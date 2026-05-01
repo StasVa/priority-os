@@ -220,5 +220,17 @@
       "back": "Back",
       "addToWorkspace": "Add to my workspace"
     }
+  },
+  "limits": {
+    "toast": {
+      "soft": "This context is past active focus. Decisions lose sharpness when there are too many.",
+      "overloaded": "This context is overloaded. Consider closing or dropping items to bring focus back."
+    },
+    "popover": {
+      "title": "Contexts thrive at 5–15 items",
+      "softBody": "Beyond 15 active items, decisions get crowded and the matrix becomes noisy. Try closing or dropping a few to restore focus.",
+      "overloadedBody": "This context is significantly past its useful range. Strongly consider closing or dropping items — too many active decisions defeat the purpose of prioritization.",
+      "viewAll": "View all items"
+    }
   }
 }
