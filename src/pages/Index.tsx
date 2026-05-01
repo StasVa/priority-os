@@ -123,9 +123,10 @@ const Index = () => {
     setEditorOpen(true);
   };
 
-  const handleAddProject = () => {
-    const name = window.prompt(t("projects.namePrompt"))?.trim();
-    if (name) addProject(name);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const handleCreateProject = (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => {
+    addProject(draft.name, { emoji: draft.emoji, color: draft.color, description: draft.description });
   };
 
   // Translate seed project names if they match known keys.
@@ -135,6 +136,10 @@ const Index = () => {
       name: t(`projects.${p.name}`, { defaultValue: p.name }),
       activeCount: p.items.filter(i => i.status === "active").length,
       lastAccessedAt: p.lastAccessedAt,
+      emoji: p.emoji,
+      color: p.color,
+      isFavorite: p.isFavorite,
+      archivedAt: p.archivedAt,
     })),
     [state.projects, t],
   );
@@ -147,9 +152,12 @@ const Index = () => {
         projects={projectsForSwitcher}
         activeProjectId={state.activeProjectId}
         activeProjectName={activeProjectName}
+        activeProjectEmoji={activeProject?.emoji}
+        activeProjectColor={activeProject?.color}
         activeProjectCount={activeProjectCount}
         onSelectProject={setActiveProject}
-        onAddProject={handleAddProject}
+        onCreateProject={handleCreateProject}
+        onOpenSettings={() => setSettingsOpen(true)}
         insightsOn={insightsOn}
         onToggleInsights={() => setInsightsOn(v => !v)}
         onNewItem={openNew}
