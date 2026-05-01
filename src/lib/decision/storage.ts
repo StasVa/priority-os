@@ -1,9 +1,20 @@
-import type { DecisionState, Item } from "./types";
+import type { DecisionState, Item, Project } from "./types";
 
 const STORAGE_KEY = "decision-os.v1";
 
 function uid(): string {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+}
+
+function makeProject(name: string, items: Item[] = []): Project {
+  return {
+    id: uid(),
+    name,
+    items,
+    isFavorite: false,
+    lastAccessedAt: Date.now(),
+    visibility: "private",
+  };
 }
 
 export function seed(): DecisionState {
@@ -39,28 +50,28 @@ export function seed(): DecisionState {
     mk("Migrate analytics to PostHog",    "Current tool is expensive and limited",          4, 5, 4, 5, 6, 3),
   ];
 
-  const contexts = [
-    { id: uid(), name: "Startup",  items: startup },
-    { id: uid(), name: "Personal", items: [] },
+  const projects = [
+    makeProject("Startup", startup),
+    makeProject("Personal", []),
   ];
 
   return {
     version: 1,
-    contexts,
-    activeContextId: contexts[0].id,
+    projects,
+    activeProjectId: projects[0].id,
     history: {},
   };
 }
 
-// Demo seed used by the Skip flow: a single context populated with demo items.
-export function skipSeed(defaultContextName: string): DecisionState {
+// Demo seed used by the Skip flow: a single project populated with demo items.
+export function skipSeed(defaultProjectName: string): DecisionState {
   const full = seed();
-  const startupItems = full.contexts[0].items.slice(0, 6);
-  const ctxId = uid();
+  const startupItems = full.projects[0].items.slice(0, 6);
+  const project = makeProject(defaultProjectName, startupItems);
   return {
     version: 1,
-    contexts: [{ id: ctxId, name: defaultContextName, items: startupItems }],
-    activeContextId: ctxId,
+    projects: [project],
+    activeProjectId: project.id,
     history: {},
   };
 }
@@ -68,8 +79,8 @@ export function skipSeed(defaultContextName: string): DecisionState {
 export function emptySeed(): DecisionState {
   return {
     version: 1,
-    contexts: [],
-    activeContextId: "",
+    projects: [],
+    activeProjectId: "",
     history: {},
   };
 }
@@ -88,32 +99,49 @@ export function markOnboarded() {
   try { localStorage.setItem(ONBOARDED_KEY, "true"); } catch { /* ignore */ }
 }
 
+type LegacyState = Partial<DecisionState> & {
+  contexts?: Array<Partial<Project>>;
+  activeContextId?: string;
+};
+
 export function loadState(): DecisionState {
   if (typeof window === "undefined") return seed();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      // First visit: if onboarding hasn't been completed, start empty so the
-      // welcome flow can populate the workspace with the user's own first item.
-      // Otherwise (or once onboarded), use the demo seed.
       const onboarded = localStorage.getItem(ONBOARDED_KEY) === "true";
       const s = onboarded ? seed() : emptySeed();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
       return s;
     }
-    const parsed = JSON.parse(raw) as DecisionState;
-    if (!parsed.contexts) parsed.contexts = [];
-    if (!parsed.history) parsed.history = {};
-    // Migrate: ensure every item has status + references
-    parsed.contexts = parsed.contexts.map(c => ({
-      ...c,
-      items: c.items.map(i => ({
+    const parsed = JSON.parse(raw) as LegacyState;
+    // Migrate from "contexts" → "projects"
+    const rawProjects: Array<Partial<Project>> =
+      (parsed.projects as Array<Partial<Project>>) ?? parsed.contexts ?? [];
+    const now = Date.now();
+    const projects: Project[] = rawProjects.map(p => ({
+      id: p.id ?? uid(),
+      name: p.name ?? "Untitled",
+      items: (p.items ?? []).map(i => ({
         ...i,
         status: i.status ?? "active",
         references: Array.isArray(i.references) ? i.references : [],
-      })),
+      })) as Item[],
+      isFavorite: p.isFavorite ?? false,
+      lastAccessedAt: p.lastAccessedAt ?? now,
+      visibility: p.visibility ?? "private",
+      archivedAt: p.archivedAt,
+      color: p.color,
     }));
-    return parsed;
+    const activeProjectId =
+      parsed.activeProjectId ?? parsed.activeContextId ?? projects[0]?.id ?? "";
+    const history = parsed.history ?? {};
+    return {
+      version: parsed.version ?? 1,
+      projects,
+      activeProjectId,
+      history,
+    };
   } catch {
     return seed();
   }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Context, DecisionState, Item } from "@/lib/decision/types";
+import type { DecisionState, Item, Project } from "@/lib/decision/types";
 import { loadState, newId, saveState, snapshotItem } from "@/lib/decision/storage";
 
 export function useDecisionStore() {
@@ -7,52 +7,71 @@ export function useDecisionStore() {
 
   useEffect(() => { saveState(state); }, [state]);
 
-  const activeContext: Context = useMemo(
-    () => state.contexts.find(c => c.id === state.activeContextId) ?? state.contexts[0],
-    [state.contexts, state.activeContextId],
+  const activeProject: Project = useMemo(
+    () => state.projects.find(p => p.id === state.activeProjectId) ?? state.projects[0],
+    [state.projects, state.activeProjectId],
   );
 
-  const setActiveContext = useCallback((id: string) => {
-    setState(s => ({ ...s, activeContextId: id }));
+  const setActiveProject = useCallback((id: string) => {
+    setState(s => ({
+      ...s,
+      activeProjectId: id,
+      projects: s.projects.map(p =>
+        p.id === id ? { ...p, lastAccessedAt: Date.now() } : p,
+      ),
+    }));
   }, []);
 
-  const addContext = useCallback((name: string): string => {
+  const addProject = useCallback((name: string): string => {
     const id = newId();
-    setState(s => ({ ...s, contexts: [...s.contexts, { id, name, items: [] }], activeContextId: id }));
+    setState(s => ({
+      ...s,
+      projects: [
+        ...s.projects,
+        {
+          id,
+          name,
+          items: [],
+          isFavorite: false,
+          lastAccessedAt: Date.now(),
+          visibility: "private",
+        },
+      ],
+      activeProjectId: id,
+    }));
     return id;
   }, []);
 
   const upsertItem = useCallback((draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => {
     setState(s => {
-      const ctxs = s.contexts.map(c => {
-        if (c.id !== s.activeContextId) return c;
+      const projects = s.projects.map(p => {
+        if (p.id !== s.activeProjectId) return p;
         const now = Date.now();
-        const existing = draft.id ? c.items.find(i => i.id === draft.id) : undefined;
+        const existing = draft.id ? p.items.find(i => i.id === draft.id) : undefined;
         if (existing) {
           const updated: Item = { ...existing, ...draft, id: existing.id, updatedAt: now };
-          return { ...c, items: c.items.map(i => i.id === existing.id ? updated : i) };
+          return { ...p, items: p.items.map(i => i.id === existing.id ? updated : i) };
         }
         const created: Item = { ...(draft as Omit<Item, "createdAt" | "updatedAt">), id: draft.id ?? newId(), createdAt: now, updatedAt: now };
-        return { ...c, items: [...c.items, created] };
+        return { ...p, items: [...p.items, created] };
       });
 
-      // History: append snapshot for the affected item
-      const ctx = ctxs.find(c => c.id === s.activeContextId)!;
-      const target = ctx.items.find(i => i.id === (draft.id ?? ctx.items[ctx.items.length - 1]?.id));
+      const proj = projects.find(p => p.id === s.activeProjectId)!;
+      const target = proj.items.find(i => i.id === (draft.id ?? proj.items[proj.items.length - 1]?.id));
       const history = { ...s.history };
       if (target) {
         const list = history[target.id] ?? [];
         history[target.id] = [...list, { at: Date.now(), snapshot: snapshotItem(target) }].slice(-25);
       }
-      return { ...s, contexts: ctxs, history };
+      return { ...s, projects, history };
     });
   }, []);
 
   const deleteItem = useCallback((id: string) => {
     setState(s => ({
       ...s,
-      contexts: s.contexts.map(c =>
-        c.id === s.activeContextId ? { ...c, items: c.items.filter(i => i.id !== id) } : c,
+      projects: s.projects.map(p =>
+        p.id === s.activeProjectId ? { ...p, items: p.items.filter(i => i.id !== id) } : p,
       ),
     }));
   }, []);
@@ -60,18 +79,16 @@ export function useDecisionStore() {
   const setItemStatus = useCallback((id: string, status: Item["status"], resolutionNote?: string) => {
     setState(s => ({
       ...s,
-      contexts: s.contexts.map(c => ({
-        ...c,
-        items: c.items.map(i => {
+      projects: s.projects.map(p => ({
+        ...p,
+        items: p.items.map(i => {
           if (i.id !== id) return i;
           const now = Date.now();
           if (status === "active") {
-            // Reconsidering — clear resolution + startedAt.
             const { resolvedAt: _r, resolutionNote: _n, startedAt: _s, ...rest } = i;
             return { ...rest, status: "active", updatedAt: now } as Item;
           }
           if (status === "in_progress") {
-            // Committing to action — set startedAt, clear any prior resolution.
             const { resolvedAt: _r, resolutionNote: _n, ...rest } = i;
             return {
               ...rest,
@@ -80,7 +97,6 @@ export function useDecisionStore() {
               updatedAt: now,
             } as Item;
           }
-          // done / dropped — keep startedAt if present, set resolvedAt.
           return {
             ...i,
             status,
@@ -93,5 +109,5 @@ export function useDecisionStore() {
     }));
   }, []);
 
-  return { state, activeContext, setActiveContext, addContext, upsertItem, deleteItem, setItemStatus };
+  return { state, activeProject, setActiveProject, addProject, upsertItem, deleteItem, setItemStatus };
 }
