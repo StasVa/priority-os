@@ -12,9 +12,9 @@ interface MatrixProps {
   onClick?: () => void;
 }
 
-const PAD = 56; // padding for axis labels
+const PAD = 64; // padding for axis labels
 const W = 720;
-const H = 520;
+const H = 540;
 
 export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "primary", onClick }: MatrixProps) {
   const def = LENSES.find(l => l.id === lens)!;
@@ -35,22 +35,46 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     });
   }, [items, lens, w, h, pad, isMini]);
 
-  // Always-visible labels (primary only, ≤12 items). Resolve vertical overlaps with ±14px offsets; hide if still colliding.
+  // Always-visible labels (primary only, ≤12 items). Resolve vertical overlaps with ±14px offsets;
+  // flip side / push down at edges; hide if still colliding.
   const showLabels = !isMini && items.length > 0 && items.length <= 12;
   const labels = useMemo(() => {
-    if (!showLabels) return [] as { id: string; x: number; y: number; text: string; visible: boolean }[];
+    if (!showLabels) return [] as { id: string; x: number; y: number; text: string; anchor: "start" | "end"; visible: boolean }[];
     const charW = 6.2; // approx for Fraunces 11px
     const labelH = 14;
+    const gap = 8;
+    const rightEdge = w - pad - 4;
+    const leftEdge = pad + 4;
+    const topEdge = pad + 4;
     const placed: { x1: number; x2: number; y1: number; y2: number }[] = [];
-    const offsets = [0, -14, 14, -28, 28];
+    const yOffsets = [0, -14, 14, -28, 28];
     return plot.map(({ it, cx, cy, r }) => {
-      const lx = cx + r + 8;
       const width = it.title.length * charW;
+
+      // Decide side: right by default, flip left if right would overflow.
+      let anchor: "start" | "end" = "start";
+      let lx = cx + r + gap;
+      if (lx + width > rightEdge) {
+        anchor = "end";
+        lx = cx - r - gap;
+        if (lx - width < leftEdge) {
+          // Both sides overflow — pin right side at right edge.
+          anchor = "end";
+          lx = rightEdge;
+        }
+      }
+
+      // Decide y: if dot is in top row, push label below dot instead of beside.
+      const nearTop = cy - r - labelH / 2 < topEdge;
+      const baseYOffsets = nearTop ? [r + labelH, r + labelH + 14, r + labelH + 28] : yOffsets;
+
       let visible = false;
       let ly = cy;
-      for (const off of offsets) {
+      for (const off of baseYOffsets) {
         const tryY = cy + off;
-        const box = { x1: lx, x2: lx + width, y1: tryY - labelH / 2, y2: tryY + labelH / 2 };
+        const x1 = anchor === "start" ? lx : lx - width;
+        const x2 = anchor === "start" ? lx + width : lx;
+        const box = { x1, x2, y1: tryY - labelH / 2, y2: tryY + labelH / 2 };
         const collides = placed.some(p => !(box.x2 < p.x1 || box.x1 > p.x2 || box.y2 < p.y1 || box.y1 > p.y2));
         if (!collides) {
           placed.push(box);
@@ -59,9 +83,9 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
           break;
         }
       }
-      return { id: it.id, x: lx, y: ly, text: it.title, visible };
+      return { id: it.id, x: lx, y: ly, text: it.title, anchor, visible };
     });
-  }, [plot, showLabels]);
+  }, [plot, showLabels, w, pad]);
 
 
   return (
@@ -89,12 +113,9 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       <line x1={pad} y1={pad + (h - pad * 2) / 2} x2={w - pad} y2={pad + (h - pad * 2) / 2}
         stroke="hsl(var(--rule))" strokeWidth="1" strokeDasharray="4 4" />
 
-      {/* Axis frame */}
-      <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1.25" />
-      <line x1={pad} y1={pad} x2={pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1.25" />
-      {/* Arrows */}
-      <polyline points={`${w - pad - 6},${h - pad - 4} ${w - pad},${h - pad} ${w - pad - 6},${h - pad + 4}`} fill="none" stroke="hsl(var(--ink))" strokeWidth="1.25" />
-      <polyline points={`${pad - 4},${pad + 6} ${pad},${pad} ${pad + 4},${pad + 6}`} fill="none" stroke="hsl(var(--ink))" strokeWidth="1.25" />
+      {/* Axis frame (no arrowheads) */}
+      <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1" />
+      <line x1={pad} y1={pad} x2={pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1" />
 
       {/* Quadrant labels */}
       {!isMini && (
@@ -106,20 +127,20 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
         </g>
       )}
 
-      {/* Axis labels */}
+      {/* Axis labels (bidirectional) */}
       {!isMini && (
-        <g style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.16em", fill: "hsl(var(--ink))" }}>
-          <text x={w / 2} y={h - 16} textAnchor="middle">{def.xLabel}</text>
-          <text x={16} y={h / 2} textAnchor="middle" transform={`rotate(-90, 16, ${h / 2})`}>{def.yLabel}</text>
+        <g style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.2em", fill: "hsl(var(--ink))", textTransform: "uppercase" }}>
+          <text x={pad + (w - pad * 2) / 2} y={h - 18} textAnchor="middle">{`LOW  ←  ${def.xLabel}  →  HIGH`}</text>
+          <text x={20} y={pad + (h - pad * 2) / 2} textAnchor="middle" transform={`rotate(-90, 20, ${pad + (h - pad * 2) / 2})`}>{`LOW  ←  ${def.yLabel}  →  HIGH`}</text>
         </g>
       )}
 
       {/* Always-visible labels */}
       {showLabels && (
-        <g style={{ fontFamily: "Fraunces, serif", fontSize: 11, fill: "hsl(var(--foreground))" }}>
+        <g style={{ fontFamily: "Fraunces, serif", fontSize: 11, fill: "hsl(var(--ink))" }}>
           {labels.map(l => (
             l.visible && hoveredId !== l.id ? (
-              <text key={l.id} x={l.x} y={l.y + 4} style={{ pointerEvents: "none" }}>{l.text}</text>
+              <text key={l.id} x={l.x} y={l.y + 4} textAnchor={l.anchor} style={{ pointerEvents: "none" }}>{l.text}</text>
             ) : null
           ))}
         </g>
