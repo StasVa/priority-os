@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Trash2, X } from "lucide-react";
-import type { Item, ItemStatus } from "@/lib/decision/types";
+import type { Item, ItemStatus, Reference } from "@/lib/decision/types";
 import { compositeScore, recommendationKey } from "@/lib/decision/logic";
 import { StatusConfirm, statusToToastKey } from "@/components/decision/StatusConfirm";
+import { ReferenceList } from "@/components/decision/ReferenceList";
 
 interface ItemEditorProps {
   open: boolean;
@@ -22,7 +23,7 @@ const SLIDER_KEYS: Array<keyof Pick<Item, "impact" | "effort" | "importance" | "
 const empty = (): Item => ({
   id: "", title: "", note: "",
   impact: 5, effort: 5, importance: 5, satisfaction: 5, confidence: 5, risk: 3,
-  createdAt: 0, updatedAt: 0, status: "active",
+  createdAt: 0, updatedAt: 0, status: "active", references: [],
 });
 
 export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStatus }: ItemEditorProps) {
