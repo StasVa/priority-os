@@ -38,10 +38,8 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
   const def = LENSES.find(l => l.id === lens)!;
 
   const isMini = size === "mini";
-  const w = isMini ? 360 : W;
-  const h = isMini ? 220 : H;
-  // Mini matrices use the same proportions as the main matrix so dots map to the same
-  // relative positions. We just shrink dimensions and padding.
+  // Mini matrices share the same aspect ratio as the main matrix (1000:700) so dots
+  // map to the same relative positions, just at a smaller visual scale.
   const w = isMini ? 500 : W;
   const h = isMini ? 350 : H;
   const pad = isMini ? 8 : PAD;
