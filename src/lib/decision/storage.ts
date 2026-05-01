@@ -69,7 +69,11 @@ export function seed(): DecisionState {
 export function skipSeed(defaultProjectName: string): DecisionState {
   const full = seed();
   const startupItems = full.projects[0].items.slice(0, 6);
-  const project = makeProject(defaultProjectName, startupItems);
+  const project: Project = {
+    ...makeProject(defaultProjectName, startupItems),
+    emoji: "💭",
+    color: "neutral",
+  };
   return {
     version: 1,
     projects: [project],
