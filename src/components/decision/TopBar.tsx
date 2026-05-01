@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Plus, Settings } from "lucide-react";
+import { Eye, EyeOff, HelpCircle, Plus, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/decision/LanguageSwitcher";
 import { ThemeToggle } from "@/components/decision/ThemeToggle";
