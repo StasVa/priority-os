@@ -44,8 +44,8 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
               onMouseEnter={() => onHover(it.id)}
               onMouseLeave={() => onHover(null)}
               onClick={() => onSelect(it.id)}
-              className={`px-6 py-4 cursor-pointer ease-editorial transition-colors
-                ${hovered ? "bg-accent" : "hover:bg-accent/60"}`}
+              className={`queue-row px-6 py-4 cursor-pointer ease-editorial transition-colors
+                ${hovered ? "queue-row-active" : ""}`}
             >
               <div className="flex items-start gap-3">
                 <span className="font-mono text-[11px] text-muted-foreground pt-1 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
