@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { Item, LensId } from "@/lib/decision/types";
 import { TONE_CLASSES, compositeScore, recommendationKey, verdictForLens } from "@/lib/decision/logic";
+import { RefStack } from "./RefStack";
 
 interface PriorityQueueProps {
   items: Item[];
@@ -49,7 +50,10 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
               <div className="flex items-start gap-3">
                 <span className="font-mono text-[11px] text-muted-foreground pt-1 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
                 <div className="flex-1 min-w-0">
-                  <div className="font-serif text-base leading-snug truncate">{it.title}</div>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="font-serif text-base leading-snug truncate flex-1 min-w-0">{it.title}</div>
+                    <RefStack references={it.references ?? []} />
+                  </div>
                   <div className="mt-1.5 flex items-center gap-2">
                     <span className={`inline-block text-[10px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded ${cls.bg} ${cls.text}`}>
                       {t(`verdicts.${cls.verdictKey}`)}
