@@ -15,6 +15,7 @@ interface TopBarProps {
   onSelectProject: (id: string) => void;
   onCreateProject: (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => void;
   onOpenSettings: () => void;
+  onOpenHelp: () => void;
   insightsOn: boolean;
   onToggleInsights: () => void;
   onNewItem: () => void;
