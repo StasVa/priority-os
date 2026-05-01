@@ -128,6 +128,13 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
           </div>
 
           <ScoreBlock score={score} recText={t(`recommendations.${recKey}`)} />
+
+          <PositionAcrossLenses
+            draft={draft}
+            contextItems={contextItems}
+            t={t}
+            sectionLabel={t("editor.positionAcrossLenses")}
+          />
         </div>
 
         {confirming ? (
