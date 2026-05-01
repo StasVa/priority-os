@@ -131,81 +131,70 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
             })}
           </div>
 
-          <div className="rounded-lg bg-ink text-paper p-5 mt-4">
-            <div className="flex items-baseline justify-between">
-              <span className="label-mono" style={{ color: "hsl(var(--paper) / 0.6)" }}>{t("editor.compositeScore")}</span>
-              <span className="font-serif text-3xl tabular-nums" style={{ fontVariationSettings: '"opsz" 144' }}>
-                {score.toFixed(1)}
-              </span>
-            </div>
-            <p className="font-serif italic text-sm leading-relaxed mt-3 text-paper/85">
-              {t(`recommendations.${recKey}`)}
-            </p>
-          </div>
+          <ScoreBlock score={score} recText={t(`recommendations.${recKey}`)} />
         </div>
 
-        <div className="px-8 py-5 border-t border-border flex items-center gap-3 relative">
-          {isEdit && onDelete && (
-            <button
-              onClick={() => { onDelete(draft.id); onClose(); }}
-              aria-label={t("editor.delete")}
-              className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border text-muted-foreground hover:text-destructive hover:border-destructive ease-editorial transition-colors"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          )}
-          {isEdit && onSetStatus && draft.status === "active" && (
-            <div className="flex items-center gap-2 relative">
+        {confirming ? (
+          <InlineConfirm
+            status={confirming}
+            onBack={() => setConfirming(null)}
+            onConfirm={(note) => {
+              if (!onSetStatus) return;
+              const id = draft.id;
+              const status = confirming;
+              onSetStatus(id, status, note || undefined);
+              setConfirming(null);
+              onClose();
+              toast(t(`toast.${statusToToastKey(status)}`), {
+                action: { label: t("toast.undo"), onClick: () => onSetStatus(id, "active") },
+                duration: 5000,
+              });
+            }}
+          />
+        ) : (
+          <div className="px-8 py-5 border-t border-border flex items-center gap-3">
+            {isEdit && onDelete && (
               <button
-                onClick={() => setConfirming(c => c === "done" ? null : "done")}
-                className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--win))] ease-editorial transition-colors"
+                onClick={() => { onDelete(draft.id); onClose(); }}
+                aria-label={t("editor.delete")}
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border text-muted-foreground hover:text-destructive hover:border-destructive ease-editorial transition-colors"
               >
-                {t("editor.markDone")}
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+            {isEdit && onSetStatus && draft.status === "active" && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setConfirming("done")}
+                  className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--win))] ease-editorial transition-colors"
+                >
+                  {t("editor.markDone")}
+                </button>
+                <button
+                  onClick={() => setConfirming("dropped")}
+                  className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--drop))] ease-editorial transition-colors"
+                >
+                  {t("editor.drop")}
+                </button>
+              </div>
+            )}
+            <div className="ml-auto flex items-center gap-2">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
+              >
+                {t("editor.cancel")}
               </button>
               <button
-                onClick={() => setConfirming(c => c === "dropped" ? null : "dropped")}
-                className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--drop))] ease-editorial transition-colors"
+                onClick={submit}
+                disabled={!canSave}
+                className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed ease-editorial transition-opacity"
               >
-                {t("editor.drop")}
+                {isEdit ? t("editor.saveChanges") : t("editor.addToContext")}
               </button>
-              {confirming && (
-                <div className="absolute bottom-full left-0 mb-2">
-                  <StatusConfirm
-                    status={confirming}
-                    align="left"
-                    onCancel={() => setConfirming(null)}
-                    onConfirm={(note) => {
-                      const id = draft.id;
-                      const status = confirming;
-                      onSetStatus(id, status, note || undefined);
-                      setConfirming(null);
-                      onClose();
-                      toast(t(`toast.${statusToToastKey(status)}`), {
-                        action: { label: t("toast.undo"), onClick: () => onSetStatus(id, "active") },
-                        duration: 5000,
-                      });
-                    }}
-                  />
-                </div>
-              )}
             </div>
-          )}
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
-            >
-              {t("editor.cancel")}
-            </button>
-            <button
-              onClick={submit}
-              disabled={!canSave}
-              className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed ease-editorial transition-opacity"
-            >
-              {isEdit ? t("editor.saveChanges") : t("editor.addToContext")}
-            </button>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
