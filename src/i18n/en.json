@@ -42,7 +42,11 @@
     "view": "View",
     "axis": "LOW  ←  {{label}}  →  HIGH",
     "low": "LOW",
-    "high": "HIGH"
+    "high": "HIGH",
+    "cluster": {
+      "label_one": "{{count}} item",
+      "label_other": "{{count}} items"
+    }
   },
   "sliders": {
     "impact": { "label": "Impact", "hint": "expected value if it works" },
