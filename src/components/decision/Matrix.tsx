@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import type { Item, LensId } from "@/lib/decision/types";
+import type { Item, LensId, Tone } from "@/lib/decision/types";
 import { LENSES, lensCoords, toneHsl, verdictForLens, compositeScore } from "@/lib/decision/logic";
 
 interface MatrixProps {
@@ -14,9 +14,24 @@ interface MatrixProps {
   onClick?: () => void;
 }
 
-const PAD = 28; // padding for axis labels (tighter — fills the card)
+const PAD = 28;
 const W = 1000;
 const H = 700;
+const CLUSTER_DIST = 6; // px distance threshold (in svg viewBox units)
+
+type Dot = { it: Item; cx: number; cy: number; r: number; tone: Tone };
+
+type Node = {
+  id: string;             // cluster id (first item's id)
+  items: Item[];          // 1 (singleton) or 2+ (cluster)
+  cx: number;
+  cy: number;
+  r: number;
+  tone: Tone;             // dominant verdict tone (highest-scoring item's tone)
+  mixed: boolean;         // true if items have mixed tones
+  topScore: number;       // highest composite score in node
+  isCluster: boolean;
+};
 
 export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "primary", onClick }: MatrixProps) {
   const { t } = useTranslation();
@@ -27,11 +42,11 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
   const h = isMini ? 220 : H;
   const pad = isMini ? 24 : PAD;
 
-  const plot = useMemo(() => {
+  // 1) Pixel positions for all items, clamped inside the matrix.
+  const plot = useMemo<Dot[]>(() => {
     return items.map(it => {
       const { x, y } = lensCoords(it, lens);
       const r = isMini ? 4 + (it.confidence / 10) * 4 : 8 + (it.confidence / 10) * 12;
-      // Safe area: keep dot fully inside matrix, never closer than r + 4 to any edge.
       const safe = r + 4;
       const xMin = pad + safe;
       const xMax = w - pad - safe;
@@ -46,15 +61,61 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     });
   }, [items, lens, w, h, pad, isMini]);
 
-  // Always-visible labels (primary only). Two-pass:
-  //  1) compute final position for every label (right by default; flip left at right edge,
-  //     flip below at top edge, flip above at bottom edge)
-  //  2) collision pass on the FINAL rectangles — higher composite score wins, lower hides.
-  const showLabels = !isMini && items.length > 0 && items.length <= 25;
+  // 2) Cluster dots within CLUSTER_DIST px of each other (Euclidean, against existing groups).
+  const nodes = useMemo<Node[]>(() => {
+    const groups: Dot[][] = [];
+    for (const d of plot) {
+      let added = false;
+      for (const g of groups) {
+        // distance to centroid of group
+        const cx = g.reduce((s, x) => s + x.cx, 0) / g.length;
+        const cy = g.reduce((s, x) => s + x.cy, 0) / g.length;
+        const dx = d.cx - cx;
+        const dy = d.cy - cy;
+        if (dx * dx + dy * dy <= CLUSTER_DIST * CLUSTER_DIST) {
+          g.push(d);
+          added = true;
+          break;
+        }
+      }
+      if (!added) groups.push([d]);
+    }
+    return groups.map(g => {
+      // pick highest-scoring item for tone & id
+      const ranked = [...g].sort((a, b) => compositeScore(b.it) - compositeScore(a.it));
+      const top = ranked[0];
+      const mixed = g.some(x => x.tone !== top.tone);
+      // Cluster radius: same as top item, +1px per extra item (capped).
+      const extra = Math.min(6, g.length - 1) * (isMini ? 0.5 : 1);
+      const cx = g.reduce((s, x) => s + x.cx, 0) / g.length;
+      const cy = g.reduce((s, x) => s + x.cy, 0) / g.length;
+      return {
+        id: top.it.id,
+        items: ranked.map(x => x.it),
+        cx,
+        cy,
+        r: top.r + extra,
+        tone: top.tone,
+        mixed,
+        topScore: compositeScore(top.it),
+        isCluster: g.length > 1,
+      };
+    });
+  }, [plot, isMini]);
+
+  // Map any item id → its containing node (so hovering an item in PriorityQueue still highlights the cluster).
+  const itemToNode = useMemo(() => {
+    const m = new Map<string, Node>();
+    for (const n of nodes) for (const it of n.items) m.set(it.id, n);
+    return m;
+  }, [nodes]);
+
+  // 3) Always-visible labels (primary only). Two-pass: compute final positions then collision detection.
+  const showLabels = !isMini && nodes.length > 0 && nodes.length <= 25;
   const labels = useMemo(() => {
-    type L = { id: string; x: number; y: number; text: string; anchor: "start" | "end"; visible: boolean; box: { x1: number; x2: number; y1: number; y2: number }; score: number };
+    type L = { id: string; x: number; y: number; text: string; anchor: "start" | "end"; visible: boolean; box: { x1: number; x2: number; y1: number; y2: number }; score: number; cluster: boolean };
     if (!showLabels) return [] as L[];
-    const charW = 7; // approx for Fraunces 11px (slightly conservative)
+    const charW = 7;
     const labelH = 14;
     const gap = 8;
     const rightEdge = w - pad - 4;
@@ -62,37 +123,34 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     const topEdge = pad + 4;
     const bottomEdge = h - pad - 4;
 
-    // Pass 1: compute final position for every label.
-    const computed: L[] = plot.map(({ it, cx, cy, r }) => {
-      const width = it.title.length * charW;
+    const computed: L[] = nodes.map(n => {
+      const text = n.isCluster
+        ? t("matrix.cluster.label", { count: n.items.length })
+        : n.items[0].title;
+      const width = text.length * charW;
 
-      // Horizontal: right of dot by default; flip if it would overflow right edge.
       let anchor: "start" | "end" = "start";
-      let lx = cx + r + gap;
+      let lx = n.cx + n.r + gap;
       if (lx + width > rightEdge) {
         anchor = "end";
-        lx = cx - r - gap;
+        lx = n.cx - n.r - gap;
         if (lx - width < leftEdge) {
-          // Both sides overflow — pin label to right edge.
           anchor = "end";
           lx = rightEdge;
         }
       }
 
-      // Vertical: beside the dot. Flip below if near top, above if near bottom.
-      let ly = cy;
-      if (cy - labelH / 2 < topEdge) ly = cy + r + labelH;
-      else if (cy + labelH / 2 > bottomEdge) ly = cy - r - labelH / 2;
+      let ly = n.cy;
+      if (n.cy - labelH / 2 < topEdge) ly = n.cy + n.r + labelH;
+      else if (n.cy + labelH / 2 > bottomEdge) ly = n.cy - n.r - labelH / 2;
 
       const x1 = anchor === "start" ? lx : lx - width;
       const x2 = anchor === "start" ? lx + width : lx;
       const box = { x1, x2, y1: ly - labelH / 2, y2: ly + labelH / 2 };
 
-      return { id: it.id, x: lx, y: ly, text: it.title, anchor, visible: true, box, score: compositeScore(it) };
+      return { id: n.id, x: lx, y: ly, text, anchor, visible: true, box, score: n.topScore, cluster: n.isCluster };
     });
 
-    // Pass 2: collision detection on final rectangles. Place higher-score first; lower-score that
-    // collides with anything already placed gets hidden (will appear on hover).
     const order = [...computed].sort((a, b) => b.score - a.score);
     const placed: { x1: number; x2: number; y1: number; y2: number }[] = [];
     for (const l of order) {
@@ -101,16 +159,21 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       else placed.push(l.box);
     }
     return computed;
-  }, [plot, showLabels, w, h, pad]);
-
+  }, [nodes, showLabels, w, h, pad, t]);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const hoveredDot = plot.find(p => p.it.id === hoveredId) ?? null;
+  const hoveredNode = (hoveredId && itemToNode.get(hoveredId)) || null;
+
   const [tipPos, setTipPos] = useState<{ left: number; top: number; placement: "right" | "left" | "top" | "bottom" } | null>(null);
   const tipRef = useRef<HTMLDivElement | null>(null);
 
+  // Cluster popover state
+  const [popoverNode, setPopoverNode] = useState<Node | null>(null);
+  const [popoverPos, setPopoverPos] = useState<{ left: number; top: number } | null>(null);
+  const popoverRef = useRef<HTMLDivElement | null>(null);
+
   useLayoutEffect(() => {
-    if (isMini || !hoveredDot || !svgRef.current) {
+    if (isMini || !hoveredNode || !svgRef.current) {
       setTipPos(null);
       return;
     }
@@ -118,11 +181,10 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     const rect = svg.getBoundingClientRect();
     const scaleX = rect.width / w;
     const scaleY = rect.height / h;
-    const dotScreenX = rect.left + hoveredDot.cx * scaleX;
-    const dotScreenY = rect.top + hoveredDot.cy * scaleY;
-    const dotR = hoveredDot.r * scaleX;
+    const dotScreenX = rect.left + hoveredNode.cx * scaleX;
+    const dotScreenY = rect.top + hoveredNode.cy * scaleY;
+    const dotR = hoveredNode.r * scaleX;
 
-    // Measure tooltip
     const tipEl = tipRef.current;
     const tipW = tipEl?.offsetWidth ?? 200;
     const tipH = tipEl?.offsetHeight ?? 40;
@@ -130,10 +192,9 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    // Determine quadrant of dot within matrix
-    const inRightHalf = hoveredDot.cx > w / 2;
-    const inTopRow = hoveredDot.cy < h * 0.25;
-    const inBottomRow = hoveredDot.cy > h * 0.75;
+    const inRightHalf = hoveredNode.cx > w / 2;
+    const inTopRow = hoveredNode.cy < h * 0.25;
+    const inBottomRow = hoveredNode.cy > h * 0.75;
 
     let placement: "right" | "left" | "top" | "bottom" = inRightHalf ? "left" : "right";
     if (inTopRow) placement = "bottom";
@@ -157,17 +218,84 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       pos = compute(opposite[placement]);
       placement = opposite[placement];
     }
-    // Clamp into viewport as final safety
     pos.left = Math.max(4, Math.min(pos.left, vw - tipW - 4));
     pos.top = Math.max(4, Math.min(pos.top, vh - tipH - 4));
 
     setTipPos({ ...pos, placement });
-  }, [hoveredDot?.it.id, hoveredDot?.cx, hoveredDot?.cy, hoveredDot?.r, isMini, w, h]);
+  }, [hoveredNode?.id, hoveredNode?.cx, hoveredNode?.cy, hoveredNode?.r, isMini, w, h]);
 
-  const tooltipNote = hoveredDot ? (() => {
-    const n = (hoveredDot.it.note ?? "").trim();
+  // Position the cluster popover relative to its node.
+  useLayoutEffect(() => {
+    if (!popoverNode || !svgRef.current) {
+      setPopoverPos(null);
+      return;
+    }
+    const svg = svgRef.current;
+    const rect = svg.getBoundingClientRect();
+    const scaleX = rect.width / w;
+    const scaleY = rect.height / h;
+    const dotScreenX = rect.left + popoverNode.cx * scaleX;
+    const dotScreenY = rect.top + popoverNode.cy * scaleY;
+    const dotR = popoverNode.r * scaleX;
+    const popW = popoverRef.current?.offsetWidth ?? 280;
+    const popH = popoverRef.current?.offsetHeight ?? 120;
+    const gap = 12;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    let left = dotScreenX + dotR + gap;
+    if (left + popW > vw - 8) left = dotScreenX - dotR - gap - popW;
+    let top = dotScreenY - popH / 2;
+    left = Math.max(8, Math.min(left, vw - popW - 8));
+    top = Math.max(8, Math.min(top, vh - popH - 8));
+    setPopoverPos({ left, top });
+  }, [popoverNode, w, h]);
+
+  // Close popover on outside click / escape.
+  useLayoutEffect(() => {
+    if (!popoverNode) return;
+    const onDown = (e: MouseEvent) => {
+      const el = popoverRef.current;
+      if (el && !el.contains(e.target as Node)) setPopoverNode(null);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setPopoverNode(null); };
+    // Defer attach so the click that opened the popover doesn't immediately close it.
+    const id = window.setTimeout(() => {
+      document.addEventListener("mousedown", onDown);
+      document.addEventListener("keydown", onKey);
+    }, 0);
+    return () => {
+      window.clearTimeout(id);
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [popoverNode]);
+
+  const tooltipNote = hoveredNode && !hoveredNode.isCluster ? (() => {
+    const n = (hoveredNode.items[0].note ?? "").trim();
     return n ? (n.length > 60 ? n.slice(0, 60) + "…" : n) : "";
   })() : "";
+
+  // Contrasting tone for mixed-cluster outline.
+  const contrastTone = (tone: Tone): Tone => {
+    switch (tone) {
+      case "win": return "drop";
+      case "drop": return "win";
+      case "bet": return "neutral";
+      case "neutral": return "bet";
+    }
+  };
+
+  const handleNodeClick = (n: Node, evt: React.MouseEvent) => {
+    evt.stopPropagation();
+    if (isMini) {
+      // mini matrices: clicking just triggers the parent onClick (lens switch).
+      onClick?.();
+      return;
+    }
+    if (n.isCluster) setPopoverNode(n);
+    else onSelect(n.items[0].id);
+  };
 
   return (
     <>
@@ -196,7 +324,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       <line x1={pad} y1={pad + (h - pad * 2) / 2} x2={w - pad} y2={pad + (h - pad * 2) / 2}
         stroke="hsl(var(--rule) / var(--matrix-midline-alpha))" strokeWidth="1" strokeDasharray="4 4" />
 
-      {/* Axis frame (no arrowheads) */}
+      {/* Axis frame */}
       <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1" />
       <line x1={pad} y1={pad} x2={pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1" />
 
@@ -210,7 +338,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
         </g>
       )}
 
-      {/* Axis labels (bidirectional) */}
+      {/* Axis labels */}
       {!isMini && (
         <g style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.2em", fill: "hsl(var(--ink))", textTransform: "uppercase" }}>
           <text x={pad + (w - pad * 2) / 2} y={h - 8} textAnchor="middle">{t("matrix.axis", { label: t(`axes.${def.xLabel}`) })}</text>
@@ -220,42 +348,74 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
 
       {/* Always-visible labels */}
       {showLabels && (
-        <g style={{ fontFamily: "Fraunces, serif", fontSize: 11, fill: "hsl(var(--ink))" }}>
+        <g style={{ fontFamily: "Fraunces, serif", fontSize: 11 }}>
           {labels.map(l => (
-            l.visible && hoveredId !== l.id ? (
-              <text key={l.id} x={l.x} y={l.y + 4} textAnchor={l.anchor} style={{ pointerEvents: "none" }}>{l.text}</text>
+            l.visible && hoveredNode?.id !== l.id ? (
+              <text
+                key={l.id}
+                x={l.x}
+                y={l.y + 4}
+                textAnchor={l.anchor}
+                style={{
+                  pointerEvents: "none",
+                  fill: l.cluster ? "hsl(var(--muted-foreground))" : "hsl(var(--ink))",
+                  fontStyle: l.cluster ? "italic" : "normal",
+                }}
+              >
+                {l.text}
+              </text>
             ) : null
           ))}
         </g>
       )}
 
-      {/* Dots */}
-      {plot.map(({ it, cx, cy, r, tone }) => {
-        const hovered = hoveredId === it.id;
-        const fillOpacity = hovered ? 1 : tone === "neutral" ? "var(--matrix-neutral-dot-alpha)" : "var(--matrix-dot-alpha)";
+      {/* Nodes (singletons + clusters) */}
+      {nodes.map(n => {
+        const hovered = hoveredNode?.id === n.id;
+        const fillOpacity = hovered ? 1 : n.tone === "neutral" ? "var(--matrix-neutral-dot-alpha)" : "var(--matrix-dot-alpha)";
         return (
-          <g key={it.id}
-             onMouseEnter={() => onHover(it.id)}
+          <g key={n.id}
+             onMouseEnter={() => onHover(n.id)}
              onMouseLeave={() => onHover(null)}
-             onClick={(e) => { e.stopPropagation(); onSelect(it.id); }}
+             onClick={(e) => handleNodeClick(n, e)}
              style={{ cursor: "pointer" }}
           >
             {hovered && (
-              <circle cx={cx} cy={cy} r={r + 8} fill="none"
-                stroke={toneHsl(tone)} strokeOpacity={0.35} strokeWidth={2}
+              <circle cx={n.cx} cy={n.cy} r={n.r + 8} fill="none"
+                stroke={toneHsl(n.tone)} strokeOpacity={0.35} strokeWidth={2}
                 style={{ transition: "all 280ms cubic-bezier(0.22, 0.61, 0.36, 1)" }}
               />
             )}
-            <circle cx={cx} cy={cy} r={r}
-              fill={toneHsl(tone)} fillOpacity={fillOpacity}
-              stroke="hsl(var(--paper))" strokeWidth={1.5}
+            <circle cx={n.cx} cy={n.cy} r={n.r}
+              fill={toneHsl(n.tone)} fillOpacity={fillOpacity}
+              stroke={n.isCluster && n.mixed ? toneHsl(contrastTone(n.tone)) : "hsl(var(--paper))"}
+              strokeWidth={n.isCluster && n.mixed ? 2 : 1.5}
               style={{ transition: "all 280ms cubic-bezier(0.22, 0.61, 0.36, 1)" }}
             />
+            {n.isCluster && (
+              <text
+                x={n.cx}
+                y={n.cy}
+                textAnchor="middle"
+                dominantBaseline="central"
+                style={{
+                  fontFamily: "JetBrains Mono, monospace",
+                  fontSize: isMini ? 9 : 13,
+                  fontWeight: 700,
+                  fill: "hsl(var(--paper))",
+                  pointerEvents: "none",
+                }}
+              >
+                {n.items.length}
+              </text>
+            )}
           </g>
         );
       })}
     </svg>
-    {!isMini && hoveredDot && typeof document !== "undefined" && createPortal(
+
+    {/* Hover tooltip (singleton + cluster) */}
+    {!isMini && hoveredNode && typeof document !== "undefined" && createPortal(
       <div
         ref={tipRef}
         style={{
@@ -269,17 +429,77 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
           color: "hsl(var(--paper))",
           borderRadius: 4,
           padding: "6px 10px",
-          maxWidth: 320,
+          maxWidth: hoveredNode.isCluster ? 360 : 320,
         }}
       >
-        <div style={{ fontFamily: "Fraunces, serif", fontSize: 13, lineHeight: 1.2 }}>
-          {hoveredDot.it.title}
-        </div>
-        {tooltipNote && (
-          <div style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontSize: 11, opacity: 0.75, marginTop: 2, lineHeight: 1.3 }}>
-            {tooltipNote}
+        {hoveredNode.isCluster ? (
+          <div style={{ fontFamily: "Fraunces, serif", fontSize: 13, lineHeight: 1.35 }}>
+            {hoveredNode.items.map(it => (
+              <div key={it.id} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {it.title}
+              </div>
+            ))}
           </div>
+        ) : (
+          <>
+            <div style={{ fontFamily: "Fraunces, serif", fontSize: 13, lineHeight: 1.2 }}>
+              {hoveredNode.items[0].title}
+            </div>
+            {tooltipNote && (
+              <div style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontSize: 11, opacity: 0.75, marginTop: 2, lineHeight: 1.3 }}>
+                {tooltipNote}
+              </div>
+            )}
+          </>
         )}
+      </div>,
+      document.body
+    )}
+
+    {/* Cluster popover (click) */}
+    {!isMini && popoverNode && typeof document !== "undefined" && createPortal(
+      <div
+        ref={popoverRef}
+        style={{
+          position: "fixed",
+          left: popoverPos?.left ?? -9999,
+          top: popoverPos?.top ?? -9999,
+          visibility: popoverPos ? "visible" : "hidden",
+          zIndex: 70,
+          minWidth: 260,
+          maxWidth: 360,
+          background: "hsl(var(--card))",
+          color: "hsl(var(--foreground))",
+          border: "1px solid hsl(var(--border))",
+          borderRadius: 8,
+          boxShadow: "0 12px 32px -8px hsl(0 0% 0% / 0.18)",
+          padding: 6,
+        }}
+      >
+        {popoverNode.items.map(it => {
+          const tone = verdictForLens(it, lens);
+          const score = compositeScore(it);
+          return (
+            <button
+              key={it.id}
+              onClick={() => { onSelect(it.id); setPopoverNode(null); }}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-muted/60 ease-editorial transition-colors text-left"
+            >
+              <span
+                aria-hidden
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 999,
+                  background: toneHsl(tone),
+                  flexShrink: 0,
+                }}
+              />
+              <span className="font-serif text-sm flex-1 truncate" title={it.title}>{it.title}</span>
+              <span className="font-mono tabular-nums text-xs text-muted-foreground">{score.toFixed(1)}</span>
+            </button>
+          );
+        })}
       </div>,
       document.body
     )}
