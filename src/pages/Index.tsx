@@ -27,6 +27,18 @@ const Index = () => {
   } = useDecisionStore();
 
   const [lens, setLens] = useState<LensId>("value-effort");
+  const matrixCardRef = useRef<HTMLElement | null>(null);
+  const handleLensChange = (next: LensId) => {
+    setLens(next);
+    requestAnimationFrame(() => {
+      const el = matrixCardRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 88;
+      if (window.scrollY > top + 4) {
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    });
+  };
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [insightsOn, setInsightsOn] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -171,7 +183,7 @@ const Index = () => {
         onNewItem={openNew}
       />
 
-      <LensSwitcher active={lens} onChange={setLens} itemCount={items.length} />
+      <LensSwitcher active={lens} onChange={handleLensChange} itemCount={items.length} />
 
       <main className="grid grid-cols-1 lg:grid-cols-[1fr_340px] min-h-[calc(100vh-128px)]">
         <section className="px-8 py-6 space-y-5">
@@ -179,7 +191,7 @@ const Index = () => {
             <LensInsight items={items} lens={lens} onSelectItem={openEdit} />
           )}
 
-          <article className="border border-border rounded-lg bg-card overflow-hidden grid-paper">
+          <article ref={matrixCardRef} className="border border-border rounded-lg bg-card overflow-hidden grid-paper">
             <header className="px-6 py-4 border-b border-border flex items-baseline justify-between bg-card">
               <h1 className="font-serif text-2xl leading-none" style={{ fontVariationSettings: '"opsz" 144' }}>
                 {t(`lenses.${activeLens.id}`)}
@@ -225,7 +237,7 @@ const Index = () => {
                 <article
                   key={l.id}
                   className="border border-border rounded-lg bg-card overflow-hidden ease-editorial transition-shadow hover:shadow-md cursor-pointer"
-                  onClick={() => setLens(l.id)}
+                  onClick={() => handleLensChange(l.id)}
                 >
                   <header className="px-3 py-2 border-b border-border flex items-baseline justify-between">
                     <h2 className="font-serif text-xs">{t(`lenses.${l.id}`)}</h2>
