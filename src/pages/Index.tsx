@@ -135,7 +135,7 @@ const Index = () => {
     })),
     [state.contexts, t],
   );
-  const activeContextName = t(`contexts.${activeContext.name}`, { defaultValue: activeContext.name });
+  const activeContextName = activeContext ? t(`contexts.${activeContext.name}`, { defaultValue: activeContext.name }) : "";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
