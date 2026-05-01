@@ -166,5 +166,10 @@ export function useDecisionStore() {
     }));
   }, []);
 
-  return { state, activeProject, setActiveProject, addProject, upsertItem, deleteItem, setItemStatus };
+  return {
+    state, activeProject,
+    setActiveProject, addProject, updateProject, deleteProject,
+    archiveProject, restoreProject, toggleFavoriteProject,
+    upsertItem, deleteItem, setItemStatus,
+  };
 }
