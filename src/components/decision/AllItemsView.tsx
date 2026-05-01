@@ -249,6 +249,7 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                 const cls = TONE_CLASSES[tone];
                 const isDone = it.status === "done";
                 const isDropped = it.status === "dropped";
+                const isInProgress = it.status === "in_progress";
                 const muted = isDone || isDropped;
                 return (
                   <li
@@ -259,11 +260,13 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                       onClick={() => setExpandedFor(prev => prev === it.id ? null : it.id)}
                       className="px-2 py-4 cursor-pointer hover:bg-muted/50 ease-editorial transition-colors"
                     >
-                      {(isDone || isDropped) && (
+                      {(isDone || isDropped || isInProgress) && (
                         <div className="font-mono text-[10px] text-muted-foreground/70 mb-1 ml-10">
                           {isDone
                             ? t("all.doneAt", { date: fmtDate(it.resolvedAt, i18n.language) })
-                            : t("all.droppedAt", { date: fmtDate(it.resolvedAt, i18n.language) })}
+                            : isDropped
+                              ? t("all.droppedAt", { date: fmtDate(it.resolvedAt, i18n.language) })
+                              : t("all.startedAt", { date: fmtDate(it.startedAt, i18n.language) })}
                         </div>
                       )}
                       <div className="flex items-start gap-4">
