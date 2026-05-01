@@ -143,9 +143,14 @@
     }
   },
   "confirm": {
-    "doneTitle": "Отметить как завершённое?",
-    "droppedTitle": "Отбросить пункт?",
+    "doneTitle": "Завершить?",
+    "droppedTitle": "Отбросить?",
     "notePlaceholder": "Заметка о результате (необязательно)",
+    "donePlaceholder": "Как всё прошло?",
+    "dropPlaceholder": "Почему отказываемся?",
+    "back": "Назад",
+    "confirmDone": "Подтвердить",
+    "confirmDrop": "Подтвердить",
     "confirm": "Подтвердить",
     "cancel": "Отмена"
   },

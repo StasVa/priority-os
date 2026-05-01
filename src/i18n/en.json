@@ -142,6 +142,11 @@
     "doneTitle": "Mark this as done?",
     "droppedTitle": "Drop this item?",
     "notePlaceholder": "Add a note about the outcome (optional)",
+    "donePlaceholder": "How did it go?",
+    "dropPlaceholder": "Why drop it?",
+    "back": "Back",
+    "confirmDone": "Confirm done",
+    "confirmDrop": "Confirm drop",
     "confirm": "Confirm",
     "cancel": "Cancel"
   },

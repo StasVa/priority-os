@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Trash2, X } from "lucide-react";
 import type { Item, ItemStatus, Reference } from "@/lib/decision/types";
 import { compositeScore, recommendationKey } from "@/lib/decision/logic";
-import { StatusConfirm, statusToToastKey } from "@/components/decision/StatusConfirm";
+import { statusToToastKey } from "@/components/decision/StatusConfirm";
 import { ReferenceList } from "@/components/decision/ReferenceList";
 
 interface ItemEditorProps {
@@ -131,81 +131,211 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
             })}
           </div>
 
-          <div className="rounded-lg bg-ink text-paper p-5 mt-4">
-            <div className="flex items-baseline justify-between">
-              <span className="label-mono" style={{ color: "hsl(var(--paper) / 0.6)" }}>{t("editor.compositeScore")}</span>
-              <span className="font-serif text-3xl tabular-nums" style={{ fontVariationSettings: '"opsz" 144' }}>
-                {score.toFixed(1)}
-              </span>
-            </div>
-            <p className="font-serif italic text-sm leading-relaxed mt-3 text-paper/85">
-              {t(`recommendations.${recKey}`)}
-            </p>
-          </div>
+          <ScoreBlock score={score} recText={t(`recommendations.${recKey}`)} />
         </div>
 
-        <div className="px-8 py-5 border-t border-border flex items-center gap-3 relative">
-          {isEdit && onDelete && (
-            <button
-              onClick={() => { onDelete(draft.id); onClose(); }}
-              aria-label={t("editor.delete")}
-              className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border text-muted-foreground hover:text-destructive hover:border-destructive ease-editorial transition-colors"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          )}
-          {isEdit && onSetStatus && draft.status === "active" && (
-            <div className="flex items-center gap-2 relative">
+        {confirming ? (
+          <InlineConfirm
+            status={confirming}
+            onBack={() => setConfirming(null)}
+            onConfirm={(note) => {
+              if (!onSetStatus) return;
+              const id = draft.id;
+              const status = confirming;
+              onSetStatus(id, status, note || undefined);
+              setConfirming(null);
+              onClose();
+              toast(t(`toast.${statusToToastKey(status)}`), {
+                action: { label: t("toast.undo"), onClick: () => onSetStatus(id, "active") },
+                duration: 5000,
+              });
+            }}
+          />
+        ) : (
+          <div className="px-8 py-5 border-t border-border flex items-center gap-3">
+            {isEdit && onDelete && (
               <button
-                onClick={() => setConfirming(c => c === "done" ? null : "done")}
-                className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--win))] ease-editorial transition-colors"
+                onClick={() => { onDelete(draft.id); onClose(); }}
+                aria-label={t("editor.delete")}
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border text-muted-foreground hover:text-destructive hover:border-destructive ease-editorial transition-colors"
               >
-                {t("editor.markDone")}
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+            {isEdit && onSetStatus && draft.status === "active" && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setConfirming("done")}
+                  className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--win))] ease-editorial transition-colors"
+                >
+                  {t("editor.markDone")}
+                </button>
+                <button
+                  onClick={() => setConfirming("dropped")}
+                  className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--drop))] ease-editorial transition-colors"
+                >
+                  {t("editor.drop")}
+                </button>
+              </div>
+            )}
+            <div className="ml-auto flex items-center gap-2">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
+              >
+                {t("editor.cancel")}
               </button>
               <button
-                onClick={() => setConfirming(c => c === "dropped" ? null : "dropped")}
-                className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--drop))] ease-editorial transition-colors"
+                onClick={submit}
+                disabled={!canSave}
+                className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed ease-editorial transition-opacity"
               >
-                {t("editor.drop")}
+                {isEdit ? t("editor.saveChanges") : t("editor.addToContext")}
               </button>
-              {confirming && (
-                <div className="absolute bottom-full left-0 mb-2">
-                  <StatusConfirm
-                    status={confirming}
-                    align="left"
-                    onCancel={() => setConfirming(null)}
-                    onConfirm={(note) => {
-                      const id = draft.id;
-                      const status = confirming;
-                      onSetStatus(id, status, note || undefined);
-                      setConfirming(null);
-                      onClose();
-                      toast(t(`toast.${statusToToastKey(status)}`), {
-                        action: { label: t("toast.undo"), onClick: () => onSetStatus(id, "active") },
-                        duration: 5000,
-                      });
-                    }}
-                  />
-                </div>
-              )}
             </div>
-          )}
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
-            >
-              {t("editor.cancel")}
-            </button>
-            <button
-              onClick={submit}
-              disabled={!canSave}
-              className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed ease-editorial transition-opacity"
-            >
-              {isEdit ? t("editor.saveChanges") : t("editor.addToContext")}
-            </button>
           </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface ScoreBlockProps { score: number; recText: string; }
+
+function ScoreBlock({ score, recText }: ScoreBlockProps) {
+  const { t } = useTranslation();
+  const [displayScore, setDisplayScore] = useState(score);
+  const [delta, setDelta] = useState<"up" | "down" | null>(null);
+  const [recDisplay, setRecDisplay] = useState(recText);
+  const [recVisible, setRecVisible] = useState(true);
+  const prevRef = useRef(score);
+  const rafRef = useRef<number | null>(null);
+  const arrowTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    const from = displayScore;
+    const to = score;
+    if (Math.abs(from - to) < 0.05) { setDisplayScore(to); return; }
+    const start = performance.now();
+    const dur = 200;
+    const tick = (now: number) => {
+      const t2 = Math.min(1, (now - start) / dur);
+      const eased = 1 - Math.pow(1 - t2, 3);
+      setDisplayScore(from + (to - from) * eased);
+      if (t2 < 1) rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [score]);
+
+  useEffect(() => {
+    const prev = prevRef.current;
+    if (Math.abs(score - prev) >= 0.05) {
+      setDelta(score > prev ? "up" : "down");
+      if (arrowTimer.current) window.clearTimeout(arrowTimer.current);
+      arrowTimer.current = window.setTimeout(() => setDelta(null), 800);
+      prevRef.current = score;
+    }
+    return () => { if (arrowTimer.current) window.clearTimeout(arrowTimer.current); };
+  }, [score]);
+
+  useEffect(() => {
+    if (recText === recDisplay) return;
+    setRecVisible(false);
+    const id = window.setTimeout(() => {
+      setRecDisplay(recText);
+      setRecVisible(true);
+    }, 180);
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recText]);
+
+  return (
+    <div className="border-t border-stone-200 mt-4">
+      <div className="py-5">
+        <div className="flex items-baseline justify-between gap-4">
+          <span className="font-mono text-[10px] uppercase text-stone-400" style={{ letterSpacing: "0.15em" }}>
+            {t("editor.compositeScore")}
+          </span>
+          <span className="inline-flex items-baseline gap-2">
+            {delta && (
+              <span className="font-mono text-[11px] text-stone-400 transition-opacity duration-200">
+                {delta === "up" ? "↑" : "↓"}
+              </span>
+            )}
+            <span
+              className="font-serif tabular-nums text-stone-900"
+              style={{ fontSize: 36, fontWeight: 400, fontVariationSettings: '"opsz" 144', lineHeight: 1 }}
+            >
+              {displayScore.toFixed(1)}
+            </span>
+          </span>
         </div>
+        <p
+          className="font-serif italic text-stone-600 mt-2.5 transition-opacity duration-150"
+          style={{ fontSize: 14, lineHeight: 1.5, opacity: recVisible ? 1 : 0 }}
+        >
+          {recDisplay}
+        </p>
+      </div>
+      <div className="border-b border-stone-200" />
+    </div>
+  );
+}
+
+interface InlineConfirmProps {
+  status: "done" | "dropped";
+  onBack: () => void;
+  onConfirm: (note: string) => void;
+}
+
+function InlineConfirm({ status, onBack, onConfirm }: InlineConfirmProps) {
+  const { t } = useTranslation();
+  const [note, setNote] = useState("");
+  const taRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    requestAnimationFrame(() => taRef.current?.focus());
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { e.preventDefault(); onBack(); }
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); onConfirm(note.trim()); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [note, onBack, onConfirm]);
+
+  const isDone = status === "done";
+  const confirmCls = isDone
+    ? "bg-stone-900 text-paper hover:opacity-90"
+    : "bg-rose-700 text-paper hover:opacity-90";
+
+  return (
+    <div className="px-8 py-5 border-t border-border bg-stone-50 animate-fade-up">
+      <div className="font-serif text-base text-stone-900 mb-3">
+        {isDone ? t("confirm.doneTitle") : t("confirm.droppedTitle")}
+      </div>
+      <textarea
+        ref={taRef}
+        rows={3}
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        placeholder={isDone ? t("confirm.donePlaceholder") : t("confirm.dropPlaceholder")}
+        className="w-full bg-background border border-stone-200 focus:border-stone-900 rounded px-3 py-2 font-serif text-sm outline-none ease-editorial transition-colors resize-none"
+      />
+      <div className="mt-3 flex items-center justify-end gap-2">
+        <button
+          onClick={onBack}
+          className="px-4 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
+        >
+          {t("confirm.back")}
+        </button>
+        <button
+          onClick={() => onConfirm(note.trim())}
+          className={`px-5 py-2 rounded-full font-serif text-sm ease-editorial transition-opacity ${confirmCls}`}
+        >
+          {isDone ? t("confirm.confirmDone") : t("confirm.confirmDrop")}
+        </button>
       </div>
     </div>
   );
