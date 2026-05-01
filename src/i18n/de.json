@@ -1,6 +1,12 @@
 {
-  "brand": { "name": "Priority", "suffix": "OS" },
-  "theme": { "light": "Hell", "dark": "Dunkel" },
+  "brand": {
+    "name": "Priority",
+    "suffix": "OS"
+  },
+  "theme": {
+    "light": "Hell",
+    "dark": "Dunkel"
+  },
   "nav": {
     "newItem": "Neues Element",
     "insights": "Insights",
@@ -103,12 +109,30 @@
     }
   },
   "sliders": {
-    "impact": { "label": "Wirkung", "hint": "erwarteter Wert, wenn es klappt" },
-    "effort": { "label": "Aufwand", "hint": "Kosten, Zeit, Komplexität" },
-    "importance": { "label": "Wichtigkeit", "hint": "wie kritisch das zugrunde liegende Bedürfnis ist" },
-    "satisfaction": { "label": "Zufriedenheit", "hint": "wie gut dieses Bedürfnis heute erfüllt ist" },
-    "confidence": { "label": "Vertrauen", "hint": "Sicherheit in den Schätzungen" },
-    "risk": { "label": "Risiko", "hint": "Kehrseite, wenn es schiefgeht" }
+    "impact": {
+      "label": "Wirkung",
+      "hint": "erwarteter Wert, wenn es klappt"
+    },
+    "effort": {
+      "label": "Aufwand",
+      "hint": "Kosten, Zeit, Komplexität"
+    },
+    "importance": {
+      "label": "Wichtigkeit",
+      "hint": "wie kritisch das zugrunde liegende Bedürfnis ist"
+    },
+    "satisfaction": {
+      "label": "Zufriedenheit",
+      "hint": "wie gut dieses Bedürfnis heute erfüllt ist"
+    },
+    "confidence": {
+      "label": "Vertrauen",
+      "hint": "Sicherheit in den Schätzungen"
+    },
+    "risk": {
+      "label": "Risiko",
+      "hint": "Kehrseite, wenn es schiefgeht"
+    }
   },
   "axes": {
     "EFFORT": "AUFWAND",
@@ -316,20 +340,50 @@
       "matrix": "Wie die Matrix lesen"
     },
     "dimensions": {
-      "impact": { "term": "Wirkung", "def": "Wenn es klappt, wie sehr verändert es die Lage?" },
-      "effort": { "term": "Aufwand", "def": "Kosten, Zeit, Komplexität. Was kostet es?" },
-      "importance": { "term": "Wichtigkeit", "def": "Wie kritisch ist das zugrunde liegende Bedürfnis?" },
-      "satisfaction": { "term": "Zufriedenheit", "def": "Wie gut ist dieses Bedürfnis heute erfüllt?" },
-      "confidence": { "term": "Vertrauen", "def": "Wie sicher bist du dir bei deinen Schätzungen?" },
-      "risk": { "term": "Risiko", "def": "Was ist die Kehrseite, wenn es schiefgeht?" }
+      "impact": {
+        "term": "Wirkung",
+        "def": "Wenn es klappt, wie sehr verändert es die Lage?"
+      },
+      "effort": {
+        "term": "Aufwand",
+        "def": "Kosten, Zeit, Komplexität. Was kostet es?"
+      },
+      "importance": {
+        "term": "Wichtigkeit",
+        "def": "Wie kritisch ist das zugrunde liegende Bedürfnis?"
+      },
+      "satisfaction": {
+        "term": "Zufriedenheit",
+        "def": "Wie gut ist dieses Bedürfnis heute erfüllt?"
+      },
+      "confidence": {
+        "term": "Vertrauen",
+        "def": "Wie sicher bist du dir bei deinen Schätzungen?"
+      },
+      "risk": {
+        "term": "Risiko",
+        "def": "Was ist die Kehrseite, wenn es schiefgeht?"
+      }
     },
     "lenses": {
-      "valueEffort": { "term": "Wert vs Aufwand", "def": "Wo der Ertrag pro Aufwand am höchsten ist. Was jetzt zu tun ist." },
-      "importanceSatisfaction": { "term": "Wichtigkeit vs Zufriedenheit", "def": "Wo unerfüllte Bedürfnisse liegen. Echte Chancen." },
-      "confidenceRisk": { "term": "Vertrauen vs Risiko", "def": "Wo vor der Entscheidung validiert werden muss. Was du noch nicht weißt." }
+      "valueEffort": {
+        "term": "Wert vs Aufwand",
+        "def": "Wo der Ertrag pro Aufwand am höchsten ist. Was jetzt zu tun ist."
+      },
+      "importanceSatisfaction": {
+        "term": "Wichtigkeit vs Zufriedenheit",
+        "def": "Wo unerfüllte Bedürfnisse liegen. Echte Chancen."
+      },
+      "confidenceRisk": {
+        "term": "Vertrauen vs Risiko",
+        "def": "Wo vor der Entscheidung validiert werden muss. Was du noch nicht weißt."
+      }
     },
     "matrix": {
       "body": "Jeder Punkt ist eine Entscheidung. Die Farbe zeigt das Urteil in der aktiven Linse — Grün für Erfolge, Bernstein für Wetten, Rot für Verwerfen, Grau für dazwischen. Größere Punkte heißen mehr Vertrauen. Mehrere Entscheidungen am selben Ort werden zu einem Cluster mit Zähler."
     }
+  },
+  "language": {
+    "tooltip": "Sprache"
   }
 }

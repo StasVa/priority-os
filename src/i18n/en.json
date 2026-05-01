@@ -1,6 +1,12 @@
 {
-  "brand": { "name": "Priority", "suffix": "OS" },
-  "theme": { "light": "Light", "dark": "Dark" },
+  "brand": {
+    "name": "Priority",
+    "suffix": "OS"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark"
+  },
   "nav": {
     "newItem": "New item",
     "insights": "Insights",
@@ -102,12 +108,30 @@
     }
   },
   "sliders": {
-    "impact": { "label": "Impact", "hint": "expected value if it works" },
-    "effort": { "label": "Effort", "hint": "cost, time, complexity" },
-    "importance": { "label": "Importance", "hint": "how critical the underlying need is" },
-    "satisfaction": { "label": "Satisfaction", "hint": "how well that need is met today" },
-    "confidence": { "label": "Confidence", "hint": "certainty in the estimates" },
-    "risk": { "label": "Risk", "hint": "downside if it goes wrong" }
+    "impact": {
+      "label": "Impact",
+      "hint": "expected value if it works"
+    },
+    "effort": {
+      "label": "Effort",
+      "hint": "cost, time, complexity"
+    },
+    "importance": {
+      "label": "Importance",
+      "hint": "how critical the underlying need is"
+    },
+    "satisfaction": {
+      "label": "Satisfaction",
+      "hint": "how well that need is met today"
+    },
+    "confidence": {
+      "label": "Confidence",
+      "hint": "certainty in the estimates"
+    },
+    "risk": {
+      "label": "Risk",
+      "hint": "downside if it goes wrong"
+    }
   },
   "axes": {
     "EFFORT": "EFFORT",
@@ -315,20 +339,50 @@
       "matrix": "How to read the matrix"
     },
     "dimensions": {
-      "impact": { "term": "Impact", "def": "If it works, how much will it change things?" },
-      "effort": { "term": "Effort", "def": "Cost, time, complexity. What does it take?" },
-      "importance": { "term": "Importance", "def": "How critical is the underlying need?" },
-      "satisfaction": { "term": "Satisfaction", "def": "How well is that need met today?" },
-      "confidence": { "term": "Confidence", "def": "How sure are you about your estimates?" },
-      "risk": { "term": "Risk", "def": "What's the downside if it goes wrong?" }
+      "impact": {
+        "term": "Impact",
+        "def": "If it works, how much will it change things?"
+      },
+      "effort": {
+        "term": "Effort",
+        "def": "Cost, time, complexity. What does it take?"
+      },
+      "importance": {
+        "term": "Importance",
+        "def": "How critical is the underlying need?"
+      },
+      "satisfaction": {
+        "term": "Satisfaction",
+        "def": "How well is that need met today?"
+      },
+      "confidence": {
+        "term": "Confidence",
+        "def": "How sure are you about your estimates?"
+      },
+      "risk": {
+        "term": "Risk",
+        "def": "What's the downside if it goes wrong?"
+      }
     },
     "lenses": {
-      "valueEffort": { "term": "Value vs Effort", "def": "Where the return is highest per effort. What to do now." },
-      "importanceSatisfaction": { "term": "Importance vs Satisfaction", "def": "Where unmet needs live. Real opportunities." },
-      "confidenceRisk": { "term": "Confidence vs Risk", "def": "Where to validate before deciding. What you don't know yet." }
+      "valueEffort": {
+        "term": "Value vs Effort",
+        "def": "Where the return is highest per effort. What to do now."
+      },
+      "importanceSatisfaction": {
+        "term": "Importance vs Satisfaction",
+        "def": "Where unmet needs live. Real opportunities."
+      },
+      "confidenceRisk": {
+        "term": "Confidence vs Risk",
+        "def": "Where to validate before deciding. What you don't know yet."
+      }
     },
     "matrix": {
       "body": "Each dot is a decision. Color shows its verdict in the active lens — green for wins, amber for bets, red for drops, gray for the in-between. Bigger dots mean higher confidence. Multiple decisions in the same spot cluster into one with a count."
     }
+  },
+  "language": {
+    "tooltip": "Language"
   }
 }
