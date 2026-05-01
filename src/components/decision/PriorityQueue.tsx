@@ -24,9 +24,9 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
 
   const top3 = ranked.slice(0, 3);
 
-  const total = counts.active + counts.done + counts.dropped;
+  const total = counts.active + counts.in_progress + counts.done + counts.dropped;
   const showAllBlock = total > 0;
-  const buttonLabel = counts.active <= 6 && counts.done === 0 && counts.dropped === 0
+  const buttonLabel = counts.active <= 6 && counts.in_progress === 0 && counts.done === 0 && counts.dropped === 0
     ? t("all.viewAll")
     : t("all.viewAllItems", { count: total });
 
