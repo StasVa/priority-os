@@ -33,6 +33,8 @@
     "delete": "Delete item",
     "close": "Close",
     "markDone": "Mark done",
+    "markInProgress": "Start",
+    "backToActive": "Back to active",
     "drop": "Drop",
     "positionAcrossLenses": "Position across lenses"
   },
