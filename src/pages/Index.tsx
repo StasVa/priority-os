@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { TopBar } from "@/components/decision/TopBar";
 import { LensSwitcher } from "@/components/decision/LensSwitcher";
 import { Matrix } from "@/components/decision/Matrix";
