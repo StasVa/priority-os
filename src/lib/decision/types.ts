@@ -1,5 +1,6 @@
 export type LensId = "value-effort" | "importance-satisfaction" | "confidence-risk";
 export type Tone = "win" | "bet" | "drop" | "neutral";
+export type ItemStatus = "active" | "done" | "dropped";
 
 export interface Item {
   id: string;
@@ -13,6 +14,9 @@ export interface Item {
   risk: number;
   createdAt: number;
   updatedAt: number;
+  status: ItemStatus;
+  resolvedAt?: string;
+  resolutionNote?: string;
 }
 
 export interface Context {
