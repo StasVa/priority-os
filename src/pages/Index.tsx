@@ -6,6 +6,7 @@ import { Matrix } from "@/components/decision/Matrix";
 import { PriorityQueue } from "@/components/decision/PriorityQueue";
 import { ItemEditor } from "@/components/decision/ItemEditor";
 import { AllItemsView } from "@/components/decision/AllItemsView";
+import { LensInsight } from "@/components/decision/LensInsight";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import type { Item, LensId } from "@/lib/decision/types";
 import { LENSES } from "@/lib/decision/logic";
