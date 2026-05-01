@@ -22,7 +22,26 @@ function PositionMini({ lens, draft, others }: PositionMiniProps) {
     };
   };
 
-  const otherDots = useMemo(() => others.map(it => ({ id: it.id, ...project(it) })), [others, lens]);
+  // Cluster other dots within 5px so identical-coord items don't render on top of each other.
+  const otherClusters = useMemo(() => {
+    const dots = others.map(it => ({ id: it.id, ...project(it) }));
+    const groups: typeof dots[] = [];
+    for (const d of dots) {
+      let added = false;
+      for (const g of groups) {
+        const cx = g.reduce((s, x) => s + x.cx, 0) / g.length;
+        const cy = g.reduce((s, x) => s + x.cy, 0) / g.length;
+        const dx = d.cx - cx; const dy = d.cy - cy;
+        if (dx * dx + dy * dy <= 25) { g.push(d); added = true; break; }
+      }
+      if (!added) groups.push([d]);
+    }
+    return groups.map(g => {
+      const cx = g.reduce((s, x) => s + x.cx, 0) / g.length;
+      const cy = g.reduce((s, x) => s + x.cy, 0) / g.length;
+      return { id: g[0].id, cx, cy, tone: g[0].tone, count: g.length };
+    });
+  }, [others, lens]);
   const me = project(draft);
 
   return (
@@ -44,12 +63,26 @@ function PositionMini({ lens, draft, others }: PositionMiniProps) {
       <line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} stroke="hsl(var(--ink))" strokeWidth="1" />
       <line x1={PAD} y1={PAD} x2={PAD} y2={H - PAD} stroke="hsl(var(--ink))" strokeWidth="1" />
 
-      {/* other items — small, faded */}
-      {otherDots.map(d => (
-        <circle key={d.id} cx={d.cx} cy={d.cy} r={3}
-          fill={toneHsl(d.tone)} fillOpacity={0.5}
-        />
-      ))}
+      {/* other items — small, faded, clustered */}
+      {otherClusters.map(d => {
+        const r = d.count > 1 ? 4 : 3;
+        return (
+          <g key={d.id}>
+            <circle cx={d.cx} cy={d.cy} r={r}
+              fill={toneHsl(d.tone)} fillOpacity={0.5}
+            />
+            {d.count > 1 && (
+              <text
+                x={d.cx} y={d.cy}
+                textAnchor="middle" dominantBaseline="central"
+                style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 6, fontWeight: 700, fill: "hsl(var(--paper))", pointerEvents: "none" }}
+              >
+                {d.count}
+              </text>
+            )}
+          </g>
+        );
+      })}
 
       {/* current item — ringed marker, full color, animated */}
       <g style={{ transition: "transform 200ms cubic-bezier(0.22, 0.61, 0.36, 1)" }}>
