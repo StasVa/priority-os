@@ -7,6 +7,7 @@ interface WelcomeOnboardingProps {
   open: boolean;
   onSubmit: (draft: {
     title: string;
+    contextName: string;
     impact: number; effort: number; importance: number;
     satisfaction: number; confidence: number; risk: number;
   }) => void;
@@ -19,39 +20,46 @@ const SLIDER_KEYS: Array<keyof Pick<Item, "impact" | "effort" | "importance" | "
 
 export function WelcomeOnboarding({ open, onSubmit, onSkip }: WelcomeOnboardingProps) {
   const { t } = useTranslation();
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [title, setTitle] = useState("");
+  const [contextName, setContextName] = useState("");
   const [scores, setScores] = useState({
     impact: 5, effort: 5, importance: 5, satisfaction: 5, confidence: 5, risk: 5,
   });
-  const inputRef = useRef<HTMLInputElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const contextInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (open && step === 1) {
-      requestAnimationFrame(() => inputRef.current?.focus());
-    }
+    if (!open) return;
+    if (step === 1) requestAnimationFrame(() => titleInputRef.current?.focus());
+    if (step === 2) requestAnimationFrame(() => contextInputRef.current?.focus());
   }, [open, step]);
 
   if (!open) return null;
 
-  const trimmed = title.trim();
-  const canContinue = trimmed.length > 0;
+  const trimmedTitle = title.trim();
+  const trimmedCtx = contextName.trim();
+  const canStep1 = trimmedTitle.length > 0;
+  const canStep2 = trimmedCtx.length > 0;
 
-  const advance = () => { if (canContinue) setStep(2); };
+  const advance1 = () => { if (canStep1) setStep(2); };
+  const advance2 = () => { if (canStep2) setStep(3); };
 
   const submit = () => {
-    if (!canContinue) return;
-    onSubmit({ title: trimmed, ...scores });
+    if (!canStep1 || !canStep2) return;
+    onSubmit({ title: trimmedTitle, contextName: trimmedCtx, ...scores });
   };
 
   // Build a synthetic Item-like for score/recommendation calc
   const synthetic: Item = {
-    id: "_preview", title: trimmed || "_", note: "",
+    id: "_preview", title: trimmedTitle || "_", note: "",
     ...scores,
     createdAt: 0, updatedAt: 0, status: "active", references: [],
   };
   const score = compositeScore(synthetic);
   const recKey = recommendationKey(synthetic);
+
+  const ctxExamples = [1, 2, 3, 4, 5, 6];
 
   return (
     <div className="fixed inset-0 z-50 bg-background animate-overlay-in overflow-y-auto">
@@ -66,7 +74,7 @@ export function WelcomeOnboarding({ open, onSubmit, onSkip }: WelcomeOnboardingP
           </span>
         </div>
 
-        {step === 1 ? (
+        {step === 1 && (
           <div className="w-full max-w-[500px] space-y-8">
             <div className="space-y-3">
               <h1
@@ -82,18 +90,18 @@ export function WelcomeOnboarding({ open, onSubmit, onSkip }: WelcomeOnboardingP
 
             <div>
               <input
-                ref={inputRef}
+                ref={titleInputRef}
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); advance(); } }}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); advance1(); } }}
                 placeholder={t("welcome.step1.placeholder")}
                 className="w-full bg-transparent border-0 border-b border-border focus:border-foreground outline-none px-0 py-3 font-serif placeholder:text-muted-foreground/60 ease-editorial transition-colors"
                 style={{ fontSize: 22, lineHeight: 1.4, fontVariationSettings: '"opsz" 96' }}
               />
             </div>
 
-            {trimmed.length === 0 && (
+            {trimmedTitle.length === 0 && (
               <div className="space-y-1.5 pt-2">
                 <div className="font-mono uppercase text-muted-foreground/70" style={{ fontSize: 11, letterSpacing: "0.18em" }}>
                   {t("welcome.step1.examplesTitle")}
@@ -120,32 +128,108 @@ export function WelcomeOnboarding({ open, onSubmit, onSkip }: WelcomeOnboardingP
                 {t("welcome.skip")}
               </button>
               <button
-                onClick={advance}
-                disabled={!canContinue}
+                onClick={advance1}
+                disabled={!canStep1}
                 className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed ease-editorial transition-opacity"
               >
                 {t("welcome.continue")} →
               </button>
             </div>
           </div>
-        ) : (
+        )}
+
+        {step === 2 && (
+          <div className="w-full max-w-[500px] space-y-8">
+            <div className="space-y-3">
+              <h1
+                className="font-serif text-foreground"
+                style={{ fontSize: 36, fontWeight: 400, lineHeight: 1.15, fontVariationSettings: '"opsz" 144' }}
+              >
+                {t("welcome.step2.heading")}
+              </h1>
+              <p className="font-serif italic text-muted-foreground" style={{ fontSize: 16, lineHeight: 1.5 }}>
+                {t("welcome.step2.subhead")}
+              </p>
+            </div>
+
+            {/* Read-only title display from step 1 */}
+            <div className="border-l-2 border-border pl-4 py-1">
+              <p className="font-serif italic text-muted-foreground" style={{ fontSize: 15, lineHeight: 1.4 }}>
+                "{trimmedTitle}"
+              </p>
+            </div>
+
+            <div>
+              <input
+                ref={contextInputRef}
+                type="text"
+                value={contextName}
+                onChange={(e) => setContextName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); advance2(); } }}
+                placeholder={t("welcome.step2.placeholder")}
+                className="w-full bg-transparent border-0 border-b border-border focus:border-foreground outline-none px-0 py-3 font-serif placeholder:text-muted-foreground/60 ease-editorial transition-colors"
+                style={{ fontSize: 22, lineHeight: 1.4, fontVariationSettings: '"opsz" 96' }}
+              />
+            </div>
+
+            {trimmedCtx.length === 0 && (
+              <div className="space-y-1.5 pt-2">
+                <div className="font-mono uppercase text-muted-foreground/70" style={{ fontSize: 11, letterSpacing: "0.18em" }}>
+                  {t("welcome.step2.examplesTitle")}
+                </div>
+                <ul className="space-y-1">
+                  {ctxExamples.map(n => (
+                    <li
+                      key={n}
+                      className="font-serif italic text-muted-foreground/70"
+                      style={{ fontSize: 13, lineHeight: 1.6 }}
+                    >
+                      · {t(`welcome.step2.example${n}`)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between gap-3 pt-4">
+              <button
+                onClick={() => setStep(1)}
+                className="px-4 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
+              >
+                ← {t("welcome.step3.back")}
+              </button>
+              <button
+                onClick={advance2}
+                disabled={!canStep2}
+                className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed ease-editorial transition-opacity"
+              >
+                {t("welcome.continue")} →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
           <div className="w-full max-w-[560px] space-y-8">
             <div className="space-y-3">
               <h1
                 className="font-serif text-foreground"
                 style={{ fontSize: 28, fontWeight: 400, lineHeight: 1.2, fontVariationSettings: '"opsz" 144' }}
               >
-                {t("welcome.step2.heading")}
+                {t("welcome.step3.heading")}
               </h1>
               <p className="font-serif italic text-muted-foreground" style={{ fontSize: 15, lineHeight: 1.5 }}>
-                {t("welcome.step2.subhead")}
+                {t("welcome.step3.subhead")}
               </p>
             </div>
 
             {/* Read-only title display */}
             <div className="border-l-2 border-border pl-4 py-1">
               <p className="font-serif text-foreground" style={{ fontSize: 18, lineHeight: 1.4 }}>
-                "{trimmed}"
+                "{trimmedTitle}"
+              </p>
+              <p className="font-mono uppercase text-muted-foreground/60 mt-1" style={{ fontSize: 10, letterSpacing: "0.15em" }}>
+                {trimmedCtx}
               </p>
             </div>
 
@@ -203,16 +287,16 @@ export function WelcomeOnboarding({ open, onSubmit, onSkip }: WelcomeOnboardingP
 
             <div className="flex items-center justify-between gap-3 pt-2">
               <button
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
                 className="px-4 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
               >
-                ← {t("welcome.step2.back")}
+                ← {t("welcome.step3.back")}
               </button>
               <button
                 onClick={submit}
                 className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
               >
-                {t("welcome.step2.addToWorkspace")} →
+                {t("welcome.step3.addToWorkspace")} →
               </button>
             </div>
           </div>
