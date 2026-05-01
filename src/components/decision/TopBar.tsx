@@ -1,5 +1,7 @@
 import { Eye, EyeOff, Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Context } from "@/lib/decision/types";
+import { LanguageSwitcher } from "@/components/decision/LanguageSwitcher";
 
 interface TopBarProps {
   contexts: Context[];
@@ -15,6 +17,7 @@ export function TopBar({
   contexts, activeContextId, onSelectContext, onAddContext,
   insightsOn, onToggleInsights, onNewItem,
 }: TopBarProps) {
+  const { t } = useTranslation();
   return (
     <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="px-8 py-4 flex items-center gap-6">
@@ -48,14 +51,14 @@ export function TopBar({
           })}
           <button
             onClick={onAddContext}
-            aria-label="Add context"
+            aria-label={t("nav.addContext")}
             className="ml-1 inline-flex items-center justify-center w-7 h-7 rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-foreground ease-editorial transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-3">
           <button
             onClick={onToggleInsights}
             className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm border ease-editorial transition-colors
@@ -63,15 +66,17 @@ export function TopBar({
             aria-pressed={insightsOn}
           >
             {insightsOn ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-            <span className="font-mono text-[11px] uppercase tracking-widest">Insights</span>
+            <span className="font-mono text-[11px] uppercase tracking-widest">{t("nav.insights")}</span>
           </button>
           <button
             onClick={onNewItem}
             className="inline-flex items-center gap-1.5 pl-3 pr-4 py-1.5 rounded-full text-sm bg-ink text-paper hover:opacity-90 ease-editorial transition-opacity"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span className="font-serif">New item</span>
+            <span className="font-serif">{t("nav.newItem")}</span>
           </button>
+          <span className="w-px h-5 bg-border mx-1" aria-hidden />
+          <LanguageSwitcher />
         </div>
       </div>
     </header>
