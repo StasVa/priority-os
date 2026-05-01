@@ -28,7 +28,7 @@ const empty = (): Item => ({
   createdAt: 0, updatedAt: 0, status: "active", references: [],
 });
 
-export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStatus }: ItemEditorProps) {
+export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStatus, contextItems = [] }: ItemEditorProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState<Item>(empty());
   const [confirming, setConfirming] = useState<null | "done" | "dropped">(null);
