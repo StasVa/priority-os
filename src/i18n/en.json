@@ -63,6 +63,35 @@
     "importance-satisfaction": "Importance vs Satisfaction",
     "confidence-risk": "Confidence vs Risk"
   },
+  "lensSubtitles": {
+    "value-effort": "When to ship this week",
+    "importance-satisfaction": "Where the unmet needs are",
+    "confidence-risk": "What to validate first"
+  },
+  "insights": {
+    "aria": "insight",
+    "valueEffort": {
+      "quickWins_one": "You have {{count}} quick win. <0>{{item}}</0> has the best return — start there.",
+      "quickWins_other": "You have {{count}} quick wins. <0>{{item}}</0> has the best return — start there if you can only ship one.",
+      "bigBets_one": "No quick wins yet. Your best lever is a big bet: <0>{{item}}</0>.",
+      "bigBets_other": "No quick wins yet. Your best lever is a big bet: <0>{{item}}</0>.",
+      "none": "Nothing pops as a quick win. Re-rate items or break a big one into a smaller test."
+    },
+    "importanceSatisfaction": {
+      "opportunities_one": "{{count}} opportunity gap stands out: <0>{{item}}</0> — important but barely solved today.",
+      "opportunities_other": "{{count}} opportunity gaps. <0>{{item}}</0> is the strongest — important and barely solved today.",
+      "overServed_one": "{{count}} item is over-served — high effort, low importance. Consider trimming.",
+      "overServed_other": "{{count}} items are over-served — high effort on low-importance needs. Consider trimming.",
+      "none": "No clear opportunity gap. Either you're well-served, or importance ratings need a second pass."
+    },
+    "confidenceRisk": {
+      "validate_one": "{{count}} item needs validation first: <0>{{item}}</0> — risky and uncertain.",
+      "validate_other": "{{count}} items need validation first. Start with <0>{{item}}</0> — riskiest and least certain.",
+      "safe_one": "{{count}} item is safe to ship. <0>{{item}}</0> is the strongest of those.",
+      "safe_other": "{{count}} items are safe to ship. <0>{{item}}</0> is the strongest of those.",
+      "none": "Nothing screams \"validate first.\" Confidence and risk look balanced."
+    }
+  },
   "quadrants": {
     "QUICK_WINS": "Quick wins",
     "BIG_BETS": "Big bets",
