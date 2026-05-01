@@ -112,7 +112,7 @@ const Index = () => {
 
 
   const activeLens = useMemo(() => LENSES.find(l => l.id === lens)!, [lens]);
-  
+  const otherLenses = useMemo(() => LENSES.filter(l => l.id !== lens), [lens]);
 
   const openNew = () => { setEditing(null); setEditorOpen(true); };
   const openEdit = (id: string) => {
@@ -158,8 +158,8 @@ const Index = () => {
             <LensInsight items={items} lens={lens} onSelectItem={openEdit} />
           )}
 
-          <article className="border border-border rounded-lg bg-card overflow-hidden">
-            <header className="px-6 py-4 border-b border-border flex items-baseline justify-between">
+          <article className="border border-border rounded-lg bg-card overflow-hidden grid-paper">
+            <header className="px-6 py-4 border-b border-border flex items-baseline justify-between bg-card">
               <h1 className="font-serif text-2xl leading-none" style={{ fontVariationSettings: '"opsz" 144' }}>
                 {t(`lenses.${activeLens.id}`)}
               </h1>
@@ -167,7 +167,7 @@ const Index = () => {
                 {activeLens.xHint}  ·  {activeLens.yHint}
               </span>
             </header>
-            <div className="p-4 grid-paper">
+            <div className="p-2">
               {items.length > 0 ? (
                 <Matrix
                   lens={lens}
@@ -197,6 +197,33 @@ const Index = () => {
           </article>
 
           {items.length > 0 && <FirstHint itemCount={items.length} />}
+
+          {items.length > 0 && (
+            <div className="grid grid-cols-2 gap-4">
+              {otherLenses.map(l => (
+                <article
+                  key={l.id}
+                  className="border border-border rounded-lg bg-card overflow-hidden ease-editorial transition-shadow hover:shadow-md cursor-pointer"
+                  onClick={() => setLens(l.id)}
+                >
+                  <header className="px-3 py-2 border-b border-border flex items-baseline justify-between">
+                    <h2 className="font-serif text-xs">{t(`lenses.${l.id}`)}</h2>
+                    <span className="label-mono">{t("matrix.view")}</span>
+                  </header>
+                  <div className="p-1.5 grid-paper" style={{ height: 140 }}>
+                    <Matrix
+                      lens={l.id}
+                      items={items}
+                      hoveredId={hoveredId}
+                      onHover={setHoveredId}
+                      onSelect={openEdit}
+                      size="mini"
+                    />
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
 
         <PriorityQueue
