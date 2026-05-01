@@ -169,16 +169,30 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
               stroke="hsl(var(--paper))" strokeWidth={1.5}
               style={{ transition: "all 280ms cubic-bezier(0.22, 0.61, 0.36, 1)" }}
             />
-            {!isMini && hovered && (
-              <g>
-                <rect x={cx + r + 8} y={cy - 14} width={Math.max(80, it.title.length * 7 + 16)} height={26}
-                  rx={4} fill="hsl(var(--ink))" />
-                <text x={cx + r + 16} y={cy + 4}
-                  style={{ fontFamily: "Fraunces, serif", fontSize: 13, fill: "hsl(var(--paper))" }}>
-                  {it.title}
-                </text>
-              </g>
-            )}
+            {!isMini && hovered && (() => {
+              const noteSnippet = (it.note ?? "").trim();
+              const snippet = noteSnippet ? (noteSnippet.length > 60 ? noteSnippet.slice(0, 60) + "…" : noteSnippet) : "";
+              const titleW = it.title.length * 7 + 16;
+              const snippetW = snippet ? snippet.length * 6 + 16 : 0;
+              const boxW = Math.max(80, titleW, snippetW);
+              const boxH = snippet ? 42 : 26;
+              const boxY = cy - (snippet ? 22 : 14);
+              return (
+                <g style={{ pointerEvents: "none" }}>
+                  <rect x={cx + r + 8} y={boxY} width={boxW} height={boxH} rx={4} fill="hsl(var(--ink))" />
+                  <text x={cx + r + 16} y={cy + (snippet ? -6 : 4)}
+                    style={{ fontFamily: "Fraunces, serif", fontSize: 13, fill: "hsl(var(--paper))" }}>
+                    {it.title}
+                  </text>
+                  {snippet && (
+                    <text x={cx + r + 16} y={cy + 12}
+                      style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontSize: 11, fill: "hsl(var(--paper) / 0.75)" }}>
+                      {snippet}
+                    </text>
+                  )}
+                </g>
+              );
+            })()}
           </g>
         );
       })}
