@@ -326,9 +326,9 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       <line x1={pad} y1={pad + (h - pad * 2) / 2} x2={w - pad} y2={pad + (h - pad * 2) / 2}
         stroke="hsl(var(--rule) / var(--matrix-midline-alpha))" strokeWidth="1" strokeDasharray="4 4" />
 
-      {/* Axis frame */}
-      <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1" />
-      <line x1={pad} y1={pad} x2={pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1" />
+      {/* Axis frame (main only — previews use only dashed midlines) */}
+      {!isMini && <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1" />}
+      {!isMini && <line x1={pad} y1={pad} x2={pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1" />}
 
       {/* Quadrant labels */}
       {!isMini && (
