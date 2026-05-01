@@ -119,18 +119,18 @@
     --neutral-bg: 30 5% 16%;
 
     /* Surfaces invert: ink (button bg) becomes cream, paper becomes warm-dark */
-    --ink: 35 15% 92%;
+    --ink: 35 18% 95%;
     --paper: 30 8% 8%;
-    --rule: 30 8% 24%;
+    --rule: 30 8% 26%;
 
     --sidebar-background: 30 8% 9%;
-    --sidebar-foreground: 35 15% 92%;
-    --sidebar-primary: 35 15% 92%;
+    --sidebar-foreground: 35 18% 95%;
+    --sidebar-primary: 35 18% 95%;
     --sidebar-primary-foreground: 30 8% 8%;
     --sidebar-accent: 30 8% 14%;
-    --sidebar-accent-foreground: 35 15% 92%;
+    --sidebar-accent-foreground: 35 18% 95%;
     --sidebar-border: 30 8% 18%;
-    --sidebar-ring: 35 15% 65%;
+    --sidebar-ring: 35 18% 70%;
   }
 }
 
