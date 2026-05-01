@@ -11,7 +11,7 @@ interface PriorityQueueProps {
   onHover: (id: string | null) => void;
   onSelect: (id: string) => void;
   insightsOn: boolean;
-  counts: { active: number; done: number; dropped: number };
+  counts: { active: number; in_progress: number; done: number; dropped: number };
   onViewAll: () => void;
 }
 
