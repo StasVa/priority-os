@@ -44,7 +44,13 @@
     "view": "Открыть",
     "axis": "НИЗКО  ←  {{label}}  →  ВЫСОКО",
     "low": "НИЗКО",
-    "high": "ВЫСОКО"
+    "high": "ВЫСОКО",
+    "cluster": {
+      "label_one": "{{count}} пункт",
+      "label_few": "{{count}} пункта",
+      "label_many": "{{count}} пунктов",
+      "label_other": "{{count}} пункта"
+    }
   },
   "sliders": {
     "impact": { "label": "Влияние", "hint": "ожидаемая отдача, если сработает" },
