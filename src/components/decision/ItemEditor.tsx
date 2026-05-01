@@ -334,3 +334,37 @@ function InlineConfirm({ status, onBack, onConfirm }: InlineConfirmProps) {
     </div>
   );
 }
+
+interface WhyFieldProps { value: string; onChange: (v: string) => void; }
+
+function WhyField({ value, onChange }: WhyFieldProps) {
+  const { t } = useTranslation();
+  const len = value.length;
+  const showCounter = len > 280;
+  const overLimit = len > 400;
+  return (
+    <div>
+      <label className="font-mono text-[10px] uppercase tracking-[0.18em] text-stone-400 block mb-1">
+        {t("editor.whyLabel")}
+      </label>
+      <p className="font-serif italic text-[13px] text-stone-500 mb-2">
+        {t("editor.whySubtitle")}
+      </p>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={3}
+        placeholder={t("editor.whyPlaceholder")}
+        className="w-full bg-transparent border border-border rounded px-3 py-2 font-serif text-sm focus:border-foreground outline-none ease-editorial transition-colors resize-none"
+      />
+      {showCounter && (
+        <div
+          className={`mt-1 text-right font-mono text-[11px] tabular-nums ${overLimit ? "text-amber-700" : "text-stone-400"}`}
+          title={overLimit ? t("editor.whyTooLong") : undefined}
+        >
+          {len} / 280
+        </div>
+      )}
+    </div>
+  );
+}
