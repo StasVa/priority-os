@@ -78,6 +78,15 @@ export function TopBar({
           <span className="w-px h-5 bg-border mx-1" aria-hidden />
           <LanguageSwitcher />
           <span className="w-px h-5 bg-border mx-1" aria-hidden />
+          <button
+            onClick={onOpenHelp}
+            title={t("help.tooltip")}
+            aria-label={t("help.tooltip")}
+            className="inline-flex items-center justify-center p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary ease-editorial transition-colors"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </button>
+          <span className="w-px h-5 bg-border mx-1" aria-hidden />
           <ThemeToggle />
         </div>
       </div>
