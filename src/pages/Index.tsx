@@ -311,6 +311,8 @@ const Index = () => {
         onSubmit={handleWelcomeSubmit}
         onSkip={handleWelcomeSkip}
       />
+
+      <HelpDrawer open={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   );
 };
