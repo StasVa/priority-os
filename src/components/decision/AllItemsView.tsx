@@ -44,7 +44,7 @@ function fmtDate(iso: string | undefined, locale: string): string {
   } catch { return ""; }
 }
 
-export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetStatus, onDelete }: AllItemsViewProps) {
+export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetStatus, onDelete, onUpdateItem }: AllItemsViewProps) {
   const { t, i18n } = useTranslation();
   const [closing, setClosing] = useState(false);
   const [tab, setTab] = useState<Tab>(() => {
@@ -54,6 +54,7 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
   const [sort, setSort] = useState<SortKey>("score");
   const [query, setQuery] = useState("");
   const [menuFor, setMenuFor] = useState<string | null>(null);
+  const [expandedFor, setExpandedFor] = useState<string | null>(null);
   const [confirmFor, setConfirmFor] = useState<{ id: string; status: "done" | "dropped" } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
