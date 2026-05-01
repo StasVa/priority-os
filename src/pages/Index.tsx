@@ -35,9 +35,11 @@ const Index = () => {
 
   const handleWelcomeSubmit = (draft: {
     title: string;
+    contextName: string;
     impact: number; effort: number; importance: number;
     satisfaction: number; confidence: number; risk: number;
   }) => {
+    addContext(draft.contextName);
     upsertItem({
       id: undefined,
       title: draft.title,
@@ -50,13 +52,14 @@ const Index = () => {
   };
 
   const handleWelcomeSkip = () => {
-    // Load demo seed so the user has something to play with.
+    // Load demo seed (one default context with demo items) so user has something to explore.
     try {
-      const s = buildSeed();
+      const { skipSeed } = await import("@/lib/decision/storage");
+      const defaultName = t("contexts.My decisions", { defaultValue: "My decisions" });
+      const s = skipSeed(defaultName);
       localStorage.setItem("decision-os.v1", JSON.stringify(s));
     } catch { /* ignore */ }
     markOnboarded();
-    // Hard reload so the store rehydrates from the new seeded state.
     window.location.reload();
   };
 
