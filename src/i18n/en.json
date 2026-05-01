@@ -64,9 +64,9 @@
     "confidence-risk": "Confidence vs Risk"
   },
   "lensSubtitles": {
-    "value-effort": "When to ship this week",
+    "value-effort": "Where the return is highest per effort",
     "importance-satisfaction": "Where the unmet needs are",
-    "confidence-risk": "What to validate first"
+    "confidence-risk": "Where to validate before deciding"
   },
   "insights": {
     "aria": "insight",
