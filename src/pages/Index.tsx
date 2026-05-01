@@ -214,6 +214,12 @@ const Index = () => {
         onDelete={deleteItem}
         onUpdateItem={upsertItem}
       />
+
+      <WelcomeOnboarding
+        open={welcomeOpen}
+        onSubmit={handleWelcomeSubmit}
+        onSkip={handleWelcomeSkip}
+      />
     </div>
   );
 };
