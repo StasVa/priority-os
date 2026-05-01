@@ -35,6 +35,7 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
   useEffect(() => {
     if (open) {
       setDraft(initial ? { ...initial } : empty());
+      setConfirming(null);
       requestAnimationFrame(() => titleRef.current?.focus());
     }
   }, [open, initial]);
