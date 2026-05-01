@@ -7,7 +7,7 @@ import { Matrix } from "@/components/decision/Matrix";
 import { PriorityQueue } from "@/components/decision/PriorityQueue";
 import { ItemEditor } from "@/components/decision/ItemEditor";
 import { AllItemsView } from "@/components/decision/AllItemsView";
-import { LensInsight } from "@/components/decision/LensInsight";
+// LensInsight intentionally not rendered; kept in codebase for potential reuse.
 import { WelcomeOnboarding } from "@/components/decision/WelcomeOnboarding";
 import { FirstHint } from "@/components/decision/FirstHint";
 import { ProjectSettingsDrawer } from "@/components/decision/ProjectSettingsDrawer";
