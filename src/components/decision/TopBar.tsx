@@ -2,6 +2,7 @@ import { Eye, EyeOff, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { Context } from "@/lib/decision/types";
 import { LanguageSwitcher } from "@/components/decision/LanguageSwitcher";
+import { ThemeToggle } from "@/components/decision/ThemeToggle";
 
 interface TopBarProps {
   contexts: Context[];
@@ -77,6 +78,8 @@ export function TopBar({
           </button>
           <span className="w-px h-5 bg-border mx-1" aria-hidden />
           <LanguageSwitcher />
+          <span className="w-px h-5 bg-border mx-1" aria-hidden />
+          <ThemeToggle />
         </div>
       </div>
     </header>

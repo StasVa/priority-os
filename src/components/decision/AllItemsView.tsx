@@ -153,7 +153,7 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
           {/* Header */}
           <div className="flex items-start justify-between mb-2">
             <h1
-              className="font-serif text-[32px] leading-tight text-stone-900"
+              className="font-serif text-[32px] leading-tight text-foreground"
               style={{ fontVariationSettings: '"opsz" 144' }}
             >
               {t("all.title", { context: contextName })}
@@ -161,12 +161,12 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
             <button
               onClick={handleClose}
               aria-label={t("editor.close")}
-              className="text-stone-400 hover:text-stone-900 ease-editorial transition-colors p-2"
+              className="text-muted-foreground/70 hover:text-foreground ease-editorial transition-colors p-2"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-          <div className="font-mono text-[11px] text-stone-400 mb-8">
+          <div className="font-mono text-[11px] text-muted-foreground/70 mb-8">
             {t("all.totalAndUpdated", { total: items.length, time: lastUpdated || "—" })}
           </div>
 
@@ -180,11 +180,11 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                     key={t2}
                     onClick={() => setTab(t2)}
                     className={`relative px-4 py-2 font-serif text-sm ease-editorial transition-colors flex items-center gap-2
-                      ${active ? "bg-ink text-paper" : "text-stone-500 hover:text-stone-900"}
+                      ${active ? "bg-ink text-paper" : "text-muted-foreground hover:text-foreground"}
                       ${idx > 0 ? "border-l border-border" : ""}`}
                   >
                     <span>{t(`all.tabs.${t2}`)}</span>
-                    <span className={`font-mono text-[10px] tabular-nums ${active ? "text-paper/70" : "text-stone-400"}`}>
+                    <span className={`font-mono text-[10px] tabular-nums ${active ? "text-paper/70" : "text-muted-foreground/70"}`}>
                       {counts[t2]}
                     </span>
                   </button>
@@ -194,13 +194,13 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
 
             <div className="flex items-center gap-3">
               <label className="inline-flex items-center gap-2">
-                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-stone-400">
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
                   {t("all.sort.label")}
                 </span>
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value as SortKey)}
-                  className="bg-transparent border border-border rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-stone-700 focus:border-foreground outline-none"
+                  className="bg-transparent border border-border rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-foreground/90 focus:border-foreground outline-none"
                 >
                   {sortOptions.map(o => (
                     <option key={o} value={o}>{t(`all.sort.${o}`)}</option>
@@ -220,10 +220,10 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
           {/* List */}
           {list.length === 0 ? (
             <div className="text-center py-[60px]">
-              <p className="font-serif italic text-base text-stone-400">{t(`all.empty.${tab}`)}</p>
+              <p className="font-serif italic text-base text-muted-foreground/70">{t(`all.empty.${tab}`)}</p>
             </div>
           ) : (
-            <ul className="divide-y divide-stone-100">
+            <ul className="divide-y divide-border">
               {list.map(({ it, score }, i) => {
                 const tone = verdictForLens(it, "value-effort");
                 const cls = TONE_CLASSES[tone];
@@ -237,21 +237,21 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                   >
                     <div
                       onClick={() => setExpandedFor(prev => prev === it.id ? null : it.id)}
-                      className="px-2 py-4 cursor-pointer hover:bg-stone-50 ease-editorial transition-colors"
+                      className="px-2 py-4 cursor-pointer hover:bg-muted/50 ease-editorial transition-colors"
                     >
                       {(isDone || isDropped) && (
-                        <div className="font-mono text-[10px] text-stone-400 mb-1 ml-10">
+                        <div className="font-mono text-[10px] text-muted-foreground/70 mb-1 ml-10">
                           {isDone
                             ? t("all.doneAt", { date: fmtDate(it.resolvedAt, i18n.language) })
                             : t("all.droppedAt", { date: fmtDate(it.resolvedAt, i18n.language) })}
                         </div>
                       )}
                       <div className="flex items-start gap-4">
-                        <span className="font-mono text-[11px] text-stone-400 tabular-nums pt-1 w-6">
+                        <span className="font-mono text-[11px] text-muted-foreground/70 tabular-nums pt-1 w-6">
                           {String(i + 1).padStart(2, "0")}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div className={`font-serif text-[17px] leading-snug truncate ${muted ? "text-stone-500" : "text-stone-900"}`}>
+                          <div className={`font-serif text-[17px] leading-snug truncate ${muted ? "text-muted-foreground" : "text-foreground"}`}>
                             {it.title}
                           </div>
                           <div className="mt-1.5 flex items-center gap-2">
@@ -259,12 +259,12 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                               {t(`verdicts.${cls.verdictKey}`)}
                             </span>
                             {it.note && (
-                              <span className="font-serif italic text-sm text-stone-500 truncate">
+                              <span className="font-serif italic text-sm text-muted-foreground truncate">
                                 · {it.note.length > 80 ? it.note.slice(0, 80) + "…" : it.note}
                               </span>
                             )}
                           </div>
-                          <div className="mt-2 hidden group-hover:flex items-center gap-3 font-mono text-[10px] text-stone-500 uppercase tracking-wider">
+                          <div className="mt-2 hidden group-hover:flex items-center gap-3 font-mono text-[10px] text-muted-foreground uppercase tracking-wider">
                             <span>IMPACT {it.impact}</span>
                             <span>EFFORT {it.effort}</span>
                             <span>IMP {it.importance}</span>
@@ -276,13 +276,13 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                         <div className="pt-1.5" onClick={(e) => e.stopPropagation()}>
                           <RefStack references={it.references ?? []} />
                         </div>
-                        <div className={`font-mono text-sm tabular-nums pt-1 ${muted ? "text-stone-400" : "text-stone-700"}`} onClick={(e) => e.stopPropagation()}>
+                        <div className={`font-mono text-sm tabular-nums pt-1 ${muted ? "text-muted-foreground/70" : "text-foreground/90"}`} onClick={(e) => e.stopPropagation()}>
                           {score.toFixed(1)}
                         </div>
                         <button
                           onClick={(e) => { e.stopPropagation(); setExpandedFor(prev => prev === it.id ? null : it.id); }}
                           aria-label="Toggle inline edit"
-                          className="p-1.5 rounded-full text-stone-400 hover:text-stone-900 hover:bg-stone-100 ease-editorial transition-colors"
+                          className="p-1.5 rounded-full text-muted-foreground/70 hover:text-foreground hover:bg-muted ease-editorial transition-colors"
                         >
                           <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedFor === it.id ? "rotate-180" : ""}`} />
                         </button>
@@ -290,7 +290,7 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                           <button
                             onClick={() => setMenuFor(m => m === it.id ? null : it.id)}
                             aria-label="Actions"
-                            className="p-1.5 rounded-full text-stone-400 hover:text-stone-900 hover:bg-stone-100 ease-editorial transition-colors"
+                            className="p-1.5 rounded-full text-muted-foreground/70 hover:text-foreground hover:bg-muted ease-editorial transition-colors"
                           >
                             <MoreHorizontal className="w-4 h-4" />
                           </button>
@@ -298,7 +298,7 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                             <div ref={menuRef} className="absolute right-0 top-full mt-1 z-50 w-48 rounded-lg border border-border bg-popover shadow-xl py-1 animate-fade-up">
                               <button
                                 onClick={() => { setMenuFor(null); onEdit(it.id); }}
-                                className="w-full text-left px-3 py-2 font-serif text-sm text-stone-700 hover:bg-stone-50"
+                                className="w-full text-left px-3 py-2 font-serif text-sm text-foreground/90 hover:bg-muted/50"
                               >
                                 {t("all.actions.editDetails")}
                               </button>
@@ -306,13 +306,13 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                                 <>
                                   <button
                                     onClick={() => setConfirmFor({ id: it.id, status: "done" })}
-                                    className="w-full text-left px-3 py-2 font-serif text-sm text-stone-700 hover:bg-stone-50"
+                                    className="w-full text-left px-3 py-2 font-serif text-sm text-foreground/90 hover:bg-muted/50"
                                   >
                                     {t("all.actions.markDone")}
                                   </button>
                                   <button
                                     onClick={() => setConfirmFor({ id: it.id, status: "dropped" })}
-                                    className="w-full text-left px-3 py-2 font-serif text-sm text-stone-700 hover:bg-stone-50"
+                                    className="w-full text-left px-3 py-2 font-serif text-sm text-foreground/90 hover:bg-muted/50"
                                   >
                                     {t("all.actions.markDropped")}
                                   </button>
@@ -321,7 +321,7 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                               {it.status !== "active" && (
                                 <button
                                   onClick={() => doStatus(it.id, "active")}
-                                  className="w-full text-left px-3 py-2 font-serif text-sm text-stone-700 hover:bg-stone-50"
+                                  className="w-full text-left px-3 py-2 font-serif text-sm text-foreground/90 hover:bg-muted/50"
                                 >
                                   {t("all.actions.restore")}
                                 </button>
@@ -329,7 +329,7 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                               <div className="my-1 border-t border-border" />
                               <button
                                 onClick={() => { setMenuFor(null); onDelete(it.id); }}
-                                className="w-full text-left px-3 py-2 font-serif text-sm text-destructive hover:bg-stone-50"
+                                className="w-full text-left px-3 py-2 font-serif text-sm text-destructive hover:bg-muted/50"
                               >
                                 {t("all.actions.delete")}
                               </button>
@@ -390,13 +390,13 @@ function InlineEditPanel({ item, open, onChange }: InlineEditPanelProps) {
       className="overflow-hidden"
       onClick={(e) => e.stopPropagation()}
     >
-      <div ref={ref} className="border-t border-stone-100 bg-stone-50/50 px-2 py-5">
+      <div ref={ref} className="border-t border-border bg-muted/30 px-2 py-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4 pl-10 pr-4">
           {PANEL_KEYS.map(key => {
             const value = item[key];
             return (
               <div key={key} className="flex items-center gap-3">
-                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-stone-500 w-28 shrink-0">
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground w-28 shrink-0">
                   {t(`sliders.${key}.label`)}
                 </span>
                 <input
@@ -408,7 +408,7 @@ function InlineEditPanel({ item, open, onChange }: InlineEditPanelProps) {
                   onChange={(e) => onChange({ [key]: Number(e.target.value) } as Partial<Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence">>)}
                   className="flex-1 accent-foreground"
                 />
-                <span className="font-mono text-sm tabular-nums w-6 text-right text-stone-700">{value}</span>
+                <span className="font-mono text-sm tabular-nums w-6 text-right text-foreground/90">{value}</span>
               </div>
             );
           })}

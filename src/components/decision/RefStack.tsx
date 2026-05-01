@@ -24,7 +24,7 @@ export function RefStack({ references, max = 3 }: RefStackProps) {
         return (
           <span
             key={r.id}
-            className="inline-flex items-center justify-center w-[18px] h-[18px] rounded-full bg-stone-100 border border-background text-stone-500"
+            className="inline-flex items-center justify-center w-[18px] h-[18px] rounded-full bg-muted border border-background text-muted-foreground"
             style={{ marginLeft: i === 0 ? 0 : -6, zIndex: 10 - i }}
           >
             <RefIcon kind={kind} size={10} />

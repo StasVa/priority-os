@@ -64,7 +64,7 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
   return (
     <div className="fixed inset-0 z-50 flex">
       <div
-        className="absolute inset-0 bg-ink/30 backdrop-blur-[2px] animate-overlay-in"
+        className="absolute inset-0 bg-ink/30 dark:bg-black/60 backdrop-blur-[2px] animate-overlay-in"
         onClick={onClose}
         aria-hidden
       />
@@ -246,20 +246,20 @@ function ScoreBlock({ score, recText }: ScoreBlockProps) {
   }, [recText]);
 
   return (
-    <div className="border-t border-stone-200 mt-4">
+    <div className="border-t border-border mt-4">
       <div className="py-5">
         <div className="flex items-baseline justify-between gap-4">
-          <span className="font-mono text-[10px] uppercase text-stone-400" style={{ letterSpacing: "0.15em" }}>
+          <span className="font-mono text-[10px] uppercase text-muted-foreground/70" style={{ letterSpacing: "0.15em" }}>
             {t("editor.compositeScore")}
           </span>
           <span className="inline-flex items-baseline gap-2">
             {delta && (
-              <span className="font-mono text-[11px] text-stone-400 transition-opacity duration-200">
+              <span className="font-mono text-[11px] text-muted-foreground/70 transition-opacity duration-200">
                 {delta === "up" ? "↑" : "↓"}
               </span>
             )}
             <span
-              className="font-serif tabular-nums text-stone-900"
+              className="font-serif tabular-nums text-foreground"
               style={{ fontSize: 36, fontWeight: 400, fontVariationSettings: '"opsz" 144', lineHeight: 1 }}
             >
               {displayScore.toFixed(1)}
@@ -267,13 +267,13 @@ function ScoreBlock({ score, recText }: ScoreBlockProps) {
           </span>
         </div>
         <p
-          className="font-serif italic text-stone-600 mt-2.5 transition-opacity duration-150"
+          className="font-serif italic text-muted-foreground mt-2.5 transition-opacity duration-150"
           style={{ fontSize: 14, lineHeight: 1.5, opacity: recVisible ? 1 : 0 }}
         >
           {recDisplay}
         </p>
       </div>
-      <div className="border-b border-stone-200" />
+      <div className="border-b border-border" />
     </div>
   );
 }
@@ -301,12 +301,12 @@ function InlineConfirm({ status, onBack, onConfirm }: InlineConfirmProps) {
 
   const isDone = status === "done";
   const confirmCls = isDone
-    ? "bg-stone-900 text-paper hover:opacity-90"
-    : "bg-rose-700 text-paper hover:opacity-90";
+    ? "bg-ink text-paper hover:opacity-90"
+    : "bg-[hsl(var(--drop))] text-paper hover:opacity-90";
 
   return (
-    <div className="px-8 py-5 border-t border-border bg-stone-50 animate-fade-up">
-      <div className="font-serif text-base text-stone-900 mb-3">
+    <div className="px-8 py-5 border-t border-border bg-muted/50 animate-fade-up">
+      <div className="font-serif text-base text-foreground mb-3">
         {isDone ? t("confirm.doneTitle") : t("confirm.droppedTitle")}
       </div>
       <textarea
@@ -315,7 +315,7 @@ function InlineConfirm({ status, onBack, onConfirm }: InlineConfirmProps) {
         value={note}
         onChange={(e) => setNote(e.target.value)}
         placeholder={isDone ? t("confirm.donePlaceholder") : t("confirm.dropPlaceholder")}
-        className="w-full bg-background border border-stone-200 focus:border-stone-900 rounded px-3 py-2 font-serif text-sm outline-none ease-editorial transition-colors resize-none"
+        className="w-full bg-background border border-border focus:border-foreground rounded px-3 py-2 font-serif text-sm outline-none ease-editorial transition-colors resize-none"
       />
       <div className="mt-3 flex items-center justify-end gap-2">
         <button
@@ -344,10 +344,10 @@ function WhyField({ value, onChange }: WhyFieldProps) {
   const overLimit = len > 400;
   return (
     <div>
-      <label className="font-mono text-[10px] uppercase tracking-[0.18em] text-stone-400 block mb-1">
+      <label className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70 block mb-1">
         {t("editor.whyLabel")}
       </label>
-      <p className="font-serif italic text-[13px] text-stone-500 mb-2">
+      <p className="font-serif italic text-[13px] text-muted-foreground mb-2">
         {t("editor.whySubtitle")}
       </p>
       <textarea
@@ -359,7 +359,7 @@ function WhyField({ value, onChange }: WhyFieldProps) {
       />
       {showCounter && (
         <div
-          className={`mt-1 text-right font-mono text-[11px] tabular-nums ${overLimit ? "text-amber-700" : "text-stone-400"}`}
+          className={`mt-1 text-right font-mono text-[11px] tabular-nums ${overLimit ? "text-[hsl(var(--bet-strong))]" : "text-muted-foreground/70"}`}
           title={overLimit ? t("editor.whyTooLong") : undefined}
         >
           {len} / 280

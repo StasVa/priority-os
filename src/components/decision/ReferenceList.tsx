@@ -58,7 +58,7 @@ export function ReferenceList({ references, onChange }: ReferenceListProps) {
 
   return (
     <div>
-      <label className="font-mono text-[10px] uppercase tracking-[0.18em] text-stone-400 block mb-2">
+      <label className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70 block mb-2">
         {t("references.title")}
       </label>
 
@@ -68,7 +68,7 @@ export function ReferenceList({ references, onChange }: ReferenceListProps) {
             const kind = detectRefKind(r.url);
             const isLabeling = labelFor === r.id;
             return (
-              <li key={r.id} className="group flex items-start gap-2 rounded px-2 py-1.5 hover:bg-stone-50 ease-editorial transition-colors">
+              <li key={r.id} className="group flex items-start gap-2 rounded px-2 py-1.5 hover:bg-muted/50 ease-editorial transition-colors">
                 <a
                   href={r.url}
                   target="_blank"
@@ -76,9 +76,9 @@ export function ReferenceList({ references, onChange }: ReferenceListProps) {
                   title={r.url}
                   className="flex-1 min-w-0 flex items-start gap-2"
                 >
-                  <span className="text-stone-500 pt-0.5"><RefIcon kind={kind} /></span>
+                  <span className="text-muted-foreground pt-0.5"><RefIcon kind={kind} /></span>
                   <div className="min-w-0 flex-1">
-                    <div className="font-mono text-[12px] text-stone-700 truncate">{shortUrl(r.url)}</div>
+                    <div className="font-mono text-[12px] text-foreground/90 truncate">{shortUrl(r.url)}</div>
                     {isLabeling ? (
                       <input
                         ref={labelRef}
@@ -90,13 +90,13 @@ export function ReferenceList({ references, onChange }: ReferenceListProps) {
                         }}
                         onClick={(e) => e.preventDefault()}
                         placeholder={t("references.labelPlaceholder")}
-                        className="mt-0.5 w-full bg-transparent border-b border-stone-200 focus:border-foreground outline-none font-serif italic text-sm text-stone-700 placeholder:text-stone-400"
+                        className="mt-0.5 w-full bg-transparent border-b border-border focus:border-foreground outline-none font-serif italic text-sm text-foreground/90 placeholder:text-muted-foreground/70"
                       />
                     ) : r.label ? (
                       <button
                         type="button"
                         onClick={(e) => { e.preventDefault(); setLabelFor(r.id); }}
-                        className="font-serif italic text-sm text-stone-500 text-left"
+                        className="font-serif italic text-sm text-muted-foreground text-left"
                       >
                         {r.label}
                       </button>
@@ -107,7 +107,7 @@ export function ReferenceList({ references, onChange }: ReferenceListProps) {
                   type="button"
                   onClick={() => remove(r.id)}
                   aria-label="Remove reference"
-                  className="opacity-0 group-hover:opacity-100 text-stone-400 hover:text-stone-900 ease-editorial transition-all p-1"
+                  className="opacity-0 group-hover:opacity-100 text-muted-foreground/70 hover:text-foreground ease-editorial transition-all p-1"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -126,10 +126,10 @@ export function ReferenceList({ references, onChange }: ReferenceListProps) {
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
         placeholder={placeholder}
-        className="w-full bg-transparent border border-dashed border-border rounded px-3 py-2 font-serif text-sm focus:border-foreground outline-none ease-editorial transition-colors placeholder:text-stone-400"
+        className="w-full bg-transparent border border-dashed border-border rounded px-3 py-2 font-serif text-sm focus:border-foreground outline-none ease-editorial transition-colors placeholder:text-muted-foreground/70"
       />
       {error && (
-        <div className="font-serif italic text-xs text-stone-400 mt-1.5">{error}</div>
+        <div className="font-serif italic text-xs text-muted-foreground/70 mt-1.5">{error}</div>
       )}
     </div>
   );

@@ -94,10 +94,10 @@ export function LensInsight({ items, lens, onSelectItem }: LensInsightProps) {
 
   return (
     <div
-      className="border-t border-b border-stone-200 bg-stone-50/70 px-5 py-4 transition-opacity duration-200"
+      className="border-t border-b border-border bg-muted/40 px-5 py-4 transition-opacity duration-200"
       style={{ opacity: visible ? 1 : 0 }}
     >
-      <p className="font-serif text-[15px] leading-[1.5] text-stone-700">
+      <p className="font-serif text-[15px] leading-[1.5] text-foreground/90">
         <Trans
           i18nKey={`insights.${shown.i18nKey}`}
           values={{ count: shown.count ?? 0, item: shown.itemTitle ?? "" }}
@@ -106,10 +106,10 @@ export function LensInsight({ items, lens, onSelectItem }: LensInsightProps) {
               <button
                 key="0"
                 onClick={() => onSelectItem(shown.itemId!)}
-                className="font-medium text-stone-900 underline-offset-2 hover:underline ease-editorial transition-colors"
+                className="font-medium text-foreground underline-offset-2 hover:underline ease-editorial transition-colors"
               />
             ) : (
-              <span key="0" className="font-medium text-stone-900" />
+              <span key="0" className="font-medium text-foreground" />
             ),
           ]}
         />
