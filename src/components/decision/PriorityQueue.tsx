@@ -78,8 +78,20 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
       {/* All items block — primary navigation, not a footer */}
       {showAllBlock && (
         <div className="border-t border-b border-border bg-muted/50 px-5 py-4">
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2 mb-3">
-            <CounterPair color="hsl(var(--win))" count={counts.active} label={t("all.shortLabels.active")} />
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3">
+            <CounterPair
+              color="hsl(var(--win))"
+              count={counts.active}
+              label={t("all.shortLabels.active")}
+              countColor={
+                focusLevelFor(counts.active) === "overloaded"
+                  ? "hsl(var(--drop-strong))"
+                  : focusLevelFor(counts.active) === "soft"
+                    ? "hsl(var(--bet-strong))"
+                    : undefined
+              }
+            />
+            <FocusWarning level={focusLevelFor(counts.active)} onViewAll={onViewAll} size="sm" />
             <span className="text-muted-foreground/50" aria-hidden>·</span>
             <CounterPair color="hsl(var(--neutral))" count={counts.done} label={t("all.shortLabels.done")} />
             <span className="text-muted-foreground/50" aria-hidden>·</span>
