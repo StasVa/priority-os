@@ -22,6 +22,12 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
 
   const top3 = ranked.slice(0, 3);
 
+  const total = counts.active + counts.done + counts.dropped;
+  const showAllBlock = total > 0;
+  const buttonLabel = counts.active <= 6 && counts.done === 0 && counts.dropped === 0
+    ? t("all.viewAll")
+    : t("all.viewAllItems", { count: total });
+
   return (
     <aside className="border-l border-border bg-sidebar h-full overflow-y-auto flex flex-col">
       <div className="px-6 py-5 border-b border-border">
@@ -64,6 +70,26 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
         )}
       </ol>
 
+      {/* All items block — primary navigation, not a footer */}
+      {showAllBlock && (
+        <div className="border-t border-b border-stone-200 bg-stone-50 px-5 py-4">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2 mb-3">
+            <CounterPair color="hsl(var(--win))" count={counts.active} label={t("all.shortLabels.active")} />
+            <span className="text-stone-300" aria-hidden>·</span>
+            <CounterPair color="hsl(var(--neutral))" count={counts.done} label={t("all.shortLabels.done")} />
+            <span className="text-stone-300" aria-hidden>·</span>
+            <CounterPair color="hsl(var(--drop) / 0.7)" count={counts.dropped} label={t("all.shortLabels.dropped")} />
+          </div>
+          <button
+            onClick={onViewAll}
+            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded border border-stone-900 bg-transparent text-stone-900 font-serif text-sm hover:bg-stone-900 hover:text-stone-50 transition-colors duration-[180ms]"
+          >
+            <span>{buttonLabel}</span>
+            <span aria-hidden>→</span>
+          </button>
+        </div>
+      )}
+
       {insightsOn && top3.length > 0 && (
         <div className="px-6 py-5 border-t border-border bg-background animate-fade-up">
           <div className="label-mono mb-4">{t("queue.topRecommendations")}</div>
@@ -79,39 +105,16 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
           </ul>
         </div>
       )}
-
-      {/* All items footer */}
-      <div className="mt-auto border-t border-border px-6 pt-4 pb-5">
-        <div className="pb-2 mb-3 border-b border-stone-200 font-mono text-[10px] uppercase tracking-[0.18em] text-stone-400">
-          {t("all.footer")}
-        </div>
-        <ul className="space-y-2 mb-3">
-          <li className="flex items-center gap-2.5">
-            <span className="inline-block w-2 h-2 rounded-full" style={{ background: "hsl(var(--win))" }} />
-            <span className="font-serif text-sm text-stone-700 tabular-nums">
-              {t("all.countLabels.active", { count: counts.active })}
-            </span>
-          </li>
-          <li className="flex items-center gap-2.5">
-            <span className="inline-block w-2 h-2 rounded-full bg-stone-500" />
-            <span className="font-serif text-sm text-stone-700 tabular-nums">
-              {t("all.countLabels.done", { count: counts.done })}
-            </span>
-          </li>
-          <li className="flex items-center gap-2.5">
-            <span className="inline-block w-2 h-2 rounded-full" style={{ background: "hsl(var(--drop) / 0.7)" }} />
-            <span className="font-serif text-sm text-stone-700 tabular-nums">
-              {t("all.countLabels.dropped", { count: counts.dropped })}
-            </span>
-          </li>
-        </ul>
-        <button
-          onClick={onViewAll}
-          className="w-full text-right font-serif italic text-sm text-stone-900 hover:underline ease-editorial transition-colors"
-        >
-          {t("all.viewAll")} →
-        </button>
-      </div>
     </aside>
+  );
+}
+
+function CounterPair({ color, count, label }: { color: string; count: number; label: string }) {
+  return (
+    <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
+      <span className="inline-block w-2 h-2 rounded-full self-center" style={{ background: color }} />
+      <span className="font-mono text-sm tabular-nums text-stone-900">{count}</span>
+      <span className="font-serif text-[13px] text-stone-500">{label}</span>
+    </span>
   );
 }
