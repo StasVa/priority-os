@@ -103,6 +103,11 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
             />
           </div>
 
+          <ReferenceList
+            references={draft.references ?? []}
+            onChange={(refs) => setDraft(d => ({ ...d, references: refs }))}
+          />
+
           <div className="space-y-5 pt-2">
             {SLIDER_KEYS.map(key => {
               const value = draft[key];
