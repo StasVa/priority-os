@@ -7,7 +7,7 @@ interface WelcomeOnboardingProps {
   open: boolean;
   onSubmit: (draft: {
     title: string;
-    contextName: string;
+    projectName: string;
     impact: number; effort: number; importance: number;
     satisfaction: number; confidence: number; risk: number;
   }) => void;
@@ -22,23 +22,23 @@ export function WelcomeOnboarding({ open, onSubmit, onSkip }: WelcomeOnboardingP
   const { t } = useTranslation();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [title, setTitle] = useState("");
-  const [contextName, setContextName] = useState("");
+  const [projectName, setProjectName] = useState("");
   const [scores, setScores] = useState({
     impact: 5, effort: 5, importance: 5, satisfaction: 5, confidence: 5, risk: 5,
   });
   const titleInputRef = useRef<HTMLInputElement>(null);
-  const contextInputRef = useRef<HTMLInputElement>(null);
+  const projectInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!open) return;
     if (step === 1) requestAnimationFrame(() => titleInputRef.current?.focus());
-    if (step === 2) requestAnimationFrame(() => contextInputRef.current?.focus());
+    if (step === 2) requestAnimationFrame(() => projectInputRef.current?.focus());
   }, [open, step]);
 
   if (!open) return null;
 
   const trimmedTitle = title.trim();
-  const trimmedCtx = contextName.trim();
+  const trimmedCtx = projectName.trim();
   const canStep1 = trimmedTitle.length > 0;
   const canStep2 = trimmedCtx.length > 0;
 
@@ -47,7 +47,7 @@ export function WelcomeOnboarding({ open, onSubmit, onSkip }: WelcomeOnboardingP
 
   const submit = () => {
     if (!canStep1 || !canStep2) return;
-    onSubmit({ title: trimmedTitle, contextName: trimmedCtx, ...scores });
+    onSubmit({ title: trimmedTitle, projectName: trimmedCtx, ...scores });
   };
 
   // Build a synthetic Item-like for score/recommendation calc
@@ -161,10 +161,10 @@ export function WelcomeOnboarding({ open, onSubmit, onSkip }: WelcomeOnboardingP
 
             <div>
               <input
-                ref={contextInputRef}
+                ref={projectInputRef}
                 type="text"
-                value={contextName}
-                onChange={(e) => setContextName(e.target.value)}
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); advance2(); } }}
                 placeholder={t("welcome.step2.placeholder")}
                 className="w-full bg-transparent border-0 border-b border-border focus:border-foreground outline-none px-0 py-3 font-serif placeholder:text-muted-foreground/60 ease-editorial transition-colors"
