@@ -156,6 +156,8 @@ const Index = () => {
             <LensInsight items={items} lens={lens} onSelectItem={openEdit} />
           )}
 
+          {items.length > 0 && <FirstHint itemCount={items.length} />}
+
           {items.length > 0 && (
             <div className="grid grid-cols-2 gap-6">
               {otherLenses.map(l => (
