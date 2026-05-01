@@ -180,6 +180,7 @@ const Index = () => {
         onSelectProject={setActiveProject}
         onCreateProject={handleCreateProject}
         onOpenSettings={() => setSettingsOpen(true)}
+        onOpenHelp={() => setHelpOpen(true)}
         insightsOn={insightsOn}
         onToggleInsights={() => setInsightsOn(v => !v)}
         onNewItem={openNew}
