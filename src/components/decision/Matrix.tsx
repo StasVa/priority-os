@@ -19,7 +19,7 @@ const W = 1000;
 const H = 700;
 const CLUSTER_DIST = 6; // px distance threshold (in svg viewBox units)
 
-type Dot = { it: Item; cx: number; cy: number; r: number; tone: Tone };
+type Dot = { it: Item; cx: number; cy: number; r: number; tone: Tone; inProgress: boolean };
 
 type MatrixNode = {
   id: string;             // cluster id (first item's id)
@@ -31,6 +31,7 @@ type MatrixNode = {
   mixed: boolean;         // true if items have mixed tones
   topScore: number;       // highest composite score in node
   isCluster: boolean;
+  hollow: boolean;        // singleton in_progress, or cluster where ALL items are in_progress
 };
 
 export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "primary", onClick }: MatrixProps) {
@@ -59,7 +60,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       const cx = Math.max(xMin, Math.min(xMax, rawCx));
       const cy = Math.max(yMin, Math.min(yMax, rawCy));
       const tone = verdictForLens(it, lens);
-      return { it, cx, cy, r, tone };
+      return { it, cx, cy, r, tone, inProgress: it.status === "in_progress" };
     });
   }, [items, lens, w, h, pad, isMini]);
 
@@ -101,6 +102,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
         mixed,
         topScore: compositeScore(top.it),
         isCluster: g.length > 1,
+        hollow: g.every(x => x.inProgress),
       };
     });
   }, [plot, isMini]);
