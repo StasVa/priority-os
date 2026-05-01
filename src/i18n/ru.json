@@ -20,7 +20,49 @@
     "empty": "Пока нет проектов.",
     "Startup": "Стартап",
     "Personal": "Личное",
-    "My decisions": "Мои решения"
+    "My decisions": "Мои решения",
+    "settings": {
+      "title": "Настройки проекта",
+      "gearTooltip": "Настройки проекта",
+      "name": "Название",
+      "namePlaceholder": "Название проекта",
+      "description": "Описание",
+      "descriptionPlaceholder": "О чём этот проект?",
+      "color": "Цвет",
+      "emoji": "Выбрать эмодзи",
+      "removeEmoji": "Убрать",
+      "stats": "Статистика",
+      "created": "Создан · {{time}}",
+      "lastActivity": "Последняя активность · {{time}}",
+      "comingSoon": "Скоро",
+      "members": "Участники",
+      "sharing": "Доступ",
+      "integrations": "Jira / Linear интеграция",
+      "addFavorite": "Добавить в избранное",
+      "removeFavorite": "Убрать из избранного",
+      "archive": "Архивировать проект",
+      "archiveConfirm": "Архивировать проект? Он будет скрыт из основной навигации, но его можно будет вернуть.",
+      "delete": "Удалить проект",
+      "deleteConfirm_one": "Удалить проект и {{count}} пункт? Это нельзя отменить.",
+      "deleteConfirm_few": "Удалить проект и {{count}} пункта? Это нельзя отменить.",
+      "deleteConfirm_many": "Удалить проект и {{count}} пунктов? Это нельзя отменить.",
+      "deleteConfirm_other": "Удалить проект и {{count}} пунктов? Это нельзя отменить.",
+      "deleteConfirmType": "Введите {{name}} для подтверждения",
+      "restore": "Вернуть проект",
+      "confirm": "Подтвердить",
+      "cancel": "Отмена"
+    },
+    "create": {
+      "title": "Новый проект",
+      "button": "Создать проект",
+      "back": "Назад"
+    },
+    "dropdown": {
+      "archived_one": "{{count}} архивный",
+      "archived_few": "{{count}} архивных",
+      "archived_many": "{{count}} архивных",
+      "archived_other": "{{count}} архивных"
+    }
   },
   "queue": {
     "title": "Очередь приоритетов",
