@@ -60,18 +60,18 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       const { x, y } = lensCoords(it, lens);
       const r = isMini ? 4 + (it.confidence / 10) * 4 : 8 + (it.confidence / 10) * 12;
       const safe = r + 4;
-      const xMin = pad + safe;
-      const xMax = w - pad - safe;
-      const yMin = pad + safe;
-      const yMax = h - pad - safe;
-      const rawCx = pad + x * (w - pad * 2);
-      const rawCy = (h - pad) - y * (h - pad * 2);
+      const xMin = padL + safe;
+      const xMax = w - padR - safe;
+      const yMin = padT + safe;
+      const yMax = h - padB - safe;
+      const rawCx = padL + x * (w - padL - padR);
+      const rawCy = (h - padB) - y * (h - padT - padB);
       const cx = Math.max(xMin, Math.min(xMax, rawCx));
       const cy = Math.max(yMin, Math.min(yMax, rawCy));
       const tone = verdictForLens(it, lens);
       return { it, cx, cy, r, tone, inProgress: it.status === "in_progress" };
     });
-  }, [items, lens, w, h, pad, isMini]);
+  }, [items, lens, w, h, padL, padR, padT, padB, isMini]);
 
   // 2) Cluster dots within CLUSTER_DIST px of each other (Euclidean, against existing groups).
   const nodes = useMemo<MatrixNode[]>(() => {
