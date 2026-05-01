@@ -377,6 +377,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       {nodes.map(n => {
         const hovered = hoveredNode?.id === n.id;
         const fillOpacity = hovered ? 1 : n.tone === "neutral" ? "var(--matrix-neutral-dot-alpha)" : "var(--matrix-dot-alpha)";
+        const isHollow = n.hollow;
         return (
           <g key={n.id}
              onMouseEnter={() => onHover(n.id)}
@@ -391,9 +392,16 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
               />
             )}
             <circle cx={n.cx} cy={n.cy} r={n.r}
-              fill={toneHsl(n.tone)} fillOpacity={fillOpacity}
-              stroke={n.isCluster && n.mixed ? toneHsl(contrastTone(n.tone)) : "hsl(var(--paper))"}
-              strokeWidth={n.isCluster && n.mixed ? 2 : 1.5}
+              fill={isHollow ? "hsl(var(--paper))" : toneHsl(n.tone)}
+              fillOpacity={isHollow ? 1 : fillOpacity}
+              stroke={
+                isHollow
+                  ? toneHsl(n.tone)
+                  : n.isCluster && n.mixed
+                    ? toneHsl(contrastTone(n.tone))
+                    : "hsl(var(--paper))"
+              }
+              strokeWidth={isHollow ? 2 : (n.isCluster && n.mixed ? 2 : 1.5)}
               style={{ transition: "all 280ms cubic-bezier(0.22, 0.61, 0.36, 1)" }}
             />
             {n.isCluster && (
@@ -406,7 +414,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
                   fontFamily: "JetBrains Mono, monospace",
                   fontSize: isMini ? 9 : 13,
                   fontWeight: 700,
-                  fill: "hsl(var(--paper))",
+                  fill: isHollow ? toneHsl(n.tone) : "hsl(var(--paper))",
                   pointerEvents: "none",
                 }}
               >
