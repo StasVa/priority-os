@@ -58,7 +58,7 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
                     <span className={`inline-block text-[10px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded ${cls.bg} ${cls.text}`}>
                       {t(`verdicts.${cls.verdictKey}`)}
                     </span>
-                    <span className="font-mono text-[11px] text-muted-foreground tabular-nums">
+                    <span className="font-mono text-[11px] text-muted-foreground/70 tabular-nums">
                       {score.toFixed(1)}
                     </span>
                   </div>
