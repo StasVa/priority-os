@@ -32,8 +32,11 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
 
   return (
     <aside className="border-l border-border bg-sidebar h-full overflow-y-auto flex flex-col">
-      <div className="px-6 py-5 border-b border-border">
+      <div className="px-6 py-5 border-b border-border flex items-baseline justify-between gap-3">
         <div className="label-mono">{t("queue.title")}</div>
+        <div className="font-serif text-[12px] text-muted-foreground">
+          {t("queue.items", { count: counts.active })}
+        </div>
       </div>
 
       <ol className="divide-y divide-border">
