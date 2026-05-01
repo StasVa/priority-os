@@ -6,6 +6,7 @@ import type { Item, ItemStatus, Reference } from "@/lib/decision/types";
 import { compositeScore, recommendationKey } from "@/lib/decision/logic";
 import { statusToToastKey } from "@/components/decision/StatusConfirm";
 import { ReferenceList } from "@/components/decision/ReferenceList";
+import { PositionAcrossLenses } from "@/components/decision/PositionAcrossLenses";
 
 interface ItemEditorProps {
   open: boolean;
@@ -14,6 +15,7 @@ interface ItemEditorProps {
   onSave: (draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => void;
   onDelete?: (id: string) => void;
   onSetStatus?: (id: string, status: ItemStatus, resolutionNote?: string) => void;
+  contextItems?: Item[];
 }
 
 const SLIDER_KEYS: Array<keyof Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence" | "risk">> = [
