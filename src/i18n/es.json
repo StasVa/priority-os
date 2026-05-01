@@ -1,0 +1,335 @@
+{
+  "brand": { "name": "Priority", "suffix": "OS" },
+  "theme": { "light": "Claro", "dark": "Oscuro" },
+  "nav": {
+    "newItem": "Nuevo elemento",
+    "insights": "Insights",
+    "lens": "Lente",
+    "addProject": "Añadir proyecto"
+  },
+  "projects": {
+    "switcher": {
+      "placeholder": "Buscar proyectos..."
+    },
+    "section": {
+      "recent": "Recientes",
+      "all": "Todos los proyectos"
+    },
+    "newProject": "Nuevo proyecto",
+    "namePrompt": "¿Nombre del proyecto?",
+    "empty": "Aún no hay proyectos.",
+    "Startup": "Startup",
+    "Personal": "Personal",
+    "My decisions": "Mis decisiones",
+    "settings": {
+      "title": "Ajustes del proyecto",
+      "gearTooltip": "Ajustes del proyecto",
+      "name": "Nombre",
+      "namePlaceholder": "Nombre del proyecto",
+      "description": "Descripción",
+      "descriptionPlaceholder": "¿De qué va este proyecto?",
+      "color": "Color",
+      "emoji": "Elegir emoji",
+      "removeEmoji": "Quitar",
+      "stats": "Estadísticas",
+      "created": "Creado · {{time}}",
+      "lastActivity": "Última actividad · {{time}}",
+      "comingSoon": "Próximamente",
+      "members": "Miembros",
+      "sharing": "Compartir",
+      "integrations": "Integración Jira / Linear",
+      "addFavorite": "Añadir a favoritos",
+      "removeFavorite": "Quitar de favoritos",
+      "archive": "Archivar proyecto",
+      "archiveConfirm": "¿Archivar este proyecto? Se ocultará de la navegación principal, pero podrás restaurarlo después.",
+      "delete": "Eliminar proyecto",
+      "deleteConfirm_one": "¿Eliminar el proyecto y su {{count}} elemento? No se puede deshacer.",
+      "deleteConfirm_other": "¿Eliminar el proyecto y sus {{count}} elementos? No se puede deshacer.",
+      "deleteConfirmType": "Escribe {{name}} para confirmar",
+      "restore": "Restaurar proyecto",
+      "confirm": "Confirmar",
+      "cancel": "Cancelar"
+    },
+    "create": {
+      "title": "Nuevo proyecto",
+      "button": "Crear proyecto",
+      "back": "Atrás"
+    },
+    "dropdown": {
+      "archived_one": "{{count}} archivado",
+      "archived_other": "{{count}} archivados"
+    }
+  },
+  "queue": {
+    "title": "Cola de prioridades",
+    "topRecommendations": "Recomendaciones clave",
+    "empty": "Aún no hay nada. Añade un elemento para empezar.",
+    "rankedBy": "ordenado por puntaje compuesto",
+    "items_one": "{{count}} elemento",
+    "items_other": "{{count}} elementos"
+  },
+  "editor": {
+    "newItem": "Nuevo elemento",
+    "editItem": "Editar",
+    "titlePlaceholder": "¿Sobre qué estás decidiendo?",
+    "noteLabel": "Nota",
+    "notePlaceholder": "Contexto, hipótesis, por qué ahora…",
+    "whyLabel": "¿Por qué?",
+    "whySubtitle": "¿Por qué vale la pena decidir esto?",
+    "whyPlaceholder": "¿Cuál es la intuición? ¿Qué cambia si lo hacemos?",
+    "whyTooLong": "Una justificación larga suele indicar que describes el trabajo, no el porqué. Intenta acortar.",
+    "compositeScore": "Puntaje compuesto",
+    "saveChanges": "Guardar",
+    "addToProject": "Añadir al proyecto",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "close": "Cerrar",
+    "markDone": "Terminar",
+    "markInProgress": "Empezar",
+    "backToActive": "Volver a activos",
+    "drop": "Descartar",
+    "positionAcrossLenses": "Posición en las lentes"
+  },
+  "matrix": {
+    "empty": "Aún no hay elementos en <0>{{name}}</0>.",
+    "addFirst": "Añade tu primer elemento",
+    "view": "Ver",
+    "axis": "BAJO  ←  {{label}}  →  ALTO",
+    "low": "BAJO",
+    "high": "ALTO",
+    "cluster": {
+      "label_one": "{{count}} elemento",
+      "label_other": "{{count}} elementos"
+    }
+  },
+  "sliders": {
+    "impact": { "label": "Impacto", "hint": "valor esperado si funciona" },
+    "effort": { "label": "Esfuerzo", "hint": "costo, tiempo, complejidad" },
+    "importance": { "label": "Importancia", "hint": "qué tan crítica es la necesidad de fondo" },
+    "satisfaction": { "label": "Satisfacción", "hint": "qué tan bien está cubierta esa necesidad hoy" },
+    "confidence": { "label": "Confianza", "hint": "certeza en las estimaciones" },
+    "risk": { "label": "Riesgo", "hint": "el reverso si sale mal" }
+  },
+  "axes": {
+    "EFFORT": "ESFUERZO",
+    "IMPACT": "IMPACTO",
+    "SATISFACTION": "SATISFACCIÓN",
+    "IMPORTANCE": "IMPORTANCIA",
+    "RISK": "RIESGO",
+    "CONFIDENCE": "CONFIANZA"
+  },
+  "lenses": {
+    "value-effort": "Valor vs Esfuerzo",
+    "importance-satisfaction": "Importancia vs Satisfacción",
+    "confidence-risk": "Confianza vs Riesgo"
+  },
+  "lensSubtitles": {
+    "value-effort": "Donde el retorno por esfuerzo es mayor",
+    "importance-satisfaction": "Donde viven las necesidades sin cubrir",
+    "confidence-risk": "Donde validar antes de decidir"
+  },
+  "insights": {
+    "aria": "insight",
+    "valueEffort": {
+      "quickWins_one": "Tienes {{count}} victoria rápida. <0>{{item}}</0> tiene el mejor retorno — empieza por ahí.",
+      "quickWins_other": "Tienes {{count}} victorias rápidas. <0>{{item}}</0> tiene el mejor retorno — empieza por ahí si solo entregas una.",
+      "bigBets_one": "Sin victorias rápidas. Tu mejor palanca es una apuesta grande: <0>{{item}}</0>.",
+      "bigBets_other": "Sin victorias rápidas. Tu mejor palanca es una apuesta grande: <0>{{item}}</0>.",
+      "none": "Nada destaca como victoria rápida. Vuelve a evaluar o divide un elemento grande en una prueba más chica."
+    },
+    "importanceSatisfaction": {
+      "opportunities_one": "{{count}} brecha clara: <0>{{item}}</0> — importante pero apenas resuelto.",
+      "opportunities_other": "{{count}} brechas. <0>{{item}}</0> es la más fuerte — importante y apenas resuelta.",
+      "overServed_one": "{{count}} elemento está sobre-atendido — mucho esfuerzo, poca importancia. Considera recortarlo.",
+      "overServed_other": "{{count}} elementos están sobre-atendidos — mucho esfuerzo en cosas poco importantes. Considera recortarlos.",
+      "none": "No hay brecha clara. O estás bien atendido, o las notas de importancia merecen una segunda mirada."
+    },
+    "confidenceRisk": {
+      "validate_one": "{{count}} elemento a validar primero: <0>{{item}}</0> — riesgoso e incierto.",
+      "validate_other": "{{count}} elementos a validar primero. Empieza por <0>{{item}}</0> — el más riesgoso e incierto.",
+      "safe_one": "{{count}} elemento es seguro de entregar. <0>{{item}}</0> es el más fuerte.",
+      "safe_other": "{{count}} elementos son seguros de entregar. <0>{{item}}</0> es el más fuerte.",
+      "none": "Nada grita «validar primero». Confianza y riesgo lucen equilibrados."
+    }
+  },
+  "quadrants": {
+    "QUICK_WINS": "Victorias rápidas",
+    "BIG_BETS": "Apuestas grandes",
+    "FILLER": "Relleno",
+    "TIME_SINKS": "Pérdida de tiempo",
+    "OPPORTUNITY": "Oportunidad",
+    "MAINTAIN": "Mantener",
+    "LOW_PRIORITY": "Baja prioridad",
+    "OVER_SERVED": "Sobre-atendido",
+    "SAFE_TO_SHIP": "Seguro de entregar",
+    "KNOWN_RISK": "Riesgo asumido",
+    "SOFT_SIGNAL": "Señal débil",
+    "VALIDATE_FIRST": "Validar primero"
+  },
+  "verdicts": {
+    "win": "Éxito",
+    "bet": "Apuesta",
+    "drop": "Descartar",
+    "neutral": "En espera"
+  },
+  "recommendations": {
+    "lowConfidence": "Baja confianza — valida antes de comprometerte.",
+    "opportunityGap": "Mucha importancia, poca satisfacción — oportunidad clara.",
+    "quickWin": "Victoria rápida. Agéndala esta semana.",
+    "highEffortThinPayoff": "Mucho esfuerzo, poco retorno — considera descartarlo.",
+    "riskyUncertain": "Riesgoso e incierto — divídelo en una prueba más chica.",
+    "bigBet": "Apuesta grande — vale la pena si bancas el costo.",
+    "averageSignal": "Señal promedio — vuelve cuando cambien las condiciones."
+  },
+  "all": {
+    "footer": "Todos los elementos",
+    "viewAll": "Ver todo",
+    "title": "Todos los elementos en {{context}}",
+    "totalAndUpdated": "{{total}} en total · actualizado {{time}}",
+    "tabs": {
+      "active": "Activos",
+      "in_progress": "En curso",
+      "done": "Hechos",
+      "dropped": "Descartados"
+    },
+    "countLabels": {
+      "active": "{{count}} activos",
+      "in_progress": "{{count}} en curso",
+      "done": "{{count}} hechos",
+      "dropped": "{{count}} descartados"
+    },
+    "shortLabels": {
+      "active": "activos",
+      "in_progress": "en curso",
+      "done": "hechos",
+      "dropped": "descartados"
+    },
+    "viewAllItems_one": "Ver el {{count}} elemento",
+    "viewAllItems_other": "Ver los {{count}} elementos",
+    "sort": {
+      "label": "Ordenar",
+      "score": "Puntaje",
+      "title": "Título",
+      "added": "Fecha añadida",
+      "started": "Fecha iniciada",
+      "resolved": "Fecha resuelta"
+    },
+    "search": "Buscar elementos...",
+    "doneAt": "Hecho · {{date}}",
+    "droppedAt": "Descartado · {{date}}",
+    "startedAt": "Iniciado · {{date}}",
+    "empty": {
+      "active": "Sin elementos activos. Añade uno desde la vista principal.",
+      "in_progress": "Nada en curso aún. Lo que empieces aparecerá aquí.",
+      "done": "Nada terminado aún. Lo que completes aparecerá aquí.",
+      "dropped": "Nada descartado aún. Saber decir no se entrena."
+    },
+    "actions": {
+      "edit": "Editar",
+      "editDetails": "Editar detalles",
+      "markInProgress": "Marcar en curso",
+      "markDone": "Marcar hecho",
+      "markDropped": "Marcar descartado",
+      "restore": "Volver a activo",
+      "delete": "Eliminar"
+    }
+  },
+  "confirm": {
+    "doneTitle": "¿Marcar como hecho?",
+    "droppedTitle": "¿Descartar este elemento?",
+    "notePlaceholder": "Nota sobre el resultado (opcional)",
+    "donePlaceholder": "¿Cómo salió?",
+    "dropPlaceholder": "¿Por qué descartarlo?",
+    "back": "Atrás",
+    "confirmDone": "Confirmar",
+    "confirmDrop": "Confirmar",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar"
+  },
+  "toast": {
+    "markedDone": "Marcado como hecho",
+    "markedDropped": "Descartado",
+    "markedInProgress": "En curso",
+    "restored": "Vuelto a activo",
+    "undo": "Deshacer"
+  },
+  "references": {
+    "title": "Referencias",
+    "add": "Añadir referencia",
+    "placeholder": "Pega una URL o arrastra un enlace aquí",
+    "placeholderEmpty": "Enlace a Jira, Notion, Figma...",
+    "labelPlaceholder": "Etiqueta opcional, ej. «Spec técnica»",
+    "invalid": "URL inválida",
+    "count_one": "{{count}} referencia",
+    "count_other": "{{count}} referencias"
+  },
+  "welcome": {
+    "skip": "Saltar",
+    "continue": "Continuar",
+    "firstHint": "Tip: Toca ? en la barra superior si dudas qué significa cada parámetro. Añade 2-3 decisiones más para que las prioridades se revelen.",
+    "step1": {
+      "heading": "¿Sobre qué estás decidiendo?",
+      "subhead": "Una decisión real que tienes encima ahora.",
+      "placeholder": "ej. Reescribir el onboarding",
+      "examplesTitle": "Ejemplos",
+      "example1": "Aceptar esta oferta de trabajo",
+      "example2": "Contratar un diseñador",
+      "example3": "Migrar la base de datos ahora"
+    },
+    "step2": {
+      "heading": "Nombra tu proyecto",
+      "subhead": "Agrupa decisiones por proyecto. Lo puedes cambiar y añadir más después.",
+      "placeholder": "ej. Startup, Personal, Inversiones...",
+      "examplesTitle": "Ejemplos",
+      "example1": "Startup",
+      "example2": "Personal",
+      "example3": "Inversiones",
+      "example4": "Salud",
+      "example5": "Compras grandes",
+      "example6": "Side project"
+    },
+    "step3": {
+      "heading": "Califica en seis dimensiones",
+      "subhead": "No le des tantas vueltas. La intuición sirve — todo se puede cambiar.",
+      "back": "Atrás",
+      "addToWorkspace": "Añadir a mi espacio"
+    }
+  },
+  "limits": {
+    "toast": {
+      "soft": "Este proyecto pasó la zona de foco. Las decisiones pierden filo cuando son demasiadas.",
+      "overloaded": "Este proyecto está sobrecargado. Considera cerrar o descartar elementos para recuperar foco."
+    },
+    "popover": {
+      "title": "Los proyectos rinden mejor con 5–15 elementos",
+      "softBody": "Pasados los 15 activos, las decisiones se amontonan y la matriz hace ruido. Cierra o descarta algunos para recuperar foco.",
+      "overloadedBody": "Este proyecto está muy lejos de su rango útil. Cierra o descarta elementos — demasiadas decisiones activas anulan la priorización.",
+      "viewAll": "Ver todos los elementos"
+    }
+  },
+  "help": {
+    "tooltip": "Ayuda",
+    "title": "Ayuda",
+    "section": {
+      "dimensions": "Seis dimensiones",
+      "lenses": "Tres lentes",
+      "matrix": "Cómo leer la matriz"
+    },
+    "dimensions": {
+      "impact": { "term": "Impacto", "def": "Si funciona, ¿cuánto cambia las cosas?" },
+      "effort": { "term": "Esfuerzo", "def": "Costo, tiempo, complejidad. ¿Qué cuesta?" },
+      "importance": { "term": "Importancia", "def": "¿Qué tan crítica es la necesidad de fondo?" },
+      "satisfaction": { "term": "Satisfacción", "def": "¿Qué tan bien está cubierta esa necesidad hoy?" },
+      "confidence": { "term": "Confianza", "def": "¿Qué tan seguro estás de tus estimaciones?" },
+      "risk": { "term": "Riesgo", "def": "¿Cuál es el reverso si sale mal?" }
+    },
+    "lenses": {
+      "valueEffort": { "term": "Valor vs Esfuerzo", "def": "Donde el retorno por esfuerzo es mayor. Qué hacer ahora." },
+      "importanceSatisfaction": { "term": "Importancia vs Satisfacción", "def": "Donde viven las necesidades sin cubrir. Oportunidades reales." },
+      "confidenceRisk": { "term": "Confianza vs Riesgo", "def": "Donde validar antes de decidir. Lo que aún no sabes." }
+    },
+    "matrix": {
+      "body": "Cada punto es una decisión. El color muestra su veredicto en la lente activa — verde para éxitos, ámbar para apuestas, rojo para descartes, gris para los intermedios. Puntos más grandes significan más confianza. Varias decisiones en el mismo lugar se agrupan en un cluster con conteo."
+    }
+  }
+}

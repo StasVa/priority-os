@@ -3,8 +3,11 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import en from "./en.json";
 import ru from "./ru.json";
+import fr from "./fr.json";
+import de from "./de.json";
+import es from "./es.json";
 
-export const SUPPORTED_LOCALES = ["en", "ru"] as const;
+export const SUPPORTED_LOCALES = ["en", "ru", "de", "fr", "es"] as const;
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
 i18n
@@ -14,6 +17,9 @@ i18n
     resources: {
       en: { translation: en },
       ru: { translation: ru },
+      fr: { translation: fr },
+      de: { translation: de },
+      es: { translation: es },
     },
     fallbackLng: "en",
     supportedLngs: SUPPORTED_LOCALES as unknown as string[],
