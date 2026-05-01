@@ -172,7 +172,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       else placed.push(l.box);
     }
     return computed;
-  }, [nodes, showLabels, w, h, pad, t]);
+  }, [nodes, showLabels, w, h, padL, padR, padT, padB, t]);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const hoveredNode = (hoveredId && itemToNode.get(hoveredId)) || null;
