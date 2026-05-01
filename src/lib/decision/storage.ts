@@ -7,12 +7,14 @@ function uid(): string {
 }
 
 function makeProject(name: string, items: Item[] = []): Project {
+  const now = Date.now();
   return {
     id: uid(),
     name,
     items,
     isFavorite: false,
-    lastAccessedAt: Date.now(),
+    lastAccessedAt: now,
+    createdAt: now,
     visibility: "private",
   };
 }
