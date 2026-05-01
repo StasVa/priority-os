@@ -102,7 +102,7 @@ export function loadState(): DecisionState {
       return s;
     }
     const parsed = JSON.parse(raw) as DecisionState;
-    if (!parsed.contexts?.length) return seed();
+    if (!parsed.contexts) parsed.contexts = [];
     if (!parsed.history) parsed.history = {};
     // Migrate: ensure every item has status + references
     parsed.contexts = parsed.contexts.map(c => ({
