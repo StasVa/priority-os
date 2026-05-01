@@ -23,7 +23,7 @@ interface TopBarProps {
 
 export function TopBar({
   projects, activeProjectId, activeProjectName, activeProjectEmoji, activeProjectColor, activeProjectCount,
-  onSelectProject, onCreateProject, onOpenSettings,
+  onSelectProject, onCreateProject, onOpenSettings, onOpenHelp,
   insightsOn, onToggleInsights, onNewItem,
 }: TopBarProps) {
   const { t } = useTranslation();
