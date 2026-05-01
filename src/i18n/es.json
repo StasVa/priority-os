@@ -1,6 +1,12 @@
 {
-  "brand": { "name": "Priority", "suffix": "OS" },
-  "theme": { "light": "Claro", "dark": "Oscuro" },
+  "brand": {
+    "name": "Priority",
+    "suffix": "OS"
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Oscuro"
+  },
   "nav": {
     "newItem": "Nuevo elemento",
     "insights": "Insights",
@@ -103,12 +109,30 @@
     }
   },
   "sliders": {
-    "impact": { "label": "Impacto", "hint": "valor esperado si funciona" },
-    "effort": { "label": "Esfuerzo", "hint": "costo, tiempo, complejidad" },
-    "importance": { "label": "Importancia", "hint": "qué tan crítica es la necesidad de fondo" },
-    "satisfaction": { "label": "Satisfacción", "hint": "qué tan bien está cubierta esa necesidad hoy" },
-    "confidence": { "label": "Confianza", "hint": "certeza en las estimaciones" },
-    "risk": { "label": "Riesgo", "hint": "el reverso si sale mal" }
+    "impact": {
+      "label": "Impacto",
+      "hint": "valor esperado si funciona"
+    },
+    "effort": {
+      "label": "Esfuerzo",
+      "hint": "costo, tiempo, complejidad"
+    },
+    "importance": {
+      "label": "Importancia",
+      "hint": "qué tan crítica es la necesidad de fondo"
+    },
+    "satisfaction": {
+      "label": "Satisfacción",
+      "hint": "qué tan bien está cubierta esa necesidad hoy"
+    },
+    "confidence": {
+      "label": "Confianza",
+      "hint": "certeza en las estimaciones"
+    },
+    "risk": {
+      "label": "Riesgo",
+      "hint": "el reverso si sale mal"
+    }
   },
   "axes": {
     "EFFORT": "ESFUERZO",
@@ -316,20 +340,50 @@
       "matrix": "Cómo leer la matriz"
     },
     "dimensions": {
-      "impact": { "term": "Impacto", "def": "Si funciona, ¿cuánto cambia las cosas?" },
-      "effort": { "term": "Esfuerzo", "def": "Costo, tiempo, complejidad. ¿Qué cuesta?" },
-      "importance": { "term": "Importancia", "def": "¿Qué tan crítica es la necesidad de fondo?" },
-      "satisfaction": { "term": "Satisfacción", "def": "¿Qué tan bien está cubierta esa necesidad hoy?" },
-      "confidence": { "term": "Confianza", "def": "¿Qué tan seguro estás de tus estimaciones?" },
-      "risk": { "term": "Riesgo", "def": "¿Cuál es el reverso si sale mal?" }
+      "impact": {
+        "term": "Impacto",
+        "def": "Si funciona, ¿cuánto cambia las cosas?"
+      },
+      "effort": {
+        "term": "Esfuerzo",
+        "def": "Costo, tiempo, complejidad. ¿Qué cuesta?"
+      },
+      "importance": {
+        "term": "Importancia",
+        "def": "¿Qué tan crítica es la necesidad de fondo?"
+      },
+      "satisfaction": {
+        "term": "Satisfacción",
+        "def": "¿Qué tan bien está cubierta esa necesidad hoy?"
+      },
+      "confidence": {
+        "term": "Confianza",
+        "def": "¿Qué tan seguro estás de tus estimaciones?"
+      },
+      "risk": {
+        "term": "Riesgo",
+        "def": "¿Cuál es el reverso si sale mal?"
+      }
     },
     "lenses": {
-      "valueEffort": { "term": "Valor vs Esfuerzo", "def": "Donde el retorno por esfuerzo es mayor. Qué hacer ahora." },
-      "importanceSatisfaction": { "term": "Importancia vs Satisfacción", "def": "Donde viven las necesidades sin cubrir. Oportunidades reales." },
-      "confidenceRisk": { "term": "Confianza vs Riesgo", "def": "Donde validar antes de decidir. Lo que aún no sabes." }
+      "valueEffort": {
+        "term": "Valor vs Esfuerzo",
+        "def": "Donde el retorno por esfuerzo es mayor. Qué hacer ahora."
+      },
+      "importanceSatisfaction": {
+        "term": "Importancia vs Satisfacción",
+        "def": "Donde viven las necesidades sin cubrir. Oportunidades reales."
+      },
+      "confidenceRisk": {
+        "term": "Confianza vs Riesgo",
+        "def": "Donde validar antes de decidir. Lo que aún no sabes."
+      }
     },
     "matrix": {
       "body": "Cada punto es una decisión. El color muestra su veredicto en la lente activa — verde para éxitos, ámbar para apuestas, rojo para descartes, gris para los intermedios. Puntos más grandes significan más confianza. Varias decisiones en el mismo lugar se agrupan en un cluster con conteo."
     }
+  },
+  "language": {
+    "tooltip": "Idioma"
   }
 }

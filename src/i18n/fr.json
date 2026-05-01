@@ -1,6 +1,12 @@
 {
-  "brand": { "name": "Priority", "suffix": "OS" },
-  "theme": { "light": "Clair", "dark": "Sombre" },
+  "brand": {
+    "name": "Priority",
+    "suffix": "OS"
+  },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre"
+  },
   "nav": {
     "newItem": "Nouvel élément",
     "insights": "Insights",
@@ -103,12 +109,30 @@
     }
   },
   "sliders": {
-    "impact": { "label": "Impact", "hint": "valeur attendue si ça marche" },
-    "effort": { "label": "Effort", "hint": "coût, temps, complexité" },
-    "importance": { "label": "Importance", "hint": "criticité du besoin sous-jacent" },
-    "satisfaction": { "label": "Satisfaction", "hint": "à quel point ce besoin est couvert aujourd'hui" },
-    "confidence": { "label": "Confiance", "hint": "certitude dans tes estimations" },
-    "risk": { "label": "Risque", "hint": "le revers si ça tourne mal" }
+    "impact": {
+      "label": "Impact",
+      "hint": "valeur attendue si ça marche"
+    },
+    "effort": {
+      "label": "Effort",
+      "hint": "coût, temps, complexité"
+    },
+    "importance": {
+      "label": "Importance",
+      "hint": "criticité du besoin sous-jacent"
+    },
+    "satisfaction": {
+      "label": "Satisfaction",
+      "hint": "à quel point ce besoin est couvert aujourd'hui"
+    },
+    "confidence": {
+      "label": "Confiance",
+      "hint": "certitude dans tes estimations"
+    },
+    "risk": {
+      "label": "Risque",
+      "hint": "le revers si ça tourne mal"
+    }
   },
   "axes": {
     "EFFORT": "EFFORT",
@@ -316,20 +340,50 @@
       "matrix": "Lire la matrice"
     },
     "dimensions": {
-      "impact": { "term": "Impact", "def": "Si ça marche, à quel point ça change les choses ?" },
-      "effort": { "term": "Effort", "def": "Coût, temps, complexité. Que faut-il y mettre ?" },
-      "importance": { "term": "Importance", "def": "À quel point ce besoin est-il critique ?" },
-      "satisfaction": { "term": "Satisfaction", "def": "À quel point ce besoin est-il couvert aujourd'hui ?" },
-      "confidence": { "term": "Confiance", "def": "À quel point es-tu sûr de tes estimations ?" },
-      "risk": { "term": "Risque", "def": "Quel est le revers si ça tourne mal ?" }
+      "impact": {
+        "term": "Impact",
+        "def": "Si ça marche, à quel point ça change les choses ?"
+      },
+      "effort": {
+        "term": "Effort",
+        "def": "Coût, temps, complexité. Que faut-il y mettre ?"
+      },
+      "importance": {
+        "term": "Importance",
+        "def": "À quel point ce besoin est-il critique ?"
+      },
+      "satisfaction": {
+        "term": "Satisfaction",
+        "def": "À quel point ce besoin est-il couvert aujourd'hui ?"
+      },
+      "confidence": {
+        "term": "Confiance",
+        "def": "À quel point es-tu sûr de tes estimations ?"
+      },
+      "risk": {
+        "term": "Risque",
+        "def": "Quel est le revers si ça tourne mal ?"
+      }
     },
     "lenses": {
-      "valueEffort": { "term": "Valeur vs Effort", "def": "Là où le retour par effort est le plus élevé. Quoi faire maintenant." },
-      "importanceSatisfaction": { "term": "Importance vs Satisfaction", "def": "Là où vivent les besoins non satisfaits. De vraies opportunités." },
-      "confidenceRisk": { "term": "Confiance vs Risque", "def": "Là où valider avant de décider. Ce que tu ne sais pas encore." }
+      "valueEffort": {
+        "term": "Valeur vs Effort",
+        "def": "Là où le retour par effort est le plus élevé. Quoi faire maintenant."
+      },
+      "importanceSatisfaction": {
+        "term": "Importance vs Satisfaction",
+        "def": "Là où vivent les besoins non satisfaits. De vraies opportunités."
+      },
+      "confidenceRisk": {
+        "term": "Confiance vs Risque",
+        "def": "Là où valider avant de décider. Ce que tu ne sais pas encore."
+      }
     },
     "matrix": {
       "body": "Chaque point est une décision. La couleur montre son verdict dans la lentille active — vert pour les réussites, ambre pour les paris, rouge pour les abandons, gris pour l'entre-deux. Un point plus grand veut dire plus de confiance. Plusieurs décisions au même endroit fusionnent en un cluster avec un compteur."
     }
+  },
+  "language": {
+    "tooltip": "Langue"
   }
 }
