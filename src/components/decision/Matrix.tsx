@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import type { Item, LensId } from "@/lib/decision/types";
 import { LENSES, lensCoords, toneHsl, verdictForLens } from "@/lib/decision/logic";
 
@@ -17,6 +18,7 @@ const W = 720;
 const H = 540;
 
 export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "primary", onClick }: MatrixProps) {
+  const { t } = useTranslation();
   const def = LENSES.find(l => l.id === lens)!;
 
   const isMini = size === "mini";
@@ -94,7 +96,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       className={`w-full h-auto ${isMini ? "cursor-pointer" : ""}`}
       onClick={onClick}
       role="img"
-      aria-label={`${def.name} matrix`}
+      aria-label={`${t(`lenses.${def.id}`)} matrix`}
     >
       {/* Plot background */}
       <rect x={pad} y={pad} width={w - pad * 2} height={h - pad * 2} fill="hsl(var(--paper))" />
@@ -120,18 +122,18 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       {/* Quadrant labels */}
       {!isMini && (
         <g style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.18em", fill: "hsl(var(--muted-foreground))" }}>
-          <text x={pad + 12} y={pad + 18}>{def.quadrants.tl.label}</text>
-          <text x={w - pad - 12} y={pad + 18} textAnchor="end">{def.quadrants.tr.label}</text>
-          <text x={pad + 12} y={h - pad - 10}>{def.quadrants.bl.label}</text>
-          <text x={w - pad - 12} y={h - pad - 10} textAnchor="end">{def.quadrants.br.label}</text>
+          <text x={pad + 12} y={pad + 18}>{t(`quadrants.${def.quadrants.tl.key}`).toUpperCase()}</text>
+          <text x={w - pad - 12} y={pad + 18} textAnchor="end">{t(`quadrants.${def.quadrants.tr.key}`).toUpperCase()}</text>
+          <text x={pad + 12} y={h - pad - 10}>{t(`quadrants.${def.quadrants.bl.key}`).toUpperCase()}</text>
+          <text x={w - pad - 12} y={h - pad - 10} textAnchor="end">{t(`quadrants.${def.quadrants.br.key}`).toUpperCase()}</text>
         </g>
       )}
 
       {/* Axis labels (bidirectional) */}
       {!isMini && (
         <g style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.2em", fill: "hsl(var(--ink))", textTransform: "uppercase" }}>
-          <text x={pad + (w - pad * 2) / 2} y={h - 18} textAnchor="middle">{`LOW  ←  ${def.xLabel}  →  HIGH`}</text>
-          <text x={20} y={pad + (h - pad * 2) / 2} textAnchor="middle" transform={`rotate(-90, 20, ${pad + (h - pad * 2) / 2})`}>{`LOW  ←  ${def.yLabel}  →  HIGH`}</text>
+          <text x={pad + (w - pad * 2) / 2} y={h - 18} textAnchor="middle">{t("matrix.axis", { label: t(`axes.${def.xLabel}`) })}</text>
+          <text x={20} y={pad + (h - pad * 2) / 2} textAnchor="middle" transform={`rotate(-90, 20, ${pad + (h - pad * 2) / 2})`}>{t("matrix.axis", { label: t(`axes.${def.yLabel}`) })}</text>
         </g>
       )}
 
