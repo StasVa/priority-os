@@ -2,6 +2,13 @@ export type LensId = "value-effort" | "importance-satisfaction" | "confidence-ri
 export type Tone = "win" | "bet" | "drop" | "neutral";
 export type ItemStatus = "active" | "done" | "dropped";
 
+export interface Reference {
+  id: string;
+  url: string;
+  label?: string;
+  addedAt: number;
+}
+
 export interface Item {
   id: string;
   title: string;
@@ -17,6 +24,7 @@ export interface Item {
   status: ItemStatus;
   resolvedAt?: string;
   resolutionNote?: string;
+  references: Reference[];
 }
 
 export interface Context {

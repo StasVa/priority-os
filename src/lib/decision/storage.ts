@@ -17,6 +17,7 @@ function seed(): DecisionState {
     impact, effort, importance, satisfaction, confidence, risk,
     createdAt: now, updatedAt: now,
     status: "active",
+    references: [],
   });
 
   const startup: Item[] = [
@@ -53,10 +54,14 @@ export function loadState(): DecisionState {
     const parsed = JSON.parse(raw) as DecisionState;
     if (!parsed.contexts?.length) return seed();
     if (!parsed.history) parsed.history = {};
-    // Migrate: ensure every item has status
+    // Migrate: ensure every item has status + references
     parsed.contexts = parsed.contexts.map(c => ({
       ...c,
-      items: c.items.map(i => i.status ? i : { ...i, status: "active" as const }),
+      items: c.items.map(i => ({
+        ...i,
+        status: i.status ?? "active",
+        references: Array.isArray(i.references) ? i.references : [],
+      })),
     }));
     return parsed;
   } catch {

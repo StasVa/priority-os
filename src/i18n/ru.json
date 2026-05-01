@@ -154,5 +154,17 @@
     "markedDropped": "Отброшено",
     "restored": "Возвращено в активные",
     "undo": "Отменить"
+  },
+  "references": {
+    "title": "Ссылки",
+    "add": "Добавить ссылку",
+    "placeholder": "Вставьте ссылку или перетащите",
+    "placeholderEmpty": "Ссылка на Jira, Notion, Figma...",
+    "labelPlaceholder": "Название (необязательно), например «Техспек»",
+    "invalid": "Некорректная ссылка",
+    "count_one": "{{count}} ссылка",
+    "count_few": "{{count}} ссылки",
+    "count_many": "{{count}} ссылок",
+    "count_other": "{{count}} ссылки"
   }
 }
