@@ -17,6 +17,10 @@ interface MatrixProps {
 const PAD = 28;
 const W = 1000;
 const H = 700;
+// Extra inset for the main matrix to make room for numeric tick labels
+// between the plot area and the existing rotated/baseline axis text.
+const TICK_INSET = 22;
+const TICK_VALUES = [0, 2, 4, 6, 8, 10];
 const CLUSTER_DIST = 6; // px distance threshold (in svg viewBox units)
 
 type Dot = { it: Item; cx: number; cy: number; r: number; tone: Tone; inProgress: boolean };
