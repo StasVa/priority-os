@@ -264,7 +264,7 @@ const Index = () => {
       <AllItemsView
         open={allOpen}
         onClose={() => setAllOpen(false)}
-        contextName={activeProjectName}
+        contextName={`${activeProject?.emoji ? activeProject.emoji + " " : ""}${activeProjectName}`}
         items={allItems}
         onEdit={openEdit}
         onSetStatus={setItemStatus}
