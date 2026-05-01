@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useState, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import type { Item, LensId } from "@/lib/decision/types";
 import { LENSES, lensCoords, toneHsl, verdictForLens } from "@/lib/decision/logic";
@@ -90,8 +91,75 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
   }, [plot, showLabels, w, pad]);
 
 
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const hoveredDot = plot.find(p => p.it.id === hoveredId) ?? null;
+  const [tipPos, setTipPos] = useState<{ left: number; top: number; placement: "right" | "left" | "top" | "bottom" } | null>(null);
+  const tipRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (isMini || !hoveredDot || !svgRef.current) {
+      setTipPos(null);
+      return;
+    }
+    const svg = svgRef.current;
+    const rect = svg.getBoundingClientRect();
+    const scaleX = rect.width / w;
+    const scaleY = rect.height / h;
+    const dotScreenX = rect.left + hoveredDot.cx * scaleX;
+    const dotScreenY = rect.top + hoveredDot.cy * scaleY;
+    const dotR = hoveredDot.r * scaleX;
+
+    // Measure tooltip
+    const tipEl = tipRef.current;
+    const tipW = tipEl?.offsetWidth ?? 200;
+    const tipH = tipEl?.offsetHeight ?? 40;
+    const gap = 10;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    // Determine quadrant of dot within matrix
+    const inRightHalf = hoveredDot.cx > w / 2;
+    const inTopRow = hoveredDot.cy < h * 0.25;
+    const inBottomRow = hoveredDot.cy > h * 0.75;
+
+    let placement: "right" | "left" | "top" | "bottom" = inRightHalf ? "left" : "right";
+    if (inTopRow) placement = "bottom";
+    else if (inBottomRow) placement = "top";
+
+    const compute = (p: typeof placement) => {
+      switch (p) {
+        case "right": return { left: dotScreenX + dotR + gap, top: dotScreenY - tipH / 2 };
+        case "left":  return { left: dotScreenX - dotR - gap - tipW, top: dotScreenY - tipH / 2 };
+        case "bottom":return { left: dotScreenX - tipW / 2, top: dotScreenY + dotR + gap };
+        case "top":   return { left: dotScreenX - tipW / 2, top: dotScreenY - dotR - gap - tipH };
+      }
+    };
+
+    let pos = compute(placement);
+    const fits = (pos: { left: number; top: number }) =>
+      pos.left >= 4 && pos.top >= 4 && pos.left + tipW <= vw - 4 && pos.top + tipH <= vh - 4;
+
+    if (!fits(pos)) {
+      const opposite: Record<typeof placement, typeof placement> = { right: "left", left: "right", top: "bottom", bottom: "top" };
+      pos = compute(opposite[placement]);
+      placement = opposite[placement];
+    }
+    // Clamp into viewport as final safety
+    pos.left = Math.max(4, Math.min(pos.left, vw - tipW - 4));
+    pos.top = Math.max(4, Math.min(pos.top, vh - tipH - 4));
+
+    setTipPos({ ...pos, placement });
+  }, [hoveredDot?.it.id, hoveredDot?.cx, hoveredDot?.cy, hoveredDot?.r, isMini, w, h]);
+
+  const tooltipNote = hoveredDot ? (() => {
+    const n = (hoveredDot.it.note ?? "").trim();
+    return n ? (n.length > 60 ? n.slice(0, 60) + "…" : n) : "";
+  })() : "";
+
   return (
+    <>
     <svg
+      ref={svgRef}
       viewBox={`0 0 ${w} ${h}`}
       className={`w-full h-auto ${isMini ? "cursor-pointer" : ""}`}
       onClick={onClick}
@@ -170,33 +238,38 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
               stroke="hsl(var(--paper))" strokeWidth={1.5}
               style={{ transition: "all 280ms cubic-bezier(0.22, 0.61, 0.36, 1)" }}
             />
-            {!isMini && hovered && (() => {
-              const noteSnippet = (it.note ?? "").trim();
-              const snippet = noteSnippet ? (noteSnippet.length > 60 ? noteSnippet.slice(0, 60) + "…" : noteSnippet) : "";
-              const titleW = it.title.length * 7 + 16;
-              const snippetW = snippet ? snippet.length * 6 + 16 : 0;
-              const boxW = Math.max(80, titleW, snippetW);
-              const boxH = snippet ? 42 : 26;
-              const boxY = cy - (snippet ? 22 : 14);
-              return (
-                <g style={{ pointerEvents: "none" }}>
-                  <rect x={cx + r + 8} y={boxY} width={boxW} height={boxH} rx={4} fill="hsl(var(--ink))" />
-                  <text x={cx + r + 16} y={cy + (snippet ? -6 : 4)}
-                    style={{ fontFamily: "Fraunces, serif", fontSize: 13, fill: "hsl(var(--paper))" }}>
-                    {it.title}
-                  </text>
-                  {snippet && (
-                    <text x={cx + r + 16} y={cy + 12}
-                      style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontSize: 11, fill: "hsl(var(--paper) / 0.75)" }}>
-                      {snippet}
-                    </text>
-                  )}
-                </g>
-              );
-            })()}
           </g>
         );
       })}
     </svg>
+    {!isMini && hoveredDot && typeof document !== "undefined" && createPortal(
+      <div
+        ref={tipRef}
+        style={{
+          position: "fixed",
+          left: tipPos?.left ?? -9999,
+          top: tipPos?.top ?? -9999,
+          visibility: tipPos ? "visible" : "hidden",
+          pointerEvents: "none",
+          zIndex: 60,
+          background: "hsl(var(--ink))",
+          color: "hsl(var(--paper))",
+          borderRadius: 4,
+          padding: "6px 10px",
+          maxWidth: 320,
+        }}
+      >
+        <div style={{ fontFamily: "Fraunces, serif", fontSize: 13, lineHeight: 1.2 }}>
+          {hoveredDot.it.title}
+        </div>
+        {tooltipNote && (
+          <div style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontSize: 11, opacity: 0.75, marginTop: 2, lineHeight: 1.3 }}>
+            {tooltipNote}
+          </div>
+        )}
+      </div>,
+      document.body
+    )}
+    </>
   );
 }
