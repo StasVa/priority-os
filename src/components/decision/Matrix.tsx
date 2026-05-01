@@ -14,7 +14,7 @@ interface MatrixProps {
   onClick?: () => void;
 }
 
-const PAD = 64; // padding for axis labels
+const PAD = 28; // padding for axis labels (tighter — fills the card)
 const W = 1000;
 const H = 700;
 
@@ -46,12 +46,15 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     });
   }, [items, lens, w, h, pad, isMini]);
 
-  // Always-visible labels (primary only). Local edge-flip + collision detection.
-  // Higher-score labels win when two would overlap. Extreme density (>25) → hover-only.
+  // Always-visible labels (primary only). Two-pass:
+  //  1) compute final position for every label (right by default; flip left at right edge,
+  //     flip below at top edge, flip above at bottom edge)
+  //  2) collision pass on the FINAL rectangles — higher composite score wins, lower hides.
   const showLabels = !isMini && items.length > 0 && items.length <= 25;
   const labels = useMemo(() => {
-    if (!showLabels) return [] as { id: string; x: number; y: number; text: string; anchor: "start" | "end"; visible: boolean }[];
-    const charW = 6.2; // approx for Fraunces 11px
+    type L = { id: string; x: number; y: number; text: string; anchor: "start" | "end"; visible: boolean; box: { x1: number; x2: number; y1: number; y2: number }; score: number };
+    if (!showLabels) return [] as L[];
+    const charW = 7; // approx for Fraunces 11px (slightly conservative)
     const labelH = 14;
     const gap = 8;
     const rightEdge = w - pad - 4;
@@ -59,55 +62,46 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     const topEdge = pad + 4;
     const bottomEdge = h - pad - 4;
 
-    // Place higher-score items first so they win collisions.
-    const order = plot
-      .map((p, i) => ({ p, i, score: compositeScore(p.it) }))
-      .sort((a, b) => b.score - a.score);
-
-    const placed: { x1: number; x2: number; y1: number; y2: number }[] = [];
-    const result: { id: string; x: number; y: number; text: string; anchor: "start" | "end"; visible: boolean }[] = new Array(plot.length);
-
-    for (const { p, i } of order) {
-      const { it, cx, cy, r } = p;
+    // Pass 1: compute final position for every label.
+    const computed: L[] = plot.map(({ it, cx, cy, r }) => {
       const width = it.title.length * charW;
 
-      // Side: right by default, flip left if right would overflow.
+      // Horizontal: right of dot by default; flip if it would overflow right edge.
       let anchor: "start" | "end" = "start";
       let lx = cx + r + gap;
       if (lx + width > rightEdge) {
         anchor = "end";
         lx = cx - r - gap;
         if (lx - width < leftEdge) {
-          // Both sides overflow — pin to right edge.
+          // Both sides overflow — pin label to right edge.
           anchor = "end";
           lx = rightEdge;
         }
       }
 
-      // Vertical: prefer beside dot; flip to below if near top, above if near bottom.
-      const nearTop = cy - labelH / 2 < topEdge;
-      const nearBottom = cy + labelH / 2 > bottomEdge;
-      let baseYOffsets: number[];
-      if (nearTop) baseYOffsets = [r + labelH, r + labelH + 14, r + labelH + 28];
-      else if (nearBottom) baseYOffsets = [-(r + labelH / 2), -(r + labelH / 2) - 14, -(r + labelH / 2) - 28];
-      else baseYOffsets = [0, -14, 14, -28, 28];
-
-      let visible = false;
+      // Vertical: beside the dot. Flip below if near top, above if near bottom.
       let ly = cy;
-      for (const off of baseYOffsets) {
-        const tryY = cy + off;
-        const x1 = anchor === "start" ? lx : lx - width;
-        const x2 = anchor === "start" ? lx + width : lx;
-        const box = { x1, x2, y1: tryY - labelH / 2, y2: tryY + labelH / 2 };
-        const collides = placed.some(pl => !(box.x2 < pl.x1 || box.x1 > pl.x2 || box.y2 < pl.y1 || box.y1 > pl.y2));
-        if (!collides) {
-          placed.push(box);
-          ly = tryY;
-          visible = true;
-          break;
-        }
-      }
-      result[i] = { id: it.id, x: lx, y: ly, text: it.title, anchor, visible };
+      if (cy - labelH / 2 < topEdge) ly = cy + r + labelH;
+      else if (cy + labelH / 2 > bottomEdge) ly = cy - r - labelH / 2;
+
+      const x1 = anchor === "start" ? lx : lx - width;
+      const x2 = anchor === "start" ? lx + width : lx;
+      const box = { x1, x2, y1: ly - labelH / 2, y2: ly + labelH / 2 };
+
+      return { id: it.id, x: lx, y: ly, text: it.title, anchor, visible: true, box, score: compositeScore(it) };
+    });
+
+    // Pass 2: collision detection on final rectangles. Place higher-score first; lower-score that
+    // collides with anything already placed gets hidden (will appear on hover).
+    const order = [...computed].sort((a, b) => b.score - a.score);
+    const placed: { x1: number; x2: number; y1: number; y2: number }[] = [];
+    for (const l of order) {
+      const collides = placed.some(p => !(l.box.x2 < p.x1 || l.box.x1 > p.x2 || l.box.y2 < p.y1 || l.box.y1 > p.y2));
+      if (collides) l.visible = false;
+      else placed.push(l.box);
+    }
+    return computed;
+  }, [plot, showLabels, w, h, pad]);
     }
     return result;
   }, [plot, showLabels, w, h, pad]);
