@@ -48,6 +48,11 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
   const w = isMini ? 500 : W;
   const h = isMini ? 350 : H;
   const pad = isMini ? 8 : PAD;
+  // Asymmetric insets for the main matrix to make room for numeric tick labels.
+  const padL = isMini ? pad : pad + TICK_INSET;
+  const padR = pad;
+  const padT = pad;
+  const padB = isMini ? pad : pad + TICK_INSET;
 
   // 1) Pixel positions for all items, clamped inside the matrix.
   const plot = useMemo<Dot[]>(() => {
