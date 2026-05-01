@@ -1,46 +1,60 @@
-import { Eye, EyeOff, Plus } from "lucide-react";
+import { Eye, EyeOff, Plus, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/decision/LanguageSwitcher";
 import { ThemeToggle } from "@/components/decision/ThemeToggle";
 import { ProjectSwitcher, type ProjectLite } from "@/components/decision/ProjectSwitcher";
+import type { ProjectColor } from "@/lib/decision/types";
 
 interface TopBarProps {
   projects: ProjectLite[];
   activeProjectId: string;
   activeProjectName: string;
+  activeProjectEmoji?: string;
+  activeProjectColor?: ProjectColor;
   activeProjectCount: number;
   onSelectProject: (id: string) => void;
-  onAddProject: () => void;
+  onCreateProject: (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => void;
+  onOpenSettings: () => void;
   insightsOn: boolean;
   onToggleInsights: () => void;
   onNewItem: () => void;
 }
 
 export function TopBar({
-  projects, activeProjectId, activeProjectName, activeProjectCount,
-  onSelectProject, onAddProject,
+  projects, activeProjectId, activeProjectName, activeProjectEmoji, activeProjectColor, activeProjectCount,
+  onSelectProject, onCreateProject, onOpenSettings,
   insightsOn, onToggleInsights, onNewItem,
 }: TopBarProps) {
   const { t } = useTranslation();
   return (
     <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="px-8 py-4 flex items-center gap-6">
-        {/* Logo */}
         <div className="flex items-baseline gap-1.5 select-none">
           <span className="font-serif text-2xl font-semibold tracking-tight" style={{ fontVariationSettings: '"opsz" 144' }}>Priority</span>
           <span className="font-serif italic text-xl text-muted-foreground font-light">OS</span>
         </div>
 
-        {/* Project switcher (replaces inline tabs) */}
-        <div className="ml-2">
+        <div className="ml-2 flex items-center gap-1.5">
           <ProjectSwitcher
             projects={projects}
             activeProjectId={activeProjectId}
             activeProjectName={activeProjectName}
+            activeProjectEmoji={activeProjectEmoji}
+            activeProjectColor={activeProjectColor}
             activeProjectCount={activeProjectCount}
             onSelect={onSelectProject}
-            onCreate={onAddProject}
+            onCreate={onCreateProject}
           />
+          {activeProjectId && (
+            <button
+              onClick={onOpenSettings}
+              title={t("projects.settings.gearTooltip")}
+              aria-label={t("projects.settings.gearTooltip")}
+              className="inline-flex items-center justify-center p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary ease-editorial transition-colors"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         <div className="ml-auto flex items-center gap-3">
