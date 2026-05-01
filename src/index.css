@@ -198,6 +198,29 @@
     color: hsl(var(--muted-foreground));
   }
 
+  /* Priority queue rows: editorial list, not cards.
+     Light mode keeps the prior accent treatment; dark mode uses a
+     much subtler tint so default rows are transparent and active/hover
+     rows don't read as stacked cards. */
+  .queue-row:hover {
+    background-color: hsl(var(--accent) / 0.6);
+  }
+  .queue-row-active,
+  .queue-row-active:hover {
+    background-color: hsl(var(--accent));
+  }
+  .dark .queue-row {
+    background-color: transparent;
+  }
+  .dark .queue-row:hover {
+    background-color: hsl(var(--sidebar-foreground) / 0.04);
+  }
+  .dark .queue-row-active,
+  .dark .queue-row-active:hover {
+    background-color: hsl(var(--sidebar-foreground) / 0.06);
+  }
+
+
   .grid-paper {
     background-image:
       linear-gradient(to right, hsl(var(--rule) / var(--paper-grid-alpha)) 1px, transparent 1px),
