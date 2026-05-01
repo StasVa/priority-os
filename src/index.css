@@ -61,6 +61,15 @@
     --paper: 48 33% 97%;
     --rule: 36 14% 78%;
 
+    /* Matrix + editorial emphasis */
+    --paper-grid-alpha: 0.35;
+    --matrix-grid-alpha: 0.4;
+    --matrix-midline-alpha: 1;
+    --matrix-label: 30 6% 38%;
+    --matrix-dot-alpha: 0.85;
+    --matrix-neutral-dot-alpha: 0.85;
+    --editorial-emphasis: 30 6% 38%;
+
     --sidebar-background: 48 30% 96%;
     --sidebar-foreground: 30 10% 12%;
     --sidebar-primary: 30 10% 12%;
@@ -106,22 +115,31 @@
     --win-strong: 145 40% 65%;
     --win-bg: 145 30% 15%;
 
-    --bet: 38 50% 60%;
-    --bet-strong: 38 55% 70%;
-    --bet-bg: 35 30% 16%;
+    --bet: 42 72% 62%;
+    --bet-strong: 42 78% 74%;
+    --bet-bg: 40 30% 18%;
 
     --drop: 5 45% 60%;
     --drop-strong: 5 50% 65%;
     --drop-bg: 5 30% 15%;
 
-    --neutral: 30 5% 50%;
-    --neutral-strong: 30 8% 65%;
-    --neutral-bg: 30 5% 16%;
+    --neutral: 28 4% 44%;
+    --neutral-strong: 30 6% 60%;
+    --neutral-bg: 28 4% 15%;
 
     /* Surfaces invert: ink (button bg) becomes cream, paper becomes warm-dark */
     --ink: 35 18% 95%;
     --paper: 30 8% 8%;
     --rule: 30 8% 26%;
+
+    /* Dark-mode readability tuning */
+    --paper-grid-alpha: 0.06;
+    --matrix-grid-alpha: 0.08;
+    --matrix-midline-alpha: 0.42;
+    --matrix-label: 35 12% 78%;
+    --matrix-dot-alpha: 0.92;
+    --matrix-neutral-dot-alpha: 0.7;
+    --editorial-emphasis: 35 14% 82%;
 
     /* Align sidebar with main background; vertical border separates them */
     --sidebar-background: 30 8% 8%;
@@ -134,12 +152,6 @@
     --sidebar-ring: 35 18% 70%;
   }
 
-  /* Soften the matrix grid pattern in dark mode — felt, not seen */
-  .dark .grid-paper {
-    background-image:
-      linear-gradient(to right, hsl(var(--rule) / 0.18) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--rule) / 0.18) 1px, transparent 1px);
-  }
 }
 
 @layer base {
@@ -188,8 +200,8 @@
 
   .grid-paper {
     background-image:
-      linear-gradient(to right, hsl(var(--rule) / 0.35) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--rule) / 0.35) 1px, transparent 1px);
+      linear-gradient(to right, hsl(var(--rule) / var(--paper-grid-alpha)) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--rule) / var(--paper-grid-alpha)) 1px, transparent 1px);
     background-size: 32px 32px;
   }
 
