@@ -173,24 +173,35 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
 
           {/* Tabs + Controls */}
           <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
-            <div className="inline-flex items-center rounded-full border border-border bg-card overflow-hidden">
-              {(["active", "done", "dropped"] as Tab[]).map((t2, idx) => {
-                const active = tab === t2;
-                return (
-                  <button
-                    key={t2}
-                    onClick={() => setTab(t2)}
-                    className={`relative px-4 py-2 font-serif text-sm ease-editorial transition-colors flex items-center gap-2
-                      ${active ? "bg-ink text-paper" : "text-muted-foreground hover:text-foreground"}
-                      ${idx > 0 ? "border-l border-border" : ""}`}
-                  >
-                    <span>{t(`all.tabs.${t2}`)}</span>
-                    <span className={`font-mono text-[10px] tabular-nums ${active ? "text-paper/70" : "text-muted-foreground/70"}`}>
-                      {counts[t2]}
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="inline-flex items-center gap-2">
+              <div className="inline-flex items-center rounded-full border border-border bg-card overflow-hidden">
+                {(["active", "done", "dropped"] as Tab[]).map((t2, idx) => {
+                  const active = tab === t2;
+                  const isActiveTab = t2 === "active";
+                  const level = focusLevelFor(counts.active);
+                  const badgeColor = isActiveTab && !active && level !== "normal"
+                    ? (level === "overloaded" ? "hsl(var(--drop-strong))" : "hsl(var(--bet-strong))")
+                    : undefined;
+                  return (
+                    <button
+                      key={t2}
+                      onClick={() => setTab(t2)}
+                      className={`relative px-4 py-2 font-serif text-sm ease-editorial transition-colors flex items-center gap-2
+                        ${active ? "bg-ink text-paper" : "text-muted-foreground hover:text-foreground"}
+                        ${idx > 0 ? "border-l border-border" : ""}`}
+                    >
+                      <span>{t(`all.tabs.${t2}`)}</span>
+                      <span
+                        className={`font-mono text-[10px] tabular-nums ${active ? "text-paper/70" : "text-muted-foreground/70"}`}
+                        style={badgeColor ? { color: badgeColor } : undefined}
+                      >
+                        {counts[t2]}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              {tab === "active" && <FocusWarning level={focusLevelFor(counts.active)} size="sm" />}
             </div>
 
             <div className="flex items-center gap-3">
