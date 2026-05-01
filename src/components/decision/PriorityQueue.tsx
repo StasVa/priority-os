@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import type { Item, LensId } from "@/lib/decision/types";
 import { TONE_CLASSES, compositeScore, recommendationKey, verdictForLens } from "@/lib/decision/logic";
 import { RefStack } from "./RefStack";
+import { FocusWarning, focusLevelFor } from "./FocusWarning";
 
 interface PriorityQueueProps {
   items: Item[];
