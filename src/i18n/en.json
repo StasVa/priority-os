@@ -199,5 +199,25 @@
     "invalid": "Not a valid URL",
     "count_one": "{{count}} reference",
     "count_other": "{{count}} references"
+  },
+  "welcome": {
+    "skip": "Skip",
+    "continue": "Continue",
+    "firstHint": "Add 2-3 more decisions to see priorities emerge. When you have a few items, switch lenses below for different angles.",
+    "step1": {
+      "heading": "What are you deciding on?",
+      "subhead": "One real decision you're sitting with right now.",
+      "placeholder": "e.g. Should I rewrite onboarding flow",
+      "examplesTitle": "Examples",
+      "example1": "Should I take this job offer",
+      "example2": "Should we hire a designer",
+      "example3": "Is it time to migrate the database"
+    },
+    "step2": {
+      "heading": "Rate it on six dimensions",
+      "subhead": "Don't overthink. Gut feeling is fine — you can change anything later.",
+      "back": "Back",
+      "addToWorkspace": "Add to my workspace"
+    }
   }
 }
