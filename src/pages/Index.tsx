@@ -112,7 +112,7 @@ const Index = () => {
 
 
   const activeLens = useMemo(() => LENSES.find(l => l.id === lens)!, [lens]);
-  const otherLenses = useMemo(() => LENSES.filter(l => l.id !== lens), [lens]);
+  
 
   const openNew = () => { setEditing(null); setEditorOpen(true); };
   const openEdit = (id: string) => {
