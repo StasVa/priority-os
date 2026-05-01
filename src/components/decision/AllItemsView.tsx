@@ -328,6 +328,12 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                               {it.status === "active" && (
                                 <>
                                   <button
+                                    onClick={() => doStatus(it.id, "in_progress")}
+                                    className="w-full text-left px-3 py-2 font-serif text-sm text-foreground/90 hover:bg-muted/50"
+                                  >
+                                    {t("all.actions.markInProgress")}
+                                  </button>
+                                  <button
                                     onClick={() => setConfirmFor({ id: it.id, status: "done" })}
                                     className="w-full text-left px-3 py-2 font-serif text-sm text-foreground/90 hover:bg-muted/50"
                                   >
@@ -341,7 +347,29 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                                   </button>
                                 </>
                               )}
-                              {it.status !== "active" && (
+                              {it.status === "in_progress" && (
+                                <>
+                                  <button
+                                    onClick={() => setConfirmFor({ id: it.id, status: "done" })}
+                                    className="w-full text-left px-3 py-2 font-serif text-sm text-foreground/90 hover:bg-muted/50"
+                                  >
+                                    {t("all.actions.markDone")}
+                                  </button>
+                                  <button
+                                    onClick={() => setConfirmFor({ id: it.id, status: "dropped" })}
+                                    className="w-full text-left px-3 py-2 font-serif text-sm text-foreground/90 hover:bg-muted/50"
+                                  >
+                                    {t("all.actions.markDropped")}
+                                  </button>
+                                  <button
+                                    onClick={() => doStatus(it.id, "active")}
+                                    className="w-full text-left px-3 py-2 font-serif text-sm text-foreground/90 hover:bg-muted/50"
+                                  >
+                                    {t("all.actions.restore")}
+                                  </button>
+                                </>
+                              )}
+                              {(it.status === "done" || it.status === "dropped") && (
                                 <button
                                   onClick={() => doStatus(it.id, "active")}
                                   className="w-full text-left px-3 py-2 font-serif text-sm text-foreground/90 hover:bg-muted/50"
