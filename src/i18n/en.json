@@ -26,7 +26,9 @@
     "addToContext": "Add to context",
     "cancel": "Cancel",
     "delete": "Delete item",
-    "close": "Close"
+    "close": "Close",
+    "markDone": "Mark done",
+    "drop": "Drop"
   },
   "matrix": {
     "empty": "No items in <0>{{name}}</0> yet.",
@@ -89,5 +91,56 @@
   "contexts": {
     "Startup": "Startup",
     "Personal": "Personal"
+  },
+  "all": {
+    "footer": "All items",
+    "viewAll": "View all",
+    "title": "All items in {{context}}",
+    "totalAndUpdated": "{{total}} total · last updated {{time}}",
+    "tabs": {
+      "active": "Active",
+      "done": "Done",
+      "dropped": "Dropped"
+    },
+    "countLabels": {
+      "active": "{{count}} active",
+      "done": "{{count}} done",
+      "dropped": "{{count}} dropped"
+    },
+    "sort": {
+      "label": "Sort",
+      "score": "Score",
+      "title": "Title",
+      "added": "Date added",
+      "resolved": "Date resolved"
+    },
+    "search": "Search items...",
+    "doneAt": "Done · {{date}}",
+    "droppedAt": "Dropped · {{date}}",
+    "empty": {
+      "active": "No active items. Add one from the main view.",
+      "done": "Nothing finished yet. Items you complete will appear here.",
+      "dropped": "Nothing dropped yet. The art of saying no comes with practice."
+    },
+    "actions": {
+      "edit": "Edit",
+      "markDone": "Mark as done",
+      "markDropped": "Mark as dropped",
+      "restore": "Restore to active",
+      "delete": "Delete"
+    }
+  },
+  "confirm": {
+    "doneTitle": "Mark this as done?",
+    "droppedTitle": "Drop this item?",
+    "notePlaceholder": "Add a note about the outcome (optional)",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "toast": {
+    "markedDone": "Marked as done",
+    "markedDropped": "Dropped",
+    "restored": "Restored to active",
+    "undo": "Undo"
   }
 }

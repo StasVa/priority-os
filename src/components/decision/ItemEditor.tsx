@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { Trash2, X } from "lucide-react";
-import type { Item } from "@/lib/decision/types";
+import type { Item, ItemStatus } from "@/lib/decision/types";
 import { compositeScore, recommendationKey } from "@/lib/decision/logic";
+import { StatusConfirm, statusToToastKey } from "@/components/decision/StatusConfirm";
 
 interface ItemEditorProps {
   open: boolean;
@@ -10,6 +12,7 @@ interface ItemEditorProps {
   onClose: () => void;
   onSave: (draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => void;
   onDelete?: (id: string) => void;
+  onSetStatus?: (id: string, status: ItemStatus, resolutionNote?: string) => void;
 }
 
 const SLIDER_KEYS: Array<keyof Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence" | "risk">> = [
@@ -19,18 +22,20 @@ const SLIDER_KEYS: Array<keyof Pick<Item, "impact" | "effort" | "importance" | "
 const empty = (): Item => ({
   id: "", title: "", note: "",
   impact: 5, effort: 5, importance: 5, satisfaction: 5, confidence: 5, risk: 3,
-  createdAt: 0, updatedAt: 0,
+  createdAt: 0, updatedAt: 0, status: "active",
 });
 
-export function ItemEditor({ open, initial, onClose, onSave, onDelete }: ItemEditorProps) {
+export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStatus }: ItemEditorProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState<Item>(empty());
+  const [confirming, setConfirming] = useState<null | "done" | "dropped">(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const isEdit = !!initial;
 
   useEffect(() => {
     if (open) {
       setDraft(initial ? { ...initial } : empty());
+      setConfirming(null);
       requestAnimationFrame(() => titleRef.current?.focus());
     }
   }, [open, initial]);
@@ -133,7 +138,7 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete }: ItemEdi
           </div>
         </div>
 
-        <div className="px-8 py-5 border-t border-border flex items-center gap-3">
+        <div className="px-8 py-5 border-t border-border flex items-center gap-3 relative">
           {isEdit && onDelete && (
             <button
               onClick={() => { onDelete(draft.id); onClose(); }}
@@ -142,6 +147,42 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete }: ItemEdi
             >
               <Trash2 className="w-4 h-4" />
             </button>
+          )}
+          {isEdit && onSetStatus && draft.status === "active" && (
+            <div className="flex items-center gap-2 relative">
+              <button
+                onClick={() => setConfirming(c => c === "done" ? null : "done")}
+                className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--win))] ease-editorial transition-colors"
+              >
+                {t("editor.markDone")}
+              </button>
+              <button
+                onClick={() => setConfirming(c => c === "dropped" ? null : "dropped")}
+                className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--drop))] ease-editorial transition-colors"
+              >
+                {t("editor.drop")}
+              </button>
+              {confirming && (
+                <div className="absolute bottom-full left-0 mb-2">
+                  <StatusConfirm
+                    status={confirming}
+                    align="left"
+                    onCancel={() => setConfirming(null)}
+                    onConfirm={(note) => {
+                      const id = draft.id;
+                      const status = confirming;
+                      onSetStatus(id, status, note || undefined);
+                      setConfirming(null);
+                      onClose();
+                      toast(t(`toast.${statusToToastKey(status)}`), {
+                        action: { label: t("toast.undo"), onClick: () => onSetStatus(id, "active") },
+                        duration: 5000,
+                      });
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           )}
           <div className="ml-auto flex items-center gap-2">
             <button

@@ -9,18 +9,21 @@ interface PriorityQueueProps {
   onHover: (id: string | null) => void;
   onSelect: (id: string) => void;
   insightsOn: boolean;
+  counts: { active: number; done: number; dropped: number };
+  onViewAll: () => void;
 }
 
-export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insightsOn }: PriorityQueueProps) {
+export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insightsOn, counts, onViewAll }: PriorityQueueProps) {
   const { t } = useTranslation();
   const ranked = [...items]
     .map(it => ({ it, score: compositeScore(it), tone: verdictForLens(it, lens) }))
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 6);
 
   const top3 = ranked.slice(0, 3);
 
   return (
-    <aside className="border-l border-border bg-sidebar h-full overflow-y-auto">
+    <aside className="border-l border-border bg-sidebar h-full overflow-y-auto flex flex-col">
       <div className="px-6 py-5 border-b border-border">
         <div className="label-mono">{t("queue.title")}</div>
       </div>
@@ -76,6 +79,39 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
           </ul>
         </div>
       )}
+
+      {/* All items footer */}
+      <div className="mt-auto border-t border-border px-6 pt-4 pb-5">
+        <div className="pb-2 mb-3 border-b border-stone-200 font-mono text-[10px] uppercase tracking-[0.18em] text-stone-400">
+          {t("all.footer")}
+        </div>
+        <ul className="space-y-2 mb-3">
+          <li className="flex items-center gap-2.5">
+            <span className="inline-block w-2 h-2 rounded-full" style={{ background: "hsl(var(--win))" }} />
+            <span className="font-serif text-sm text-stone-700 tabular-nums">
+              {t("all.countLabels.active", { count: counts.active })}
+            </span>
+          </li>
+          <li className="flex items-center gap-2.5">
+            <span className="inline-block w-2 h-2 rounded-full bg-stone-500" />
+            <span className="font-serif text-sm text-stone-700 tabular-nums">
+              {t("all.countLabels.done", { count: counts.done })}
+            </span>
+          </li>
+          <li className="flex items-center gap-2.5">
+            <span className="inline-block w-2 h-2 rounded-full" style={{ background: "hsl(var(--drop) / 0.7)" }} />
+            <span className="font-serif text-sm text-stone-700 tabular-nums">
+              {t("all.countLabels.dropped", { count: counts.dropped })}
+            </span>
+          </li>
+        </ul>
+        <button
+          onClick={onViewAll}
+          className="w-full text-right font-serif italic text-sm text-stone-900 hover:underline ease-editorial transition-colors"
+        >
+          {t("all.viewAll")} →
+        </button>
+      </div>
     </aside>
   );
 }

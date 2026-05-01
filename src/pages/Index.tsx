@@ -5,27 +5,36 @@ import { LensSwitcher } from "@/components/decision/LensSwitcher";
 import { Matrix } from "@/components/decision/Matrix";
 import { PriorityQueue } from "@/components/decision/PriorityQueue";
 import { ItemEditor } from "@/components/decision/ItemEditor";
+import { AllItemsView } from "@/components/decision/AllItemsView";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import type { Item, LensId } from "@/lib/decision/types";
 import { LENSES } from "@/lib/decision/logic";
 
 const Index = () => {
   const { t } = useTranslation();
-  const { state, activeContext, setActiveContext, addContext, upsertItem, deleteItem } = useDecisionStore();
+  const { state, activeContext, setActiveContext, addContext, upsertItem, deleteItem, setItemStatus } = useDecisionStore();
 
   const [lens, setLens] = useState<LensId>("value-effort");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [insightsOn, setInsightsOn] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<Item | null>(null);
+  const [allOpen, setAllOpen] = useState(false);
 
-  const items = activeContext?.items ?? [];
+  const allItems = activeContext?.items ?? [];
+  const items = useMemo(() => allItems.filter(i => i.status === "active"), [allItems]);
+  const counts = useMemo(() => ({
+    active: allItems.filter(i => i.status === "active").length,
+    done: allItems.filter(i => i.status === "done").length,
+    dropped: allItems.filter(i => i.status === "dropped").length,
+  }), [allItems]);
+
   const activeLens = useMemo(() => LENSES.find(l => l.id === lens)!, [lens]);
   const otherLenses = useMemo(() => LENSES.filter(l => l.id !== lens), [lens]);
 
   const openNew = () => { setEditing(null); setEditorOpen(true); };
   const openEdit = (id: string) => {
-    const it = items.find(i => i.id === id);
+    const it = allItems.find(i => i.id === id);
     if (!it) return;
     setEditing(it);
     setEditorOpen(true);
@@ -36,9 +45,13 @@ const Index = () => {
     if (name) addContext(name);
   };
 
-  // Translate seed context names if they match known keys.
+  // Translate seed context names if they match known keys, and use only active count for badge.
   const translatedContexts = useMemo(
-    () => state.contexts.map(c => ({ ...c, name: t(`contexts.${c.name}`, { defaultValue: c.name }) })),
+    () => state.contexts.map(c => ({
+      ...c,
+      name: t(`contexts.${c.name}`, { defaultValue: c.name }),
+      items: c.items.filter(i => i.status === "active"),
+    })),
     [state.contexts, t],
   );
   const activeContextName = t(`contexts.${activeContext.name}`, { defaultValue: activeContext.name });
@@ -129,6 +142,8 @@ const Index = () => {
           onHover={setHoveredId}
           onSelect={openEdit}
           insightsOn={insightsOn}
+          counts={counts}
+          onViewAll={() => setAllOpen(true)}
         />
       </main>
 
@@ -137,6 +152,17 @@ const Index = () => {
         initial={editing}
         onClose={() => setEditorOpen(false)}
         onSave={upsertItem}
+        onDelete={deleteItem}
+        onSetStatus={setItemStatus}
+      />
+
+      <AllItemsView
+        open={allOpen}
+        onClose={() => setAllOpen(false)}
+        contextName={activeContextName}
+        items={allItems}
+        onEdit={openEdit}
+        onSetStatus={setItemStatus}
         onDelete={deleteItem}
       />
     </div>

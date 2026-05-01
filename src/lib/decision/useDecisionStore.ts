@@ -56,5 +56,28 @@ export function useDecisionStore() {
     }));
   }, []);
 
-  return { state, activeContext, setActiveContext, addContext, upsertItem, deleteItem };
+  const setItemStatus = useCallback((id: string, status: Item["status"], resolutionNote?: string) => {
+    setState(s => ({
+      ...s,
+      contexts: s.contexts.map(c => ({
+        ...c,
+        items: c.items.map(i => {
+          if (i.id !== id) return i;
+          if (status === "active") {
+            const { resolvedAt: _r, resolutionNote: _n, ...rest } = i;
+            return { ...rest, status: "active", updatedAt: Date.now() } as Item;
+          }
+          return {
+            ...i,
+            status,
+            resolvedAt: new Date().toISOString(),
+            resolutionNote: resolutionNote ?? i.resolutionNote,
+            updatedAt: Date.now(),
+          };
+        }),
+      })),
+    }));
+  }, []);
+
+  return { state, activeContext, setActiveContext, addContext, upsertItem, deleteItem, setItemStatus };
 }

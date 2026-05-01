@@ -16,6 +16,7 @@ function seed(): DecisionState {
     id: uid(), title, note,
     impact, effort, importance, satisfaction, confidence, risk,
     createdAt: now, updatedAt: now,
+    status: "active",
   });
 
   const startup: Item[] = [
@@ -52,6 +53,11 @@ export function loadState(): DecisionState {
     const parsed = JSON.parse(raw) as DecisionState;
     if (!parsed.contexts?.length) return seed();
     if (!parsed.history) parsed.history = {};
+    // Migrate: ensure every item has status
+    parsed.contexts = parsed.contexts.map(c => ({
+      ...c,
+      items: c.items.map(i => i.status ? i : { ...i, status: "active" as const }),
+    }));
     return parsed;
   } catch {
     return seed();
