@@ -6,7 +6,7 @@ function uid(): string {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 }
 
-function seed(): DecisionState {
+export function seed(): DecisionState {
   const now = Date.now();
   const mk = (
     title: string,
@@ -42,12 +42,43 @@ function seed(): DecisionState {
   };
 }
 
+export function emptySeed(): DecisionState {
+  const contexts = [
+    { id: uid(), name: "Startup",  items: [] },
+    { id: uid(), name: "Personal", items: [] },
+  ];
+  return {
+    version: 1,
+    contexts,
+    activeContextId: contexts[0].id,
+    history: {},
+  };
+}
+
+const ONBOARDED_KEY = "priority-os.onboarded";
+
+export function isFirstVisit(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(ONBOARDED_KEY) !== "true"
+      && localStorage.getItem(STORAGE_KEY) === null;
+  } catch { return false; }
+}
+
+export function markOnboarded() {
+  try { localStorage.setItem(ONBOARDED_KEY, "true"); } catch { /* ignore */ }
+}
+
 export function loadState(): DecisionState {
   if (typeof window === "undefined") return seed();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      const s = seed();
+      // First visit: if onboarding hasn't been completed, start empty so the
+      // welcome flow can populate the workspace with the user's own first item.
+      // Otherwise (or once onboarded), use the demo seed.
+      const onboarded = localStorage.getItem(ONBOARDED_KEY) === "true";
+      const s = onboarded ? seed() : emptySeed();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
       return s;
     }
