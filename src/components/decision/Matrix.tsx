@@ -431,8 +431,9 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
              style={{ cursor: "pointer" }}
           >
             {hovered && (
-              <circle cx={n.cx} cy={n.cy} r={n.r + 8} fill="none"
-                stroke={toneHsl(n.tone)} strokeOpacity={0.35} strokeWidth={2}
+              <circle cx={n.cx} cy={n.cy} r={n.r + 10} fill="none"
+                stroke={toneHsl(n.tone)} strokeOpacity={0.55} strokeWidth={1.25}
+                strokeDasharray="3 3"
                 style={{ transition: "all 280ms cubic-bezier(0.22, 0.61, 0.36, 1)" }}
               />
             )}
