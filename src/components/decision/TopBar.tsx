@@ -20,7 +20,7 @@ export function TopBar({
       <div className="px-8 py-4 flex items-center gap-6">
         {/* Logo */}
         <div className="flex items-baseline gap-1.5 select-none">
-          <span className="font-serif text-2xl font-semibold tracking-tight" style={{ fontVariationSettings: '"opsz" 144' }}>Decision</span>
+          <span className="font-serif text-2xl font-semibold tracking-tight" style={{ fontVariationSettings: '"opsz" 144' }}>Priority</span>
           <span className="font-serif italic text-xl text-muted-foreground font-light">OS</span>
         </div>
 
