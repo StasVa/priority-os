@@ -64,7 +64,7 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
   return (
     <div className="fixed inset-0 z-50 flex">
       <div
-        className="absolute inset-0 bg-ink/30 backdrop-blur-[2px] animate-overlay-in"
+        className="absolute inset-0 bg-ink/30 dark:bg-black/60 backdrop-blur-[2px] animate-overlay-in"
         onClick={onClose}
         aria-hidden
       />
