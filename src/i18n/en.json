@@ -1,6 +1,6 @@
 {
   "brand": { "name": "Priority", "suffix": "OS" },
-  "theme": { "light": "Light", "dark": "Dark", "system": "System" },
+  "theme": { "light": "Light", "dark": "Dark" },
   "nav": {
     "newItem": "New item",
     "insights": "Insights",

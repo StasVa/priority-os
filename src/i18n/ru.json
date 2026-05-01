@@ -1,6 +1,6 @@
 {
   "brand": { "name": "Priority", "suffix": "OS" },
-  "theme": { "light": "Светлая", "dark": "Тёмная", "system": "Системная" },
+  "theme": { "light": "Светлая", "dark": "Тёмная" },
   "nav": {
     "newItem": "Новый пункт",
     "insights": "Инсайты",

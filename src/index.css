@@ -74,32 +74,32 @@
   .dark {
     /* Warm dark canvas — editorial reading mode */
     --background: 30 8% 8%;
-    --foreground: 35 15% 92%;
+    --foreground: 35 18% 95%;
 
     --card: 30 8% 11%;
-    --card-foreground: 35 15% 92%;
+    --card-foreground: 35 18% 95%;
 
     --popover: 30 8% 11%;
-    --popover-foreground: 35 15% 92%;
+    --popover-foreground: 35 18% 95%;
 
-    --primary: 35 15% 92%;
+    --primary: 35 18% 95%;
     --primary-foreground: 30 8% 8%;
 
     --secondary: 30 8% 14%;
-    --secondary-foreground: 35 15% 92%;
+    --secondary-foreground: 35 18% 95%;
 
     --muted: 30 8% 14%;
-    --muted-foreground: 30 8% 60%;
+    --muted-foreground: 30 10% 70%;
 
     --accent: 30 8% 16%;
-    --accent-foreground: 35 15% 92%;
+    --accent-foreground: 35 18% 95%;
 
     --destructive: 5 50% 50%;
-    --destructive-foreground: 35 15% 92%;
+    --destructive-foreground: 35 18% 95%;
 
     --border: 30 8% 18%;
     --input: 30 8% 18%;
-    --ring: 35 15% 65%;
+    --ring: 35 18% 70%;
 
     /* Verdict tones — desaturated for warm dark */
     --win: 145 25% 50%;
@@ -119,18 +119,18 @@
     --neutral-bg: 30 5% 16%;
 
     /* Surfaces invert: ink (button bg) becomes cream, paper becomes warm-dark */
-    --ink: 35 15% 92%;
+    --ink: 35 18% 95%;
     --paper: 30 8% 8%;
-    --rule: 30 8% 24%;
+    --rule: 30 8% 26%;
 
     --sidebar-background: 30 8% 9%;
-    --sidebar-foreground: 35 15% 92%;
-    --sidebar-primary: 35 15% 92%;
+    --sidebar-foreground: 35 18% 95%;
+    --sidebar-primary: 35 18% 95%;
     --sidebar-primary-foreground: 30 8% 8%;
     --sidebar-accent: 30 8% 14%;
-    --sidebar-accent-foreground: 35 15% 92%;
+    --sidebar-accent-foreground: 35 18% 95%;
     --sidebar-border: 30 8% 18%;
-    --sidebar-ring: 35 15% 65%;
+    --sidebar-ring: 35 18% 70%;
   }
 }
 

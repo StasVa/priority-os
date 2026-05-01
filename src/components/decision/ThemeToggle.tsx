@@ -1,11 +1,10 @@
-import { Moon, Monitor, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTheme, type ThemeMode } from "@/lib/useTheme";
 
 const OPTIONS: { id: ThemeMode; Icon: typeof Sun }[] = [
   { id: "light", Icon: Sun },
-  { id: "system", Icon: Monitor },
   { id: "dark", Icon: Moon },
 ];
 
