@@ -63,8 +63,9 @@ export function StatusConfirm({ status, onCancel, onConfirm, align = "right" }: 
   );
 }
 
-export function statusToToastKey(s: ItemStatus): "markedDone" | "markedDropped" | "restored" {
+export function statusToToastKey(s: ItemStatus): "markedDone" | "markedDropped" | "markedInProgress" | "restored" {
   if (s === "done") return "markedDone";
   if (s === "dropped") return "markedDropped";
+  if (s === "in_progress") return "markedInProgress";
   return "restored";
 }
