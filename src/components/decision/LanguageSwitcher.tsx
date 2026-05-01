@@ -1,4 +1,4 @@
-import { Check, Globe } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { SUPPORTED_LOCALES, type Locale } from "@/i18n";
 import {
@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const LANGUAGE_NAMES: Record<Locale, string> = {
   en: "English",
@@ -19,21 +20,27 @@ const LANGUAGE_NAMES: Record<Locale, string> = {
 const LANGUAGE_ORDER: Locale[] = ["en", "ru", "de", "fr", "es"];
 
 export function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const current = (i18n.resolvedLanguage?.slice(0, 2) ?? "en") as Locale;
   void SUPPORTED_LOCALES;
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          aria-label="Language"
-          className="inline-flex items-center justify-center p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary ease-editorial transition-colors"
-        >
-          <Globe className="w-4 h-4" />
-        </button>
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              aria-label={t("language.tooltip")}
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-foreground hover:bg-secondary ease-editorial transition-colors"
+            >
+              <span className="font-mono text-[12px] uppercase">{current}</span>
+              <ChevronDown className="w-3 h-3 text-muted-foreground" strokeWidth={2} />
+            </button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">{t("language.tooltip")}</TooltipContent>
+      </Tooltip>
       <DropdownMenuContent align="end" className="w-[180px]">
         {LANGUAGE_ORDER.map((lng) => {
           const isActive = current === lng;
