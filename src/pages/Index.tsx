@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { TopBar } from "@/components/decision/TopBar";
 import { LensSwitcher } from "@/components/decision/LensSwitcher";
@@ -7,13 +7,58 @@ import { PriorityQueue } from "@/components/decision/PriorityQueue";
 import { ItemEditor } from "@/components/decision/ItemEditor";
 import { AllItemsView } from "@/components/decision/AllItemsView";
 import { LensInsight } from "@/components/decision/LensInsight";
+import { WelcomeOnboarding } from "@/components/decision/WelcomeOnboarding";
+import { FirstHint } from "@/components/decision/FirstHint";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import type { Item, LensId } from "@/lib/decision/types";
 import { LENSES } from "@/lib/decision/logic";
+import { isFirstVisit, markOnboarded, seed as buildSeed } from "@/lib/decision/storage";
 
 const Index = () => {
   const { t } = useTranslation();
   const { state, activeContext, setActiveContext, addContext, upsertItem, deleteItem, setItemStatus } = useDecisionStore();
+
+  const [lens, setLens] = useState<LensId>("value-effort");
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [insightsOn, setInsightsOn] = useState(true);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editing, setEditing] = useState<Item | null>(null);
+  const [allOpen, setAllOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState<boolean>(() => isFirstVisit());
+
+  // Mark onboarded once we close the welcome flow
+  const completeWelcome = () => {
+    markOnboarded();
+    setWelcomeOpen(false);
+  };
+
+  const handleWelcomeSubmit = (draft: {
+    title: string;
+    impact: number; effort: number; importance: number;
+    satisfaction: number; confidence: number; risk: number;
+  }) => {
+    upsertItem({
+      id: undefined,
+      title: draft.title,
+      note: "",
+      impact: draft.impact, effort: draft.effort, importance: draft.importance,
+      satisfaction: draft.satisfaction, confidence: draft.confidence, risk: draft.risk,
+      status: "active", references: [],
+    });
+    completeWelcome();
+  };
+
+  const handleWelcomeSkip = () => {
+    // Load demo seed so the user has something to play with.
+    try {
+      const s = buildSeed();
+      localStorage.setItem("decision-os.v1", JSON.stringify(s));
+    } catch { /* ignore */ }
+    markOnboarded();
+    // Hard reload so the store rehydrates from the new seeded state.
+    window.location.reload();
+  };
+
 
   const [lens, setLens] = useState<LensId>("value-effort");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
