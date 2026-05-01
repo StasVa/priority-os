@@ -17,6 +17,10 @@ interface MatrixProps {
 const PAD = 28;
 const W = 1000;
 const H = 700;
+// Extra inset for the main matrix to make room for numeric tick labels
+// between the plot area and the existing rotated/baseline axis text.
+const TICK_INSET = 22;
+const TICK_VALUES = [0, 2, 4, 6, 8, 10];
 const CLUSTER_DIST = 6; // px distance threshold (in svg viewBox units)
 
 type Dot = { it: Item; cx: number; cy: number; r: number; tone: Tone; inProgress: boolean };
@@ -44,6 +48,11 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
   const w = isMini ? 500 : W;
   const h = isMini ? 350 : H;
   const pad = isMini ? 8 : PAD;
+  // Asymmetric insets for the main matrix to make room for numeric tick labels.
+  const padL = isMini ? pad : pad + TICK_INSET;
+  const padR = pad;
+  const padT = pad;
+  const padB = isMini ? pad : pad + TICK_INSET;
 
   // 1) Pixel positions for all items, clamped inside the matrix.
   const plot = useMemo<Dot[]>(() => {
@@ -51,18 +60,18 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       const { x, y } = lensCoords(it, lens);
       const r = isMini ? 4 + (it.confidence / 10) * 4 : 8 + (it.confidence / 10) * 12;
       const safe = r + 4;
-      const xMin = pad + safe;
-      const xMax = w - pad - safe;
-      const yMin = pad + safe;
-      const yMax = h - pad - safe;
-      const rawCx = pad + x * (w - pad * 2);
-      const rawCy = (h - pad) - y * (h - pad * 2);
+      const xMin = padL + safe;
+      const xMax = w - padR - safe;
+      const yMin = padT + safe;
+      const yMax = h - padB - safe;
+      const rawCx = padL + x * (w - padL - padR);
+      const rawCy = (h - padB) - y * (h - padT - padB);
       const cx = Math.max(xMin, Math.min(xMax, rawCx));
       const cy = Math.max(yMin, Math.min(yMax, rawCy));
       const tone = verdictForLens(it, lens);
       return { it, cx, cy, r, tone, inProgress: it.status === "in_progress" };
     });
-  }, [items, lens, w, h, pad, isMini]);
+  }, [items, lens, w, h, padL, padR, padT, padB, isMini]);
 
   // 2) Cluster dots within CLUSTER_DIST px of each other (Euclidean, against existing groups).
   const nodes = useMemo<MatrixNode[]>(() => {
@@ -122,10 +131,10 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     const charW = 7;
     const labelH = 14;
     const gap = 8;
-    const rightEdge = w - pad - 4;
-    const leftEdge = pad + 4;
-    const topEdge = pad + 4;
-    const bottomEdge = h - pad - 4;
+    const rightEdge = w - padR - 4;
+    const leftEdge = padL + 4;
+    const topEdge = padT + 4;
+    const bottomEdge = h - padB - 4;
 
     const computed: L[] = nodes.map(n => {
       const text = n.isCluster
@@ -163,7 +172,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       else placed.push(l.box);
     }
     return computed;
-  }, [nodes, showLabels, w, h, pad, t]);
+  }, [nodes, showLabels, w, h, padL, padR, padT, padB, t]);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const hoveredNode = (hoveredId && itemToNode.get(hoveredId)) || null;
@@ -312,41 +321,77 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       aria-label={`${t(`lenses.${def.id}`)} matrix`}
     >
       {/* Plot background */}
-      <rect x={pad} y={pad} width={w - pad * 2} height={h - pad * 2} fill="hsl(var(--paper))" />
+      <rect x={padL} y={padT} width={w - padL - padR} height={h - padT - padB} fill="hsl(var(--paper))" />
 
       {/* Grid */}
       <defs>
-          <pattern id={`grid-${lens}-${size}`} width={isMini ? 20 : 32} height={isMini ? 20 : 32} patternUnits="userSpaceOnUse">
+          <pattern id={`grid-${lens}-${size}`} width={isMini ? 20 : 32} height={isMini ? 20 : 32} patternUnits="userSpaceOnUse" x={padL} y={padT}>
             <path d={`M ${isMini ? 20 : 32} 0 L 0 0 0 ${isMini ? 20 : 32}`} fill="none" stroke="hsl(var(--rule) / var(--matrix-grid-alpha))" strokeWidth="1" />
         </pattern>
       </defs>
-      <rect x={pad} y={pad} width={w - pad * 2} height={h - pad * 2} fill={`url(#grid-${lens}-${size})`} />
+      <rect x={padL} y={padT} width={w - padL - padR} height={h - padT - padB} fill={`url(#grid-${lens}-${size})`} />
 
       {/* Quadrant midlines (dashed) */}
-      <line x1={pad + (w - pad * 2) / 2} y1={pad} x2={pad + (w - pad * 2) / 2} y2={h - pad}
+      <line x1={padL + (w - padL - padR) / 2} y1={padT} x2={padL + (w - padL - padR) / 2} y2={h - padB}
         stroke="hsl(var(--rule) / var(--matrix-midline-alpha))" strokeWidth="1" strokeDasharray="4 4" />
-      <line x1={pad} y1={pad + (h - pad * 2) / 2} x2={w - pad} y2={pad + (h - pad * 2) / 2}
+      <line x1={padL} y1={padT + (h - padT - padB) / 2} x2={w - padR} y2={padT + (h - padT - padB) / 2}
         stroke="hsl(var(--rule) / var(--matrix-midline-alpha))" strokeWidth="1" strokeDasharray="4 4" />
 
       {/* Axis frame (main only — previews use only dashed midlines) */}
-      {!isMini && <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1" />}
-      {!isMini && <line x1={pad} y1={pad} x2={pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1" />}
+      {!isMini && <line x1={padL} y1={h - padB} x2={w - padR} y2={h - padB} stroke="hsl(var(--ink))" strokeWidth="1" />}
+      {!isMini && <line x1={padL} y1={padT} x2={padL} y2={h - padB} stroke="hsl(var(--ink))" strokeWidth="1" />}
+
+      {/* Numeric ticks (main matrix only) */}
+      {!isMini && (
+        <g>
+          {/* X-axis ticks (bottom) — 0 on left, 10 on right (visual scale) */}
+          {TICK_VALUES.map(v => {
+            const tx = padL + (v / 10) * (w - padL - padR);
+            const ty = h - padB;
+            return (
+              <g key={`xt-${v}`}>
+                <line x1={tx} y1={ty} x2={tx} y2={ty + 4}
+                  stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeOpacity={0.6} />
+                <text x={tx} y={ty + 16} textAnchor="middle"
+                  style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, fill: "hsl(var(--muted-foreground))" }}>
+                  {v}
+                </text>
+              </g>
+            );
+          })}
+          {/* Y-axis ticks (left) — 0 at bottom, 10 at top */}
+          {TICK_VALUES.map(v => {
+            const tx = padL;
+            const ty = (h - padB) - (v / 10) * (h - padT - padB);
+            return (
+              <g key={`yt-${v}`}>
+                <line x1={tx - 4} y1={ty} x2={tx} y2={ty}
+                  stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeOpacity={0.6} />
+                <text x={tx - 6} y={ty + 3} textAnchor="end"
+                  style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, fill: "hsl(var(--muted-foreground))" }}>
+                  {v}
+                </text>
+              </g>
+            );
+          })}
+        </g>
+      )}
 
       {/* Quadrant labels */}
       {!isMini && (
         <g style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.18em", fill: "hsl(var(--matrix-label))" }}>
-          <text x={pad + 12} y={pad + 18}>{t(`quadrants.${def.quadrants.tl.key}`).toUpperCase()}</text>
-          <text x={w - pad - 12} y={pad + 18} textAnchor="end">{t(`quadrants.${def.quadrants.tr.key}`).toUpperCase()}</text>
-          <text x={pad + 12} y={h - pad - 10}>{t(`quadrants.${def.quadrants.bl.key}`).toUpperCase()}</text>
-          <text x={w - pad - 12} y={h - pad - 10} textAnchor="end">{t(`quadrants.${def.quadrants.br.key}`).toUpperCase()}</text>
+          <text x={padL + 12} y={padT + 18}>{t(`quadrants.${def.quadrants.tl.key}`).toUpperCase()}</text>
+          <text x={w - padR - 12} y={padT + 18} textAnchor="end">{t(`quadrants.${def.quadrants.tr.key}`).toUpperCase()}</text>
+          <text x={padL + 12} y={h - padB - 10}>{t(`quadrants.${def.quadrants.bl.key}`).toUpperCase()}</text>
+          <text x={w - padR - 12} y={h - padB - 10} textAnchor="end">{t(`quadrants.${def.quadrants.br.key}`).toUpperCase()}</text>
         </g>
       )}
 
       {/* Axis labels */}
       {!isMini && (
         <g style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.2em", fill: "hsl(var(--ink))", textTransform: "uppercase" }}>
-          <text x={pad + (w - pad * 2) / 2} y={h - 8} textAnchor="middle">{t("matrix.axis", { label: t(`axes.${def.xLabel}`) })}</text>
-          <text x={10} y={pad + (h - pad * 2) / 2} textAnchor="middle" transform={`rotate(-90, 10, ${pad + (h - pad * 2) / 2})`}>{t("matrix.axis", { label: t(`axes.${def.yLabel}`) })}</text>
+          <text x={padL + (w - padL - padR) / 2} y={h - 8} textAnchor="middle">{t("matrix.axis", { label: t(`axes.${def.xLabel}`) })}</text>
+          <text x={10} y={padT + (h - padT - padB) / 2} textAnchor="middle" transform={`rotate(-90, 10, ${padT + (h - padT - padB) / 2})`}>{t("matrix.axis", { label: t(`axes.${def.yLabel}`) })}</text>
         </g>
       )}
 
