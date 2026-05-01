@@ -101,17 +101,17 @@
     --input: 30 8% 18%;
     --ring: 35 18% 70%;
 
-    /* Verdict tones — desaturated for warm dark */
-    --win: 145 25% 50%;
-    --win-strong: 145 30% 65%;
+    /* Verdict tones — desaturated but distinguishable in dark */
+    --win: 145 35% 55%;
+    --win-strong: 145 40% 65%;
     --win-bg: 145 30% 15%;
 
-    --bet: 35 35% 55%;
-    --bet-strong: 35 40% 65%;
+    --bet: 38 50% 60%;
+    --bet-strong: 38 55% 70%;
     --bet-bg: 35 30% 16%;
 
-    --drop: 5 35% 55%;
-    --drop-strong: 5 40% 65%;
+    --drop: 5 45% 60%;
+    --drop-strong: 5 50% 65%;
     --drop-bg: 5 30% 15%;
 
     --neutral: 30 5% 50%;
@@ -123,7 +123,8 @@
     --paper: 30 8% 8%;
     --rule: 30 8% 26%;
 
-    --sidebar-background: 30 8% 9%;
+    /* Align sidebar with main background; vertical border separates them */
+    --sidebar-background: 30 8% 8%;
     --sidebar-foreground: 35 18% 95%;
     --sidebar-primary: 35 18% 95%;
     --sidebar-primary-foreground: 30 8% 8%;
@@ -131,6 +132,13 @@
     --sidebar-accent-foreground: 35 18% 95%;
     --sidebar-border: 30 8% 18%;
     --sidebar-ring: 35 18% 70%;
+  }
+
+  /* Soften the matrix grid pattern in dark mode — felt, not seen */
+  .dark .grid-paper {
+    background-image:
+      linear-gradient(to right, hsl(var(--rule) / 0.18) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--rule) / 0.18) 1px, transparent 1px);
   }
 }
 
