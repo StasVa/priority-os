@@ -109,6 +109,15 @@
       "done": "{{count}} завершённых",
       "dropped": "{{count}} отброшенных"
     },
+    "shortLabels": {
+      "active": "активных",
+      "done": "завершённых",
+      "dropped": "отброшенных"
+    },
+    "viewAllItems_one": "Посмотреть все {{count}} пункт",
+    "viewAllItems_few": "Посмотреть все {{count}} пункта",
+    "viewAllItems_many": "Посмотреть все {{count}} пунктов",
+    "viewAllItems_other": "Посмотреть все {{count}} пункта",
     "sort": {
       "label": "Сортировка",
       "score": "По оценке",
