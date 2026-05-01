@@ -191,7 +191,7 @@ const Index = () => {
             <LensInsight items={items} lens={lens} onSelectItem={openEdit} />
           )}
 
-          <article className="border border-border rounded-lg bg-card overflow-hidden grid-paper">
+          <article ref={matrixCardRef} className="border border-border rounded-lg bg-card overflow-hidden grid-paper">
             <header className="px-6 py-4 border-b border-border flex items-baseline justify-between bg-card">
               <h1 className="font-serif text-2xl leading-none" style={{ fontVariationSettings: '"opsz" 144' }}>
                 {t(`lenses.${activeLens.id}`)}
