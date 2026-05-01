@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import type { Item, LensId } from "@/lib/decision/types";
 import { TONE_CLASSES, compositeScore, recommendationKey, verdictForLens } from "@/lib/decision/logic";
 import { RefStack } from "./RefStack";
+import { FocusWarning, focusLevelFor } from "./FocusWarning";
 
 interface PriorityQueueProps {
   items: Item[];
@@ -77,8 +78,20 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
       {/* All items block — primary navigation, not a footer */}
       {showAllBlock && (
         <div className="border-t border-b border-border bg-muted/50 px-5 py-4">
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2 mb-3">
-            <CounterPair color="hsl(var(--win))" count={counts.active} label={t("all.shortLabels.active")} />
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3">
+            <CounterPair
+              color="hsl(var(--win))"
+              count={counts.active}
+              label={t("all.shortLabels.active")}
+              countColor={
+                focusLevelFor(counts.active) === "overloaded"
+                  ? "hsl(var(--drop-strong))"
+                  : focusLevelFor(counts.active) === "soft"
+                    ? "hsl(var(--bet-strong))"
+                    : undefined
+              }
+            />
+            <FocusWarning level={focusLevelFor(counts.active)} onViewAll={onViewAll} size="sm" />
             <span className="text-muted-foreground/50" aria-hidden>·</span>
             <CounterPair color="hsl(var(--neutral))" count={counts.done} label={t("all.shortLabels.done")} />
             <span className="text-muted-foreground/50" aria-hidden>·</span>
@@ -113,11 +126,11 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
   );
 }
 
-function CounterPair({ color, count, label }: { color: string; count: number; label: string }) {
+function CounterPair({ color, count, label, countColor }: { color: string; count: number; label: string; countColor?: string }) {
   return (
     <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
       <span className="inline-block w-2 h-2 rounded-full self-center" style={{ background: color }} />
-      <span className="font-mono text-sm tabular-nums text-foreground">{count}</span>
+      <span className="font-mono text-sm tabular-nums" style={{ color: countColor ?? "hsl(var(--foreground))" }}>{count}</span>
       <span className="font-serif text-[13px] text-muted-foreground">{label}</span>
     </span>
   );
