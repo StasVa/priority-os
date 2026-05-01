@@ -5,8 +5,22 @@
     "newItem": "New item",
     "insights": "Insights",
     "lens": "Lens",
-    "addContext": "Add context",
-    "contextNamePrompt": "Context name?"
+    "addProject": "Add project"
+  },
+  "projects": {
+    "switcher": {
+      "placeholder": "Search projects..."
+    },
+    "section": {
+      "recent": "Recent",
+      "all": "All projects"
+    },
+    "newProject": "New project",
+    "namePrompt": "Project name?",
+    "empty": "No projects yet.",
+    "Startup": "Startup",
+    "Personal": "Personal",
+    "My decisions": "My decisions"
   },
   "queue": {
     "title": "Priority queue",
@@ -21,14 +35,14 @@
     "editItem": "Edit item",
     "titlePlaceholder": "What are you deciding on?",
     "noteLabel": "Note",
-    "notePlaceholder": "Context, hypothesis, why now…",
+    "notePlaceholder": "Background, hypothesis, why now…",
     "whyLabel": "Why?",
     "whySubtitle": "Why is this worth deciding about?",
     "whyPlaceholder": "What's the intuition? What changes if we do this?",
     "whyTooLong": "Long reasoning often signals you're describing the work, not the why. Try shortening.",
     "compositeScore": "Composite score",
     "saveChanges": "Save changes",
-    "addToContext": "Add to context",
+    "addToProject": "Add to project",
     "cancel": "Cancel",
     "delete": "Delete item",
     "close": "Close",
@@ -127,12 +141,7 @@
     "highEffortThinPayoff": "High effort, thin payoff — consider dropping.",
     "riskyUncertain": "Risky and uncertain — break into a smaller test.",
     "bigBet": "Big bet — worth it if you can stomach the cost.",
-    "averageSignal": "Average signal — revisit when context changes."
-  },
-  "contexts": {
-    "Startup": "Startup",
-    "Personal": "Personal",
-    "My decisions": "My decisions"
+    "averageSignal": "Average signal — revisit when conditions change."
   },
   "all": {
     "footer": "All items",
@@ -231,7 +240,7 @@
     },
     "step2": {
       "heading": "Where does this decision belong?",
-      "subhead": "Group decisions by life area. You can add more areas later.",
+      "subhead": "Group decisions by project. You can add more projects later.",
       "placeholder": "e.g. Career, Investments, Personal...",
       "examplesTitle": "Examples",
       "example1": "Work",
@@ -250,13 +259,13 @@
   },
   "limits": {
     "toast": {
-      "soft": "This context is past active focus. Decisions lose sharpness when there are too many.",
-      "overloaded": "This context is overloaded. Consider closing or dropping items to bring focus back."
+      "soft": "This project is past active focus. Decisions lose sharpness when there are too many.",
+      "overloaded": "This project is overloaded. Consider closing or dropping items to bring focus back."
     },
     "popover": {
-      "title": "Contexts thrive at 5–15 items",
+      "title": "Projects thrive at 5–15 items",
       "softBody": "Beyond 15 active items, decisions get crowded and the matrix becomes noisy. Try closing or dropping a few to restore focus.",
-      "overloadedBody": "This context is significantly past its useful range. Strongly consider closing or dropping items — too many active decisions defeat the purpose of prioritization.",
+      "overloadedBody": "This project is significantly past its useful range. Strongly consider closing or dropping items — too many active decisions defeat the purpose of prioritization.",
       "viewAll": "View all items"
     }
   }
