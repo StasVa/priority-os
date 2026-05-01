@@ -267,7 +267,7 @@ function ScoreBlock({ score, recText }: ScoreBlockProps) {
           </span>
         </div>
         <p
-          className="font-serif italic text-muted-foreground dark:text-[hsl(35_12%_80%)] mt-2.5 transition-opacity duration-150"
+          className="font-serif italic text-muted-foreground dark:text-[hsl(var(--editorial-emphasis))] mt-2.5 transition-opacity duration-150"
           style={{ fontSize: 14, lineHeight: 1.5, opacity: recVisible ? 1 : 0 }}
         >
           {recDisplay}
