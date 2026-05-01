@@ -103,17 +103,17 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
 
       {/* Grid */}
       <defs>
-        <pattern id={`grid-${lens}-${size}`} width={isMini ? 20 : 32} height={isMini ? 20 : 32} patternUnits="userSpaceOnUse">
-          <path d={`M ${isMini ? 20 : 32} 0 L 0 0 0 ${isMini ? 20 : 32}`} fill="none" stroke="hsl(var(--rule) / 0.4)" strokeWidth="1" />
+          <pattern id={`grid-${lens}-${size}`} width={isMini ? 20 : 32} height={isMini ? 20 : 32} patternUnits="userSpaceOnUse">
+            <path d={`M ${isMini ? 20 : 32} 0 L 0 0 0 ${isMini ? 20 : 32}`} fill="none" stroke="hsl(var(--rule) / var(--matrix-grid-alpha))" strokeWidth="1" />
         </pattern>
       </defs>
       <rect x={pad} y={pad} width={w - pad * 2} height={h - pad * 2} fill={`url(#grid-${lens}-${size})`} />
 
       {/* Quadrant midlines (dashed) */}
       <line x1={pad + (w - pad * 2) / 2} y1={pad} x2={pad + (w - pad * 2) / 2} y2={h - pad}
-        stroke="hsl(var(--rule))" strokeWidth="1" strokeDasharray="4 4" />
+        stroke="hsl(var(--rule) / var(--matrix-midline-alpha))" strokeWidth="1" strokeDasharray="4 4" />
       <line x1={pad} y1={pad + (h - pad * 2) / 2} x2={w - pad} y2={pad + (h - pad * 2) / 2}
-        stroke="hsl(var(--rule))" strokeWidth="1" strokeDasharray="4 4" />
+        stroke="hsl(var(--rule) / var(--matrix-midline-alpha))" strokeWidth="1" strokeDasharray="4 4" />
 
       {/* Axis frame (no arrowheads) */}
       <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="hsl(var(--ink))" strokeWidth="1" />
@@ -121,7 +121,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
 
       {/* Quadrant labels */}
       {!isMini && (
-        <g style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.18em", fill: "hsl(var(--muted-foreground))" }}>
+        <g style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.18em", fill: "hsl(var(--matrix-label))" }}>
           <text x={pad + 12} y={pad + 18}>{t(`quadrants.${def.quadrants.tl.key}`).toUpperCase()}</text>
           <text x={w - pad - 12} y={pad + 18} textAnchor="end">{t(`quadrants.${def.quadrants.tr.key}`).toUpperCase()}</text>
           <text x={pad + 12} y={h - pad - 10}>{t(`quadrants.${def.quadrants.bl.key}`).toUpperCase()}</text>
@@ -151,6 +151,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       {/* Dots */}
       {plot.map(({ it, cx, cy, r, tone }) => {
         const hovered = hoveredId === it.id;
+        const fillOpacity = hovered ? 1 : tone === "neutral" ? "var(--matrix-neutral-dot-alpha)" : "var(--matrix-dot-alpha)";
         return (
           <g key={it.id}
              onMouseEnter={() => onHover(it.id)}
@@ -165,7 +166,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
               />
             )}
             <circle cx={cx} cy={cy} r={r}
-              fill={toneHsl(tone)} fillOpacity={hovered ? 1 : 0.85}
+              fill={toneHsl(tone)} fillOpacity={fillOpacity}
               stroke="hsl(var(--paper))" strokeWidth={1.5}
               style={{ transition: "all 280ms cubic-bezier(0.22, 0.61, 0.36, 1)" }}
             />
