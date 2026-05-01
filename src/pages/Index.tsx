@@ -72,6 +72,44 @@ const Index = () => {
     dropped: allItems.filter(i => i.status === "dropped").length,
   }), [allItems]);
 
+  // Soft warning toasts when crossing focus thresholds (15→16 and 25→26).
+  // Per-context flags persisted in localStorage; reset when count drops back below threshold.
+  const prevActiveRef = useRef<number | null>(null);
+  useEffect(() => {
+    const ctxId = activeContext?.id;
+    if (!ctxId) { prevActiveRef.current = counts.active; return; }
+    const prev = prevActiveRef.current;
+    prevActiveRef.current = counts.active;
+
+    const softKey = `priority-os.warned.${ctxId}`;
+    const overKey = `priority-os.warned26.${ctxId}`;
+
+    // Reset flags when count drops back below the line.
+    if (counts.active < 16 && localStorage.getItem(softKey)) {
+      localStorage.removeItem(softKey);
+    }
+    if (counts.active < 26 && localStorage.getItem(overKey)) {
+      localStorage.removeItem(overKey);
+    }
+
+    if (prev === null) return; // first run after mount/context-switch — don't fire
+
+    if (prev <= 15 && counts.active >= 16 && !localStorage.getItem(softKey)) {
+      toast(t("limits.toast.soft"), { duration: 6000 });
+      localStorage.setItem(softKey, "true");
+    }
+    if (prev <= 25 && counts.active >= 26 && !localStorage.getItem(overKey)) {
+      toast(t("limits.toast.overloaded"), { duration: 6000 });
+      localStorage.setItem(overKey, "true");
+    }
+  }, [counts.active, activeContext?.id, t]);
+
+  // Reset prev counter when switching contexts so we don't false-fire across contexts.
+  useEffect(() => {
+    prevActiveRef.current = null;
+  }, [activeContext?.id]);
+
+
   const activeLens = useMemo(() => LENSES.find(l => l.id === lens)!, [lens]);
   const otherLenses = useMemo(() => LENSES.filter(l => l.id !== lens), [lens]);
 
