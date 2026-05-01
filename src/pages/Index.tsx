@@ -202,6 +202,7 @@ const Index = () => {
         onSave={upsertItem}
         onDelete={deleteItem}
         onSetStatus={setItemStatus}
+        contextItems={allItems}
       />
 
       <AllItemsView

@@ -6,6 +6,7 @@ import type { Item, ItemStatus, Reference } from "@/lib/decision/types";
 import { compositeScore, recommendationKey } from "@/lib/decision/logic";
 import { statusToToastKey } from "@/components/decision/StatusConfirm";
 import { ReferenceList } from "@/components/decision/ReferenceList";
+import { PositionAcrossLenses } from "@/components/decision/PositionAcrossLenses";
 
 interface ItemEditorProps {
   open: boolean;
@@ -14,6 +15,7 @@ interface ItemEditorProps {
   onSave: (draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => void;
   onDelete?: (id: string) => void;
   onSetStatus?: (id: string, status: ItemStatus, resolutionNote?: string) => void;
+  contextItems?: Item[];
 }
 
 const SLIDER_KEYS: Array<keyof Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence" | "risk">> = [
@@ -26,7 +28,7 @@ const empty = (): Item => ({
   createdAt: 0, updatedAt: 0, status: "active", references: [],
 });
 
-export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStatus }: ItemEditorProps) {
+export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStatus, contextItems = [] }: ItemEditorProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState<Item>(empty());
   const [confirming, setConfirming] = useState<null | "done" | "dropped">(null);
@@ -126,6 +128,13 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
           </div>
 
           <ScoreBlock score={score} recText={t(`recommendations.${recKey}`)} />
+
+          <PositionAcrossLenses
+            draft={draft}
+            contextItems={contextItems}
+            t={t}
+            sectionLabel={t("editor.positionAcrossLenses")}
+          />
         </div>
 
         {confirming ? (
