@@ -92,16 +92,10 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
             />
           </div>
 
-          <div>
-            <label className="label-mono block mb-2">{t("editor.noteLabel")}</label>
-            <textarea
-              value={draft.note ?? ""}
-              onChange={(e) => setDraft(d => ({ ...d, note: e.target.value }))}
-              rows={2}
-              placeholder={t("editor.notePlaceholder")}
-              className="w-full bg-transparent border border-border rounded px-3 py-2 font-serif text-sm focus:border-foreground outline-none ease-editorial transition-colors resize-none"
-            />
-          </div>
+          <WhyField
+            value={draft.note ?? ""}
+            onChange={(v) => setDraft(d => ({ ...d, note: v }))}
+          />
 
           <ReferenceList
             references={draft.references ?? []}
