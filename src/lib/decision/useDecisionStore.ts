@@ -22,8 +22,9 @@ export function useDecisionStore() {
     }));
   }, []);
 
-  const addProject = useCallback((name: string): string => {
+  const addProject = useCallback((name: string, opts?: Partial<Pick<Project, "emoji" | "description" | "color">>): string => {
     const id = newId();
+    const now = Date.now();
     setState(s => ({
       ...s,
       projects: [
@@ -33,13 +34,69 @@ export function useDecisionStore() {
           name,
           items: [],
           isFavorite: false,
-          lastAccessedAt: Date.now(),
+          lastAccessedAt: now,
+          createdAt: now,
           visibility: "private",
+          emoji: opts?.emoji,
+          description: opts?.description,
+          color: opts?.color,
         },
       ],
       activeProjectId: id,
     }));
     return id;
+  }, []);
+
+  const updateProject = useCallback((id: string, patch: Partial<Project>) => {
+    setState(s => ({
+      ...s,
+      projects: s.projects.map(p => p.id === id ? { ...p, ...patch } : p),
+    }));
+  }, []);
+
+  const deleteProject = useCallback((id: string) => {
+    setState(s => {
+      const remaining = s.projects.filter(p => p.id !== id);
+      const activeStillThere = remaining.some(p => p.id === s.activeProjectId);
+      const nextActive = activeStillThere
+        ? s.activeProjectId
+        : ([...remaining].sort((a, b) => b.lastAccessedAt - a.lastAccessedAt)[0]?.id ?? "");
+      return { ...s, projects: remaining, activeProjectId: nextActive };
+    });
+  }, []);
+
+  const archiveProject = useCallback((id: string) => {
+    setState(s => {
+      const projects = s.projects.map(p =>
+        p.id === id ? { ...p, archivedAt: new Date().toISOString() } : p,
+      );
+      let activeId = s.activeProjectId;
+      if (activeId === id) {
+        const next = projects
+          .filter(p => p.id !== id && !p.archivedAt)
+          .sort((a, b) => b.lastAccessedAt - a.lastAccessedAt)[0];
+        activeId = next?.id ?? "";
+      }
+      return { ...s, projects, activeProjectId: activeId };
+    });
+  }, []);
+
+  const restoreProject = useCallback((id: string) => {
+    setState(s => ({
+      ...s,
+      projects: s.projects.map(p =>
+        p.id === id ? { ...p, archivedAt: undefined } : p,
+      ),
+    }));
+  }, []);
+
+  const toggleFavoriteProject = useCallback((id: string) => {
+    setState(s => ({
+      ...s,
+      projects: s.projects.map(p =>
+        p.id === id ? { ...p, isFavorite: !p.isFavorite } : p,
+      ),
+    }));
   }, []);
 
   const upsertItem = useCallback((draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => {
