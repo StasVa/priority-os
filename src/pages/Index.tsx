@@ -13,7 +13,7 @@ import { FirstHint } from "@/components/decision/FirstHint";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import type { Item, LensId } from "@/lib/decision/types";
 import { LENSES } from "@/lib/decision/logic";
-import { isFirstVisit, markOnboarded, seed as buildSeed } from "@/lib/decision/storage";
+import { isFirstVisit, markOnboarded, skipSeed } from "@/lib/decision/storage";
 
 const Index = () => {
   const { t } = useTranslation();
@@ -35,9 +35,11 @@ const Index = () => {
 
   const handleWelcomeSubmit = (draft: {
     title: string;
+    contextName: string;
     impact: number; effort: number; importance: number;
     satisfaction: number; confidence: number; risk: number;
   }) => {
+    addContext(draft.contextName);
     upsertItem({
       id: undefined,
       title: draft.title,
@@ -50,13 +52,12 @@ const Index = () => {
   };
 
   const handleWelcomeSkip = () => {
-    // Load demo seed so the user has something to play with.
     try {
-      const s = buildSeed();
+      const defaultName = t("contexts.My decisions", { defaultValue: "My decisions" });
+      const s = skipSeed(defaultName);
       localStorage.setItem("decision-os.v1", JSON.stringify(s));
     } catch { /* ignore */ }
     markOnboarded();
-    // Hard reload so the store rehydrates from the new seeded state.
     window.location.reload();
   };
 
@@ -135,7 +136,7 @@ const Index = () => {
     })),
     [state.contexts, t],
   );
-  const activeContextName = t(`contexts.${activeContext.name}`, { defaultValue: activeContext.name });
+  const activeContextName = activeContext ? t(`contexts.${activeContext.name}`, { defaultValue: activeContext.name }) : "";
 
   return (
     <div className="min-h-screen bg-background text-foreground">

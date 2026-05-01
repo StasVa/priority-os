@@ -52,15 +52,24 @@ export function seed(): DecisionState {
   };
 }
 
-export function emptySeed(): DecisionState {
-  const contexts = [
-    { id: uid(), name: "Startup",  items: [] },
-    { id: uid(), name: "Personal", items: [] },
-  ];
+// Demo seed used by the Skip flow: a single context populated with demo items.
+export function skipSeed(defaultContextName: string): DecisionState {
+  const full = seed();
+  const startupItems = full.contexts[0].items.slice(0, 6);
+  const ctxId = uid();
   return {
     version: 1,
-    contexts,
-    activeContextId: contexts[0].id,
+    contexts: [{ id: ctxId, name: defaultContextName, items: startupItems }],
+    activeContextId: ctxId,
+    history: {},
+  };
+}
+
+export function emptySeed(): DecisionState {
+  return {
+    version: 1,
+    contexts: [],
+    activeContextId: "",
     history: {},
   };
 }
@@ -93,7 +102,7 @@ export function loadState(): DecisionState {
       return s;
     }
     const parsed = JSON.parse(raw) as DecisionState;
-    if (!parsed.contexts?.length) return seed();
+    if (!parsed.contexts) parsed.contexts = [];
     if (!parsed.history) parsed.history = {};
     // Migrate: ensure every item has status + references
     parsed.contexts = parsed.contexts.map(c => ({

@@ -125,7 +125,8 @@
   },
   "contexts": {
     "Startup": "Startup",
-    "Personal": "Personal"
+    "Personal": "Personal",
+    "My decisions": "My decisions"
   },
   "all": {
     "footer": "All items",
@@ -215,6 +216,18 @@
       "example3": "Is it time to migrate the database"
     },
     "step2": {
+      "heading": "Where does this decision belong?",
+      "subhead": "Group decisions by life area. You can add more areas later.",
+      "placeholder": "e.g. Career, Investments, Personal...",
+      "examplesTitle": "Examples",
+      "example1": "Work",
+      "example2": "Startup",
+      "example3": "Personal",
+      "example4": "Investments",
+      "example5": "Health",
+      "example6": "Big purchases"
+    },
+    "step3": {
       "heading": "Rate it on six dimensions",
       "subhead": "Don't overthink. Gut feeling is fine — you can change anything later.",
       "back": "Back",
