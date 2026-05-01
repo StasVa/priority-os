@@ -4,8 +4,8 @@ export const LENSES: { id: LensId; name: string; xLabel: string; yLabel: string;
   {
     id: "value-effort",
     name: "Value vs Effort",
-    xLabel: "EFFORT  →  HIGH",
-    yLabel: "IMPACT  →  HIGH",
+    xLabel: "EFFORT",
+    yLabel: "IMPACT",
     xHint: "x: effort (low → high, inverted)",
     yHint: "y: impact",
     quadrants: {
@@ -18,8 +18,8 @@ export const LENSES: { id: LensId; name: string; xLabel: string; yLabel: string;
   {
     id: "importance-satisfaction",
     name: "Importance vs Satisfaction",
-    xLabel: "SATISFACTION  →  HIGH",
-    yLabel: "IMPORTANCE  →  HIGH",
+    xLabel: "SATISFACTION",
+    yLabel: "IMPORTANCE",
     xHint: "x: satisfaction (low → high, inverted)",
     yHint: "y: importance",
     quadrants: {
@@ -32,8 +32,8 @@ export const LENSES: { id: LensId; name: string; xLabel: string; yLabel: string;
   {
     id: "confidence-risk",
     name: "Confidence vs Risk",
-    xLabel: "RISK  →  HIGH",
-    yLabel: "CONFIDENCE  →  HIGH",
+    xLabel: "RISK",
+    yLabel: "CONFIDENCE",
     xHint: "x: risk (low → high, inverted)",
     yHint: "y: confidence",
     quadrants: {
