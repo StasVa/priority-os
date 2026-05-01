@@ -112,6 +112,10 @@ const Index = () => {
           </article>
 
           {items.length > 0 && (
+            <LensInsight items={items} lens={lens} onSelectItem={openEdit} />
+          )}
+
+          {items.length > 0 && (
             <div className="grid grid-cols-2 gap-6">
               {otherLenses.map(l => (
                 <article key={l.id} className="border border-border rounded-lg bg-card overflow-hidden ease-editorial transition-shadow hover:shadow-md">
