@@ -11,6 +11,7 @@ import { LensInsight } from "@/components/decision/LensInsight";
 import { WelcomeOnboarding } from "@/components/decision/WelcomeOnboarding";
 import { FirstHint } from "@/components/decision/FirstHint";
 import { ProjectSettingsDrawer } from "@/components/decision/ProjectSettingsDrawer";
+import { HelpDrawer } from "@/components/decision/HelpDrawer";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import type { Item, LensId, ProjectColor } from "@/lib/decision/types";
 import { autoEmojiForProject } from "@/lib/decision/projectEmoji";
@@ -140,6 +141,7 @@ const Index = () => {
   };
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const handleCreateProject = (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => {
     addProject(draft.name, {
@@ -178,6 +180,7 @@ const Index = () => {
         onSelectProject={setActiveProject}
         onCreateProject={handleCreateProject}
         onOpenSettings={() => setSettingsOpen(true)}
+        onOpenHelp={() => setHelpOpen(true)}
         insightsOn={insightsOn}
         onToggleInsights={() => setInsightsOn(v => !v)}
         onNewItem={openNew}
@@ -308,6 +311,8 @@ const Index = () => {
         onSubmit={handleWelcomeSubmit}
         onSkip={handleWelcomeSkip}
       />
+
+      <HelpDrawer open={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   );
 };

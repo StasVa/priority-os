@@ -265,7 +265,7 @@
   "welcome": {
     "skip": "Skip",
     "continue": "Continue",
-    "firstHint": "Tip: Click the ⚙ icon next to your project name to add an emoji, color, or description. Add 2-3 more decisions to see priorities emerge.",
+    "firstHint": "Tip: Click ? in the top bar if you're unsure what each parameter means. Add 2-3 more decisions to see priorities emerge.",
     "step1": {
       "heading": "What are you deciding on?",
       "subhead": "One real decision you're sitting with right now.",
@@ -304,6 +304,31 @@
       "softBody": "Beyond 15 active items, decisions get crowded and the matrix becomes noisy. Try closing or dropping a few to restore focus.",
       "overloadedBody": "This project is significantly past its useful range. Strongly consider closing or dropping items — too many active decisions defeat the purpose of prioritization.",
       "viewAll": "View all items"
+    }
+  },
+  "help": {
+    "tooltip": "Help",
+    "title": "Help",
+    "section": {
+      "dimensions": "Six dimensions",
+      "lenses": "Three lenses",
+      "matrix": "How to read the matrix"
+    },
+    "dimensions": {
+      "impact": { "term": "Impact", "def": "If it works, how much will it change things?" },
+      "effort": { "term": "Effort", "def": "Cost, time, complexity. What does it take?" },
+      "importance": { "term": "Importance", "def": "How critical is the underlying need?" },
+      "satisfaction": { "term": "Satisfaction", "def": "How well is that need met today?" },
+      "confidence": { "term": "Confidence", "def": "How sure are you about your estimates?" },
+      "risk": { "term": "Risk", "def": "What's the downside if it goes wrong?" }
+    },
+    "lenses": {
+      "valueEffort": { "term": "Value vs Effort", "def": "Where the return is highest per effort. What to do now." },
+      "importanceSatisfaction": { "term": "Importance vs Satisfaction", "def": "Where unmet needs live. Real opportunities." },
+      "confidenceRisk": { "term": "Confidence vs Risk", "def": "Where to validate before deciding. What you don't know yet." }
+    },
+    "matrix": {
+      "body": "Each dot is a decision. Color shows its verdict in the active lens — green for wins, amber for bets, red for drops, gray for the in-between. Bigger dots mean higher confidence. Multiple decisions in the same spot cluster into one with a count."
     }
   }
 }

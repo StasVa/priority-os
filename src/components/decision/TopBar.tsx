@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Plus, Settings } from "lucide-react";
+import { Eye, EyeOff, HelpCircle, Plus, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/decision/LanguageSwitcher";
 import { ThemeToggle } from "@/components/decision/ThemeToggle";
@@ -15,6 +15,7 @@ interface TopBarProps {
   onSelectProject: (id: string) => void;
   onCreateProject: (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => void;
   onOpenSettings: () => void;
+  onOpenHelp: () => void;
   insightsOn: boolean;
   onToggleInsights: () => void;
   onNewItem: () => void;
@@ -22,7 +23,7 @@ interface TopBarProps {
 
 export function TopBar({
   projects, activeProjectId, activeProjectName, activeProjectEmoji, activeProjectColor, activeProjectCount,
-  onSelectProject, onCreateProject, onOpenSettings,
+  onSelectProject, onCreateProject, onOpenSettings, onOpenHelp,
   insightsOn, onToggleInsights, onNewItem,
 }: TopBarProps) {
   const { t } = useTranslation();
@@ -76,6 +77,15 @@ export function TopBar({
           </button>
           <span className="w-px h-5 bg-border mx-1" aria-hidden />
           <LanguageSwitcher />
+          <span className="w-px h-5 bg-border mx-1" aria-hidden />
+          <button
+            onClick={onOpenHelp}
+            title={t("help.tooltip")}
+            aria-label={t("help.tooltip")}
+            className="inline-flex items-center justify-center p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary ease-editorial transition-colors"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </button>
           <span className="w-px h-5 bg-border mx-1" aria-hidden />
           <ThemeToggle />
         </div>
