@@ -265,7 +265,7 @@
   "welcome": {
     "skip": "Skip",
     "continue": "Continue",
-    "firstHint": "Add 2-3 more decisions to see priorities emerge. When you have a few items, switch lenses below for different angles.",
+    "firstHint": "Tip: Click the ⚙ icon next to your project name to add an emoji, color, or description. Add 2-3 more decisions to see priorities emerge.",
     "step1": {
       "heading": "What are you deciding on?",
       "subhead": "One real decision you're sitting with right now.",
@@ -276,16 +276,16 @@
       "example3": "Is it time to migrate the database"
     },
     "step2": {
-      "heading": "Where does this decision belong?",
-      "subhead": "Group decisions by project. You can add more projects later.",
-      "placeholder": "e.g. Career, Investments, Personal...",
+      "heading": "Name your project",
+      "subhead": "Group decisions by project. You can change this and add more later.",
+      "placeholder": "e.g. Startup, Personal, Investments...",
       "examplesTitle": "Examples",
-      "example1": "Work",
-      "example2": "Startup",
-      "example3": "Personal",
-      "example4": "Investments",
-      "example5": "Health",
-      "example6": "Big purchases"
+      "example1": "Startup",
+      "example2": "Personal",
+      "example3": "Investments",
+      "example4": "Health",
+      "example5": "Big purchases",
+      "example6": "Side project"
     },
     "step3": {
       "heading": "Rate it on six dimensions",
