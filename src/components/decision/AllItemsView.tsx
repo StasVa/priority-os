@@ -5,6 +5,7 @@ import { ChevronDown, MoreHorizontal, X } from "lucide-react";
 import type { Item, ItemStatus } from "@/lib/decision/types";
 import { TONE_CLASSES, compositeScore, verdictForLens } from "@/lib/decision/logic";
 import { StatusConfirm, statusToToastKey } from "@/components/decision/StatusConfirm";
+import { RefStack } from "@/components/decision/RefStack";
 
 interface AllItemsViewProps {
   open: boolean;
@@ -271,6 +272,9 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                             <span>CONF {it.confidence}</span>
                             <span>RISK {it.risk}</span>
                           </div>
+                        </div>
+                        <div className="pt-1.5" onClick={(e) => e.stopPropagation()}>
+                          <RefStack references={it.references ?? []} />
                         </div>
                         <div className={`font-mono text-sm tabular-nums pt-1 ${muted ? "text-stone-400" : "text-stone-700"}`} onClick={(e) => e.stopPropagation()}>
                           {score.toFixed(1)}
