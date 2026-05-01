@@ -133,9 +133,9 @@
     --rule: 30 8% 26%;
 
     /* Dark-mode readability tuning */
-    --paper-grid-alpha: 0.06;
-    --matrix-grid-alpha: 0.08;
-    --matrix-midline-alpha: 0.42;
+    --paper-grid-alpha: 0.035;
+    --matrix-grid-alpha: 0.045;
+    --matrix-midline-alpha: 0.34;
     --matrix-label: 35 12% 78%;
     --matrix-dot-alpha: 0.92;
     --matrix-neutral-dot-alpha: 0.7;
