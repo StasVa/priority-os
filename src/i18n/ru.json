@@ -126,6 +126,7 @@
     },
     "actions": {
       "edit": "Редактировать",
+      "editDetails": "Подробнее",
       "markDone": "Завершить",
       "markDropped": "Отбросить",
       "restore": "Вернуть в активные",

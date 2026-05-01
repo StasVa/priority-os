@@ -164,6 +164,7 @@ const Index = () => {
         onEdit={openEdit}
         onSetStatus={setItemStatus}
         onDelete={deleteItem}
+        onUpdateItem={upsertItem}
       />
     </div>
   );

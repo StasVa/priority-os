@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { MoreHorizontal, X } from "lucide-react";
+import { ChevronDown, MoreHorizontal, X } from "lucide-react";
 import type { Item, ItemStatus } from "@/lib/decision/types";
 import { TONE_CLASSES, compositeScore, verdictForLens } from "@/lib/decision/logic";
 import { StatusConfirm, statusToToastKey } from "@/components/decision/StatusConfirm";
@@ -14,6 +14,7 @@ interface AllItemsViewProps {
   onEdit: (id: string) => void;
   onSetStatus: (id: string, status: ItemStatus, note?: string) => void;
   onDelete: (id: string) => void;
+  onUpdateItem: (draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => void;
 }
 
 type Tab = "active" | "done" | "dropped";
@@ -43,7 +44,7 @@ function fmtDate(iso: string | undefined, locale: string): string {
   } catch { return ""; }
 }
 
-export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetStatus, onDelete }: AllItemsViewProps) {
+export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetStatus, onDelete, onUpdateItem }: AllItemsViewProps) {
   const { t, i18n } = useTranslation();
   const [closing, setClosing] = useState(false);
   const [tab, setTab] = useState<Tab>(() => {
@@ -53,6 +54,7 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
   const [sort, setSort] = useState<SortKey>("score");
   const [query, setQuery] = useState("");
   const [menuFor, setMenuFor] = useState<string | null>(null);
+  const [expandedFor, setExpandedFor] = useState<string | null>(null);
   const [confirmFor, setConfirmFor] = useState<{ id: string; status: "done" | "dropped" } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -230,109 +232,182 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                 return (
                   <li
                     key={it.id}
-                    onClick={() => onEdit(it.id)}
-                    className={`group relative px-2 py-4 cursor-pointer hover:bg-stone-50 ease-editorial transition-colors ${isDropped ? "opacity-70" : ""}`}
+                    className={`group relative ease-editorial transition-colors ${isDropped ? "opacity-70" : ""}`}
                   >
-                    {(isDone || isDropped) && (
-                      <div className="font-mono text-[10px] text-stone-400 mb-1 ml-10">
-                        {isDone
-                          ? t("all.doneAt", { date: fmtDate(it.resolvedAt, i18n.language) })
-                          : t("all.droppedAt", { date: fmtDate(it.resolvedAt, i18n.language) })}
-                      </div>
-                    )}
-                    <div className="flex items-start gap-4">
-                      <span className="font-mono text-[11px] text-stone-400 tabular-nums pt-1 w-6">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <div className={`font-serif text-[17px] leading-snug truncate ${muted ? "text-stone-500" : "text-stone-900"}`}>
-                          {it.title}
+                    <div
+                      onClick={() => setExpandedFor(prev => prev === it.id ? null : it.id)}
+                      className="px-2 py-4 cursor-pointer hover:bg-stone-50 ease-editorial transition-colors"
+                    >
+                      {(isDone || isDropped) && (
+                        <div className="font-mono text-[10px] text-stone-400 mb-1 ml-10">
+                          {isDone
+                            ? t("all.doneAt", { date: fmtDate(it.resolvedAt, i18n.language) })
+                            : t("all.droppedAt", { date: fmtDate(it.resolvedAt, i18n.language) })}
                         </div>
-                        <div className="mt-1.5 flex items-center gap-2">
-                          <span className={`inline-block text-[10px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded ${cls.bg} ${cls.text}`}>
-                            {t(`verdicts.${cls.verdictKey}`)}
-                          </span>
-                          {it.note && (
-                            <span className="font-serif italic text-sm text-stone-500 truncate">
-                              · {it.note.length > 80 ? it.note.slice(0, 80) + "…" : it.note}
+                      )}
+                      <div className="flex items-start gap-4">
+                        <span className="font-mono text-[11px] text-stone-400 tabular-nums pt-1 w-6">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className={`font-serif text-[17px] leading-snug truncate ${muted ? "text-stone-500" : "text-stone-900"}`}>
+                            {it.title}
+                          </div>
+                          <div className="mt-1.5 flex items-center gap-2">
+                            <span className={`inline-block text-[10px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded ${cls.bg} ${cls.text}`}>
+                              {t(`verdicts.${cls.verdictKey}`)}
                             </span>
-                          )}
+                            {it.note && (
+                              <span className="font-serif italic text-sm text-stone-500 truncate">
+                                · {it.note.length > 80 ? it.note.slice(0, 80) + "…" : it.note}
+                              </span>
+                            )}
+                          </div>
+                          <div className="mt-2 hidden group-hover:flex items-center gap-3 font-mono text-[10px] text-stone-500 uppercase tracking-wider">
+                            <span>IMPACT {it.impact}</span>
+                            <span>EFFORT {it.effort}</span>
+                            <span>IMP {it.importance}</span>
+                            <span>SAT {it.satisfaction}</span>
+                            <span>CONF {it.confidence}</span>
+                            <span>RISK {it.risk}</span>
+                          </div>
                         </div>
-                        <div className="mt-2 hidden group-hover:flex items-center gap-3 font-mono text-[10px] text-stone-500 uppercase tracking-wider">
-                          <span>IMPACT {it.impact}</span>
-                          <span>EFFORT {it.effort}</span>
-                          <span>IMP {it.importance}</span>
-                          <span>SAT {it.satisfaction}</span>
-                          <span>CONF {it.confidence}</span>
-                          <span>RISK {it.risk}</span>
+                        <div className={`font-mono text-sm tabular-nums pt-1 ${muted ? "text-stone-400" : "text-stone-700"}`} onClick={(e) => e.stopPropagation()}>
+                          {score.toFixed(1)}
                         </div>
-                      </div>
-                      <div className={`font-mono text-sm tabular-nums pt-1 ${muted ? "text-stone-400" : "text-stone-700"}`}>
-                        {score.toFixed(1)}
-                      </div>
-                      <div className="relative" onClick={(e) => e.stopPropagation()}>
                         <button
-                          onClick={() => setMenuFor(m => m === it.id ? null : it.id)}
-                          aria-label="Actions"
+                          onClick={(e) => { e.stopPropagation(); setExpandedFor(prev => prev === it.id ? null : it.id); }}
+                          aria-label="Toggle inline edit"
                           className="p-1.5 rounded-full text-stone-400 hover:text-stone-900 hover:bg-stone-100 ease-editorial transition-colors"
                         >
-                          <MoreHorizontal className="w-4 h-4" />
+                          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedFor === it.id ? "rotate-180" : ""}`} />
                         </button>
-                        {menuFor === it.id && !confirmFor && (
-                          <div ref={menuRef} className="absolute right-0 top-full mt-1 z-50 w-48 rounded-lg border border-border bg-popover shadow-xl py-1 animate-fade-up">
-                            <button
-                              onClick={() => { setMenuFor(null); onEdit(it.id); }}
-                              className="w-full text-left px-3 py-2 font-serif text-sm text-stone-700 hover:bg-stone-50"
-                            >
-                              {t("all.actions.edit")}
-                            </button>
-                            {it.status === "active" && (
-                              <>
-                                <button
-                                  onClick={() => setConfirmFor({ id: it.id, status: "done" })}
-                                  className="w-full text-left px-3 py-2 font-serif text-sm text-stone-700 hover:bg-stone-50"
-                                >
-                                  {t("all.actions.markDone")}
-                                </button>
-                                <button
-                                  onClick={() => setConfirmFor({ id: it.id, status: "dropped" })}
-                                  className="w-full text-left px-3 py-2 font-serif text-sm text-stone-700 hover:bg-stone-50"
-                                >
-                                  {t("all.actions.markDropped")}
-                                </button>
-                              </>
-                            )}
-                            {it.status !== "active" && (
+                        <div className="relative" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            onClick={() => setMenuFor(m => m === it.id ? null : it.id)}
+                            aria-label="Actions"
+                            className="p-1.5 rounded-full text-stone-400 hover:text-stone-900 hover:bg-stone-100 ease-editorial transition-colors"
+                          >
+                            <MoreHorizontal className="w-4 h-4" />
+                          </button>
+                          {menuFor === it.id && !confirmFor && (
+                            <div ref={menuRef} className="absolute right-0 top-full mt-1 z-50 w-48 rounded-lg border border-border bg-popover shadow-xl py-1 animate-fade-up">
                               <button
-                                onClick={() => doStatus(it.id, "active")}
+                                onClick={() => { setMenuFor(null); onEdit(it.id); }}
                                 className="w-full text-left px-3 py-2 font-serif text-sm text-stone-700 hover:bg-stone-50"
                               >
-                                {t("all.actions.restore")}
+                                {t("all.actions.editDetails")}
                               </button>
-                            )}
-                            <div className="my-1 border-t border-border" />
-                            <button
-                              onClick={() => { setMenuFor(null); onDelete(it.id); }}
-                              className="w-full text-left px-3 py-2 font-serif text-sm text-destructive hover:bg-stone-50"
-                            >
-                              {t("all.actions.delete")}
-                            </button>
-                          </div>
-                        )}
-                        {confirmFor?.id === it.id && (
-                          <StatusConfirm
-                            status={confirmFor.status}
-                            onCancel={() => setConfirmFor(null)}
-                            onConfirm={(note) => doStatus(it.id, confirmFor.status, note || undefined)}
-                          />
-                        )}
+                              {it.status === "active" && (
+                                <>
+                                  <button
+                                    onClick={() => setConfirmFor({ id: it.id, status: "done" })}
+                                    className="w-full text-left px-3 py-2 font-serif text-sm text-stone-700 hover:bg-stone-50"
+                                  >
+                                    {t("all.actions.markDone")}
+                                  </button>
+                                  <button
+                                    onClick={() => setConfirmFor({ id: it.id, status: "dropped" })}
+                                    className="w-full text-left px-3 py-2 font-serif text-sm text-stone-700 hover:bg-stone-50"
+                                  >
+                                    {t("all.actions.markDropped")}
+                                  </button>
+                                </>
+                              )}
+                              {it.status !== "active" && (
+                                <button
+                                  onClick={() => doStatus(it.id, "active")}
+                                  className="w-full text-left px-3 py-2 font-serif text-sm text-stone-700 hover:bg-stone-50"
+                                >
+                                  {t("all.actions.restore")}
+                                </button>
+                              )}
+                              <div className="my-1 border-t border-border" />
+                              <button
+                                onClick={() => { setMenuFor(null); onDelete(it.id); }}
+                                className="w-full text-left px-3 py-2 font-serif text-sm text-destructive hover:bg-stone-50"
+                              >
+                                {t("all.actions.delete")}
+                              </button>
+                            </div>
+                          )}
+                          {confirmFor?.id === it.id && (
+                            <StatusConfirm
+                              status={confirmFor.status}
+                              onCancel={() => setConfirmFor(null)}
+                              onConfirm={(note) => doStatus(it.id, confirmFor.status, note || undefined)}
+                            />
+                          )}
+                        </div>
                       </div>
                     </div>
+                    <InlineEditPanel
+                      item={it}
+                      open={expandedFor === it.id}
+                      onChange={(patch) => {
+                        const { createdAt: _c, updatedAt: _u, ...rest } = it;
+                        onUpdateItem({ ...rest, ...patch });
+                      }}
+                    />
                   </li>
                 );
               })}
             </ul>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface InlineEditPanelProps {
+  item: Item;
+  open: boolean;
+  onChange: (patch: Partial<Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence">>) => void;
+}
+
+const PANEL_KEYS: Array<keyof Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence">> = [
+  "impact", "effort", "importance", "satisfaction", "confidence",
+];
+
+function InlineEditPanel({ item, open, onChange }: InlineEditPanelProps) {
+  const { t } = useTranslation();
+  const ref = useRef<HTMLDivElement>(null);
+  const [maxH, setMaxH] = useState(0);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    setMaxH(open ? ref.current.scrollHeight : 0);
+  }, [open, item]);
+
+  return (
+    <div
+      style={{ maxHeight: maxH, transition: "max-height 240ms ease-out" }}
+      className="overflow-hidden"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div ref={ref} className="border-t border-stone-100 bg-stone-50/50 px-2 py-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4 pl-10 pr-4">
+          {PANEL_KEYS.map(key => {
+            const value = item[key];
+            return (
+              <div key={key} className="flex items-center gap-3">
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-stone-500 w-28 shrink-0">
+                  {t(`sliders.${key}.label`)}
+                </span>
+                <input
+                  type="range"
+                  min={0}
+                  max={10}
+                  step={1}
+                  value={value}
+                  onChange={(e) => onChange({ [key]: Number(e.target.value) } as Partial<Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence">>)}
+                  className="flex-1 accent-foreground"
+                />
+                <span className="font-mono text-sm tabular-nums w-6 text-right text-stone-700">{value}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
