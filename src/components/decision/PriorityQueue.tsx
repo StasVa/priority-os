@@ -101,7 +101,7 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
             {top3.map(({ it }) => (
               <li key={it.id} className="">
                 <div className="font-serif text-sm font-medium leading-snug text-foreground">{it.title}</div>
-                <p className="font-serif italic text-sm text-muted-foreground dark:text-[hsl(35_12%_80%)] mt-1 leading-relaxed">
+                <p className="font-serif italic text-sm text-muted-foreground dark:text-[hsl(var(--editorial-emphasis))] mt-1 leading-relaxed">
                   {t(`recommendations.${recommendationKey(it)}`)}
                 </p>
               </li>
