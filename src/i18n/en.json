@@ -107,6 +107,13 @@
       "done": "{{count}} done",
       "dropped": "{{count}} dropped"
     },
+    "shortLabels": {
+      "active": "active",
+      "done": "done",
+      "dropped": "dropped"
+    },
+    "viewAllItems_one": "View all {{count}} item",
+    "viewAllItems_other": "View all {{count}} items",
     "sort": {
       "label": "Sort",
       "score": "Score",
