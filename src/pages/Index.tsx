@@ -13,6 +13,7 @@ import { FirstHint } from "@/components/decision/FirstHint";
 import { ProjectSettingsDrawer } from "@/components/decision/ProjectSettingsDrawer";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import type { Item, LensId, ProjectColor } from "@/lib/decision/types";
+import { autoEmojiForProject } from "@/lib/decision/projectEmoji";
 import { LENSES } from "@/lib/decision/logic";
 import { isFirstVisit, markOnboarded, skipSeed } from "@/lib/decision/storage";
 
@@ -44,7 +45,10 @@ const Index = () => {
     impact: number; effort: number; importance: number;
     satisfaction: number; confidence: number; risk: number;
   }) => {
-    addProject(draft.projectName);
+    addProject(draft.projectName, {
+      emoji: autoEmojiForProject(draft.projectName),
+      color: "neutral",
+    });
     upsertItem({
       id: undefined,
       title: draft.title,
@@ -126,7 +130,11 @@ const Index = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleCreateProject = (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => {
-    addProject(draft.name, { emoji: draft.emoji, color: draft.color, description: draft.description });
+    addProject(draft.name, {
+      emoji: draft.emoji ?? autoEmojiForProject(draft.name),
+      color: draft.color ?? "neutral",
+      description: draft.description,
+    });
   };
 
   // Translate seed project names if they match known keys.
