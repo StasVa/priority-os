@@ -67,8 +67,13 @@ const Index = () => {
 
   const allItems = activeContext?.items ?? [];
   const items = useMemo(() => allItems.filter(i => i.status === "active"), [allItems]);
+  const matrixItems = useMemo(
+    () => allItems.filter(i => i.status === "active" || i.status === "in_progress"),
+    [allItems],
+  );
   const counts = useMemo(() => ({
     active: allItems.filter(i => i.status === "active").length,
+    in_progress: allItems.filter(i => i.status === "in_progress").length,
     done: allItems.filter(i => i.status === "done").length,
     dropped: allItems.filter(i => i.status === "dropped").length,
   }), [allItems]);
@@ -168,10 +173,10 @@ const Index = () => {
               </span>
             </header>
             <div className="p-2">
-              {items.length > 0 ? (
+              {matrixItems.length > 0 ? (
                 <Matrix
                   lens={lens}
-                  items={items}
+                  items={matrixItems}
                   hoveredId={hoveredId}
                   onHover={setHoveredId}
                   onSelect={openEdit}
@@ -198,7 +203,7 @@ const Index = () => {
 
           {items.length > 0 && <FirstHint itemCount={items.length} />}
 
-          {items.length > 0 && (
+          {matrixItems.length > 0 && (
             <div className="grid grid-cols-2 gap-4">
               {otherLenses.map(l => (
                 <article
@@ -213,7 +218,7 @@ const Index = () => {
                   <div className="p-1.5 grid-paper">
                     <Matrix
                       lens={l.id}
-                      items={items}
+                      items={matrixItems}
                       hoveredId={hoveredId}
                       onHover={setHoveredId}
                       onSelect={openEdit}

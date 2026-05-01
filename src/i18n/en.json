@@ -33,6 +33,8 @@
     "delete": "Delete item",
     "close": "Close",
     "markDone": "Mark done",
+    "markInProgress": "Start",
+    "backToActive": "Back to active",
     "drop": "Drop",
     "positionAcrossLenses": "Position across lenses"
   },
@@ -139,16 +141,19 @@
     "totalAndUpdated": "{{total}} total · last updated {{time}}",
     "tabs": {
       "active": "Active",
+      "in_progress": "In progress",
       "done": "Done",
       "dropped": "Dropped"
     },
     "countLabels": {
       "active": "{{count}} active",
+      "in_progress": "{{count}} in progress",
       "done": "{{count}} done",
       "dropped": "{{count}} dropped"
     },
     "shortLabels": {
       "active": "active",
+      "in_progress": "in progress",
       "done": "done",
       "dropped": "dropped"
     },
@@ -159,19 +164,23 @@
       "score": "Score",
       "title": "Title",
       "added": "Date added",
+      "started": "Date started",
       "resolved": "Date resolved"
     },
     "search": "Search items...",
     "doneAt": "Done · {{date}}",
     "droppedAt": "Dropped · {{date}}",
+    "startedAt": "Started · {{date}}",
     "empty": {
       "active": "No active items. Add one from the main view.",
+      "in_progress": "Nothing in progress yet. Items you commit to will appear here.",
       "done": "Nothing finished yet. Items you complete will appear here.",
       "dropped": "Nothing dropped yet. The art of saying no comes with practice."
     },
     "actions": {
       "edit": "Edit",
       "editDetails": "Edit details",
+      "markInProgress": "Mark as in progress",
       "markDone": "Mark as done",
       "markDropped": "Mark as dropped",
       "restore": "Restore to active",
@@ -193,6 +202,7 @@
   "toast": {
     "markedDone": "Marked as done",
     "markedDropped": "Dropped",
+    "markedInProgress": "Marked as in progress",
     "restored": "Restored to active",
     "undo": "Undo"
   },

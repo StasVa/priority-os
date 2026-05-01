@@ -64,16 +64,29 @@ export function useDecisionStore() {
         ...c,
         items: c.items.map(i => {
           if (i.id !== id) return i;
+          const now = Date.now();
           if (status === "active") {
-            const { resolvedAt: _r, resolutionNote: _n, ...rest } = i;
-            return { ...rest, status: "active", updatedAt: Date.now() } as Item;
+            // Reconsidering — clear resolution + startedAt.
+            const { resolvedAt: _r, resolutionNote: _n, startedAt: _s, ...rest } = i;
+            return { ...rest, status: "active", updatedAt: now } as Item;
           }
+          if (status === "in_progress") {
+            // Committing to action — set startedAt, clear any prior resolution.
+            const { resolvedAt: _r, resolutionNote: _n, ...rest } = i;
+            return {
+              ...rest,
+              status: "in_progress",
+              startedAt: i.startedAt ?? new Date().toISOString(),
+              updatedAt: now,
+            } as Item;
+          }
+          // done / dropped — keep startedAt if present, set resolvedAt.
           return {
             ...i,
             status,
             resolvedAt: new Date().toISOString(),
             resolutionNote: resolutionNote ?? i.resolutionNote,
-            updatedAt: Date.now(),
+            updatedAt: now,
           };
         }),
       })),

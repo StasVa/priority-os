@@ -11,7 +11,7 @@ interface PriorityQueueProps {
   onHover: (id: string | null) => void;
   onSelect: (id: string) => void;
   insightsOn: boolean;
-  counts: { active: number; done: number; dropped: number };
+  counts: { active: number; in_progress: number; done: number; dropped: number };
   onViewAll: () => void;
 }
 
@@ -24,9 +24,9 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
 
   const top3 = ranked.slice(0, 3);
 
-  const total = counts.active + counts.done + counts.dropped;
+  const total = counts.active + counts.in_progress + counts.done + counts.dropped;
   const showAllBlock = total > 0;
-  const buttonLabel = counts.active <= 6 && counts.done === 0 && counts.dropped === 0
+  const buttonLabel = counts.active <= 6 && counts.in_progress === 0 && counts.done === 0 && counts.dropped === 0
     ? t("all.viewAll")
     : t("all.viewAllItems", { count: total });
 
@@ -93,6 +93,8 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
             />
             <FocusWarning level={focusLevelFor(counts.active)} onViewAll={onViewAll} size="sm" />
             <span className="text-muted-foreground/50" aria-hidden>·</span>
+            <CounterPair color="hsl(var(--win))" count={counts.in_progress} label={t("all.shortLabels.in_progress")} hollow />
+            <span className="text-muted-foreground/50" aria-hidden>·</span>
             <CounterPair color="hsl(var(--neutral))" count={counts.done} label={t("all.shortLabels.done")} />
             <span className="text-muted-foreground/50" aria-hidden>·</span>
             <CounterPair color="hsl(var(--drop) / 0.7)" count={counts.dropped} label={t("all.shortLabels.dropped")} />
@@ -126,10 +128,15 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
   );
 }
 
-function CounterPair({ color, count, label, countColor }: { color: string; count: number; label: string; countColor?: string }) {
+function CounterPair({ color, count, label, countColor, hollow }: { color: string; count: number; label: string; countColor?: string; hollow?: boolean }) {
   return (
     <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
-      <span className="inline-block w-2 h-2 rounded-full self-center" style={{ background: color }} />
+      <span
+        className="inline-block w-2 h-2 rounded-full self-center"
+        style={hollow
+          ? { background: "transparent", boxShadow: `inset 0 0 0 1.5px ${color}` }
+          : { background: color }}
+      />
       <span className="font-mono text-sm tabular-nums" style={{ color: countColor ?? "hsl(var(--foreground))" }}>{count}</span>
       <span className="font-serif text-[13px] text-muted-foreground">{label}</span>
     </span>

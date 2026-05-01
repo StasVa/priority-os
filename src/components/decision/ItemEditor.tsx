@@ -168,6 +168,45 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
             {isEdit && onSetStatus && draft.status === "active" && (
               <div className="flex items-center gap-2">
                 <button
+                  onClick={() => {
+                    onSetStatus(draft.id, "in_progress");
+                    onClose();
+                    toast(t("toast.markedInProgress"), {
+                      action: { label: t("toast.undo"), onClick: () => onSetStatus(draft.id, "active") },
+                      duration: 5000,
+                    });
+                  }}
+                  className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-foreground ease-editorial transition-colors"
+                >
+                  {t("editor.markInProgress")}
+                </button>
+                <button
+                  onClick={() => setConfirming("done")}
+                  className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--win))] ease-editorial transition-colors"
+                >
+                  {t("editor.markDone")}
+                </button>
+                <button
+                  onClick={() => setConfirming("dropped")}
+                  className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--drop))] ease-editorial transition-colors"
+                >
+                  {t("editor.drop")}
+                </button>
+              </div>
+            )}
+            {isEdit && onSetStatus && draft.status === "in_progress" && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    onSetStatus(draft.id, "active");
+                    onClose();
+                    toast(t("toast.restored"));
+                  }}
+                  className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-foreground ease-editorial transition-colors"
+                >
+                  {t("editor.backToActive")}
+                </button>
+                <button
                   onClick={() => setConfirming("done")}
                   className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-[hsl(var(--win))] ease-editorial transition-colors"
                 >

@@ -1,6 +1,6 @@
 export type LensId = "value-effort" | "importance-satisfaction" | "confidence-risk";
 export type Tone = "win" | "bet" | "drop" | "neutral";
-export type ItemStatus = "active" | "done" | "dropped";
+export type ItemStatus = "active" | "in_progress" | "done" | "dropped";
 
 export interface Reference {
   id: string;
@@ -22,6 +22,7 @@ export interface Item {
   createdAt: number;
   updatedAt: number;
   status: ItemStatus;
+  startedAt?: string;
   resolvedAt?: string;
   resolutionNote?: string;
   references: Reference[];
