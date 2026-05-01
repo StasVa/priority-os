@@ -265,7 +265,7 @@
   "welcome": {
     "skip": "Skip",
     "continue": "Continue",
-    "firstHint": "Tip: Click the ⚙ icon next to your project name to add an emoji, color, or description. Add 2-3 more decisions to see priorities emerge.",
+    "firstHint": "Tip: Click ? in the top bar if you're unsure what each parameter means. Add 2-3 more decisions to see priorities emerge.",
     "step1": {
       "heading": "What are you deciding on?",
       "subhead": "One real decision you're sitting with right now.",
