@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useState, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import type { Item, LensId } from "@/lib/decision/types";
 import { LENSES, lensCoords, toneHsl, verdictForLens } from "@/lib/decision/logic";
