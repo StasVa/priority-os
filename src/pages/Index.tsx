@@ -10,14 +10,20 @@ import { AllItemsView } from "@/components/decision/AllItemsView";
 import { LensInsight } from "@/components/decision/LensInsight";
 import { WelcomeOnboarding } from "@/components/decision/WelcomeOnboarding";
 import { FirstHint } from "@/components/decision/FirstHint";
+import { ProjectSettingsDrawer } from "@/components/decision/ProjectSettingsDrawer";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
-import type { Item, LensId } from "@/lib/decision/types";
+import type { Item, LensId, ProjectColor } from "@/lib/decision/types";
 import { LENSES } from "@/lib/decision/logic";
 import { isFirstVisit, markOnboarded, skipSeed } from "@/lib/decision/storage";
 
 const Index = () => {
   const { t } = useTranslation();
-  const { state, activeProject, setActiveProject, addProject, upsertItem, deleteItem, setItemStatus } = useDecisionStore();
+  const {
+    state, activeProject,
+    setActiveProject, addProject, updateProject, deleteProject,
+    archiveProject, restoreProject, toggleFavoriteProject,
+    upsertItem, deleteItem, setItemStatus,
+  } = useDecisionStore();
 
   const [lens, setLens] = useState<LensId>("value-effort");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
