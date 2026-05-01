@@ -272,6 +272,17 @@ const Index = () => {
         onUpdateItem={upsertItem}
       />
 
+      <ProjectSettingsDrawer
+        open={settingsOpen}
+        project={activeProject ?? null}
+        onClose={() => setSettingsOpen(false)}
+        onUpdate={updateProject}
+        onArchive={archiveProject}
+        onRestore={restoreProject}
+        onDelete={deleteProject}
+        onToggleFavorite={toggleFavoriteProject}
+      />
+
       <WelcomeOnboarding
         open={welcomeOpen}
         onSubmit={handleWelcomeSubmit}
