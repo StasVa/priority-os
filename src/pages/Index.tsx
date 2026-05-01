@@ -194,7 +194,7 @@ const Index = () => {
                   <p className="font-serif italic text-lg text-muted-foreground">
                     <Trans
                       i18nKey="matrix.empty"
-                      values={{ name: activeProjectName }}
+                      values={{ name: `${activeProject?.emoji ? activeProject.emoji + " " : ""}${activeProjectName}` }}
                       components={[<span key="0" className="not-italic font-medium text-foreground" />]}
                     />
                   </p>
