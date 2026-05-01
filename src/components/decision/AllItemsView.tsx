@@ -6,6 +6,7 @@ import type { Item, ItemStatus } from "@/lib/decision/types";
 import { TONE_CLASSES, compositeScore, verdictForLens } from "@/lib/decision/logic";
 import { StatusConfirm, statusToToastKey } from "@/components/decision/StatusConfirm";
 import { RefStack } from "@/components/decision/RefStack";
+import { FocusWarning, focusLevelFor } from "@/components/decision/FocusWarning";
 
 interface AllItemsViewProps {
   open: boolean;
