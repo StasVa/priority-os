@@ -21,12 +21,22 @@ export function seed(): DecisionState {
   });
 
   const startup: Item[] = [
-    mk("Rewrite onboarding flow",  "drop-off at step 3 is brutal",      9, 6, 9, 3, 7, 3),
-    mk("Add dark mode",            "users keep asking",                  4, 3, 5, 2, 9, 1),
-    mk("Migrate to new database",  "performance ceiling soon",           7, 9, 6, 6, 4, 8),
-    mk("Weekly user interviews",   "stop guessing",                      8, 2, 8, 2, 8, 1),
-    mk("Refactor auth module",     "tech debt",                          3, 7, 4, 7, 6, 4),
-    mk("Launch referral program",  "growth lever",                       7, 5, 7, 4, 5, 4),
+    mk("Rewrite onboarding flow",         "drop-off at step 3 is brutal",                   9, 6, 9, 3, 7, 3),
+    mk("Add dark mode",                   "users keep asking",                              4, 3, 5, 2, 9, 1),
+    mk("Migrate to new database",         "performance ceiling soon",                       7, 9, 6, 6, 4, 8),
+    mk("Weekly user interviews",          "stop guessing",                                  8, 2, 8, 2, 8, 1),
+    mk("Refactor auth module",            "tech debt",                                      3, 7, 4, 7, 6, 4),
+    mk("Launch referral program",         "growth lever",                                   7, 5, 7, 4, 5, 4),
+    mk("Set up customer support chat",    "Users emailing support takes 2 days to respond", 6, 3, 7, 3, 8, 2),
+    mk("Hire a senior backend engineer",  "Roadmap blocked on infra work",                  9, 8, 8, 4, 5, 6),
+    mk("Polish landing page copy",        "Conversion is OK but copy feels generic",        4, 2, 5, 5, 7, 1),
+    mk("Build mobile app",                "Users keep asking on Twitter",                   8, 10, 6, 3, 3, 8),
+    mk("Add Stripe integration",          "Payment is the last blocker for paid plan",      8, 4, 9, 1, 9, 3),
+    mk("Refactor CSS to design tokens",   "Engineer wants to do this but unclear ROI",      2, 6, 3, 6, 7, 2),
+    mk("Run a partnership campaign",      "Three potential partners interested",            6, 5, 5, 4, 4, 5),
+    mk("Implement SSO for enterprise",    "Two prospects asked, may unlock deals",          7, 7, 6, 2, 6, 4),
+    mk("Write a public roadmap",          "Users want transparency",                        3, 2, 4, 3, 8, 1),
+    mk("Migrate analytics to PostHog",    "Current tool is expensive and limited",          4, 5, 4, 5, 6, 3),
   ];
 
   const contexts = [
