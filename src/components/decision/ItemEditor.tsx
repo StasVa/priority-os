@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { Trash2, X } from "lucide-react";
-import type { Item } from "@/lib/decision/types";
+import type { Item, ItemStatus } from "@/lib/decision/types";
 import { compositeScore, recommendationKey } from "@/lib/decision/logic";
+import { StatusConfirm, statusToToastKey } from "@/components/decision/StatusConfirm";
 
 interface ItemEditorProps {
   open: boolean;
@@ -10,6 +12,7 @@ interface ItemEditorProps {
   onClose: () => void;
   onSave: (draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => void;
   onDelete?: (id: string) => void;
+  onSetStatus?: (id: string, status: ItemStatus, resolutionNote?: string) => void;
 }
 
 const SLIDER_KEYS: Array<keyof Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence" | "risk">> = [
@@ -22,9 +25,10 @@ const empty = (): Item => ({
   createdAt: 0, updatedAt: 0, status: "active",
 });
 
-export function ItemEditor({ open, initial, onClose, onSave, onDelete }: ItemEditorProps) {
+export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStatus }: ItemEditorProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState<Item>(empty());
+  const [confirming, setConfirming] = useState<null | "done" | "dropped">(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const isEdit = !!initial;
 
