@@ -16,9 +16,10 @@ export function useDecisionStore() {
     setState(s => ({ ...s, activeContextId: id }));
   }, []);
 
-  const addContext = useCallback((name: string) => {
+  const addContext = useCallback((name: string): string => {
     const id = newId();
     setState(s => ({ ...s, contexts: [...s.contexts, { id, name, items: [] }], activeContextId: id }));
+    return id;
   }, []);
 
   const upsertItem = useCallback((draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => {
