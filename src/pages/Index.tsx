@@ -67,8 +67,13 @@ const Index = () => {
 
   const allItems = activeContext?.items ?? [];
   const items = useMemo(() => allItems.filter(i => i.status === "active"), [allItems]);
+  const matrixItems = useMemo(
+    () => allItems.filter(i => i.status === "active" || i.status === "in_progress"),
+    [allItems],
+  );
   const counts = useMemo(() => ({
     active: allItems.filter(i => i.status === "active").length,
+    in_progress: allItems.filter(i => i.status === "in_progress").length,
     done: allItems.filter(i => i.status === "done").length,
     dropped: allItems.filter(i => i.status === "dropped").length,
   }), [allItems]);
