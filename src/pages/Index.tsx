@@ -27,6 +27,18 @@ const Index = () => {
   } = useDecisionStore();
 
   const [lens, setLens] = useState<LensId>("value-effort");
+  const matrixCardRef = useRef<HTMLElement | null>(null);
+  const handleLensChange = (next: LensId) => {
+    setLens(next);
+    requestAnimationFrame(() => {
+      const el = matrixCardRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 88;
+      if (window.scrollY > top + 4) {
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    });
+  };
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [insightsOn, setInsightsOn] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
