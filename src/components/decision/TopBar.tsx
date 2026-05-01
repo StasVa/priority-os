@@ -1,21 +1,24 @@
 import { Eye, EyeOff, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { Context } from "@/lib/decision/types";
 import { LanguageSwitcher } from "@/components/decision/LanguageSwitcher";
 import { ThemeToggle } from "@/components/decision/ThemeToggle";
+import { ProjectSwitcher, type ProjectLite } from "@/components/decision/ProjectSwitcher";
 
 interface TopBarProps {
-  contexts: Context[];
-  activeContextId: string;
-  onSelectContext: (id: string) => void;
-  onAddContext: () => void;
+  projects: ProjectLite[];
+  activeProjectId: string;
+  activeProjectName: string;
+  activeProjectCount: number;
+  onSelectProject: (id: string) => void;
+  onAddProject: () => void;
   insightsOn: boolean;
   onToggleInsights: () => void;
   onNewItem: () => void;
 }
 
 export function TopBar({
-  contexts, activeContextId, onSelectContext, onAddContext,
+  projects, activeProjectId, activeProjectName, activeProjectCount,
+  onSelectProject, onAddProject,
   insightsOn, onToggleInsights, onNewItem,
 }: TopBarProps) {
   const { t } = useTranslation();
@@ -28,36 +31,17 @@ export function TopBar({
           <span className="font-serif italic text-xl text-muted-foreground font-light">OS</span>
         </div>
 
-        {/* Context switcher */}
-        <nav className="flex items-center gap-1.5 ml-2" aria-label="Contexts">
-          {contexts.map(c => {
-            const active = c.id === activeContextId;
-            return (
-              <button
-                key={c.id}
-                onClick={() => onSelectContext(c.id)}
-                className={`group inline-flex items-center gap-2 pl-3.5 pr-2 py-1.5 rounded-full text-sm ease-editorial transition-colors
-                  ${active
-                    ? "bg-ink text-paper"
-                    : "text-foreground hover:bg-secondary"
-                  }`}
-              >
-                <span className="font-serif">{c.name}</span>
-                <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded-full
-                  ${active ? "bg-paper/15 text-paper" : "bg-secondary text-muted-foreground group-hover:bg-background"}`}>
-                  {c.items.length}
-                </span>
-              </button>
-            );
-          })}
-          <button
-            onClick={onAddContext}
-            aria-label={t("nav.addContext")}
-            className="ml-1 inline-flex items-center justify-center w-7 h-7 rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-foreground ease-editorial transition-colors"
-          >
-            <Plus className="w-3.5 h-3.5" />
-          </button>
-        </nav>
+        {/* Project switcher (replaces inline tabs) */}
+        <div className="ml-2">
+          <ProjectSwitcher
+            projects={projects}
+            activeProjectId={activeProjectId}
+            activeProjectName={activeProjectName}
+            activeProjectCount={activeProjectCount}
+            onSelect={onSelectProject}
+            onCreate={onAddProject}
+          />
+        </div>
 
         <div className="ml-auto flex items-center gap-3">
           <button

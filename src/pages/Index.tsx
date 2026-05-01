@@ -17,7 +17,7 @@ import { isFirstVisit, markOnboarded, skipSeed } from "@/lib/decision/storage";
 
 const Index = () => {
   const { t } = useTranslation();
-  const { state, activeContext, setActiveContext, addContext, upsertItem, deleteItem, setItemStatus } = useDecisionStore();
+  const { state, activeProject, setActiveProject, addProject, upsertItem, deleteItem, setItemStatus } = useDecisionStore();
 
   const [lens, setLens] = useState<LensId>("value-effort");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -27,7 +27,6 @@ const Index = () => {
   const [allOpen, setAllOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState<boolean>(() => isFirstVisit());
 
-  // Mark onboarded once we close the welcome flow
   const completeWelcome = () => {
     markOnboarded();
     setWelcomeOpen(false);
@@ -35,11 +34,11 @@ const Index = () => {
 
   const handleWelcomeSubmit = (draft: {
     title: string;
-    contextName: string;
+    projectName: string;
     impact: number; effort: number; importance: number;
     satisfaction: number; confidence: number; risk: number;
   }) => {
-    addContext(draft.contextName);
+    addProject(draft.projectName);
     upsertItem({
       id: undefined,
       title: draft.title,
@@ -53,7 +52,7 @@ const Index = () => {
 
   const handleWelcomeSkip = () => {
     try {
-      const defaultName = t("contexts.My decisions", { defaultValue: "My decisions" });
+      const defaultName = t("projects.My decisions", { defaultValue: "My decisions" });
       const s = skipSeed(defaultName);
       localStorage.setItem("decision-os.v1", JSON.stringify(s));
     } catch { /* ignore */ }
@@ -61,11 +60,7 @@ const Index = () => {
     window.location.reload();
   };
 
-
-
-
-
-  const allItems = activeContext?.items ?? [];
+  const allItems = activeProject?.items ?? [];
   const items = useMemo(() => allItems.filter(i => i.status === "active"), [allItems]);
   const matrixItems = useMemo(
     () => allItems.filter(i => i.status === "active" || i.status === "in_progress"),
@@ -78,19 +73,16 @@ const Index = () => {
     dropped: allItems.filter(i => i.status === "dropped").length,
   }), [allItems]);
 
-  // Soft warning toasts when crossing focus thresholds (15→16 and 25→26).
-  // Per-context flags persisted in localStorage; reset when count drops back below threshold.
   const prevActiveRef = useRef<number | null>(null);
   useEffect(() => {
-    const ctxId = activeContext?.id;
-    if (!ctxId) { prevActiveRef.current = counts.active; return; }
+    const projId = activeProject?.id;
+    if (!projId) { prevActiveRef.current = counts.active; return; }
     const prev = prevActiveRef.current;
     prevActiveRef.current = counts.active;
 
-    const softKey = `priority-os.warned.${ctxId}`;
-    const overKey = `priority-os.warned26.${ctxId}`;
+    const softKey = `priority-os.warned.${projId}`;
+    const overKey = `priority-os.warned26.${projId}`;
 
-    // Reset flags when count drops back below the line.
     if (counts.active < 16 && localStorage.getItem(softKey)) {
       localStorage.removeItem(softKey);
     }
@@ -98,7 +90,7 @@ const Index = () => {
       localStorage.removeItem(overKey);
     }
 
-    if (prev === null) return; // first run after mount/context-switch — don't fire
+    if (prev === null) return;
 
     if (prev <= 15 && counts.active >= 16 && !localStorage.getItem(softKey)) {
       toast(t("limits.toast.soft"), { duration: 6000 });
@@ -108,13 +100,11 @@ const Index = () => {
       toast(t("limits.toast.overloaded"), { duration: 6000 });
       localStorage.setItem(overKey, "true");
     }
-  }, [counts.active, activeContext?.id, t]);
+  }, [counts.active, activeProject?.id, t]);
 
-  // Reset prev counter when switching contexts so we don't false-fire across contexts.
   useEffect(() => {
     prevActiveRef.current = null;
-  }, [activeContext?.id]);
-
+  }, [activeProject?.id]);
 
   const activeLens = useMemo(() => LENSES.find(l => l.id === lens)!, [lens]);
   const otherLenses = useMemo(() => LENSES.filter(l => l.id !== lens), [lens]);
@@ -127,29 +117,33 @@ const Index = () => {
     setEditorOpen(true);
   };
 
-  const handleAddContext = () => {
-    const name = window.prompt(t("nav.contextNamePrompt"))?.trim();
-    if (name) addContext(name);
+  const handleAddProject = () => {
+    const name = window.prompt(t("projects.namePrompt"))?.trim();
+    if (name) addProject(name);
   };
 
-  // Translate seed context names if they match known keys, and use only active count for badge.
-  const translatedContexts = useMemo(
-    () => state.contexts.map(c => ({
-      ...c,
-      name: t(`contexts.${c.name}`, { defaultValue: c.name }),
-      items: c.items.filter(i => i.status === "active"),
+  // Translate seed project names if they match known keys.
+  const projectsForSwitcher = useMemo(
+    () => state.projects.map(p => ({
+      id: p.id,
+      name: t(`projects.${p.name}`, { defaultValue: p.name }),
+      activeCount: p.items.filter(i => i.status === "active").length,
+      lastAccessedAt: p.lastAccessedAt,
     })),
-    [state.contexts, t],
+    [state.projects, t],
   );
-  const activeContextName = activeContext ? t(`contexts.${activeContext.name}`, { defaultValue: activeContext.name }) : "";
+  const activeProjectName = activeProject ? t(`projects.${activeProject.name}`, { defaultValue: activeProject.name }) : "";
+  const activeProjectCount = activeProject?.items.filter(i => i.status === "active").length ?? 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <TopBar
-        contexts={translatedContexts}
-        activeContextId={state.activeContextId}
-        onSelectContext={setActiveContext}
-        onAddContext={handleAddContext}
+        projects={projectsForSwitcher}
+        activeProjectId={state.activeProjectId}
+        activeProjectName={activeProjectName}
+        activeProjectCount={activeProjectCount}
+        onSelectProject={setActiveProject}
+        onAddProject={handleAddProject}
         insightsOn={insightsOn}
         onToggleInsights={() => setInsightsOn(v => !v)}
         onNewItem={openNew}
@@ -186,7 +180,7 @@ const Index = () => {
                   <p className="font-serif italic text-lg text-muted-foreground">
                     <Trans
                       i18nKey="matrix.empty"
-                      values={{ name: activeContextName }}
+                      values={{ name: activeProjectName }}
                       components={[<span key="0" className="not-italic font-medium text-foreground" />]}
                     />
                   </p>
@@ -256,7 +250,7 @@ const Index = () => {
       <AllItemsView
         open={allOpen}
         onClose={() => setAllOpen(false)}
-        contextName={activeContextName}
+        contextName={activeProjectName}
         items={allItems}
         onEdit={openEdit}
         onSetStatus={setItemStatus}

@@ -232,7 +232,7 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
                 disabled={!canSave}
                 className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed ease-editorial transition-opacity"
               >
-                {isEdit ? t("editor.saveChanges") : t("editor.addToContext")}
+                {isEdit ? t("editor.saveChanges") : t("editor.addToProject")}
               </button>
             </div>
           </div>
