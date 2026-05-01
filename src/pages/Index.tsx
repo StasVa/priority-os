@@ -183,7 +183,7 @@ const Index = () => {
         onNewItem={openNew}
       />
 
-      <LensSwitcher active={lens} onChange={setLens} itemCount={items.length} />
+      <LensSwitcher active={lens} onChange={handleLensChange} itemCount={items.length} />
 
       <main className="grid grid-cols-1 lg:grid-cols-[1fr_340px] min-h-[calc(100vh-128px)]">
         <section className="px-8 py-6 space-y-5">
