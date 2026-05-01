@@ -7,7 +7,7 @@ import { Matrix } from "@/components/decision/Matrix";
 import { PriorityQueue } from "@/components/decision/PriorityQueue";
 import { ItemEditor } from "@/components/decision/ItemEditor";
 import { AllItemsView } from "@/components/decision/AllItemsView";
-import { LensInsight } from "@/components/decision/LensInsight";
+// LensInsight intentionally not rendered; kept in codebase for potential reuse.
 import { WelcomeOnboarding } from "@/components/decision/WelcomeOnboarding";
 import { FirstHint } from "@/components/decision/FirstHint";
 import { ProjectSettingsDrawer } from "@/components/decision/ProjectSettingsDrawer";
@@ -190,9 +190,6 @@ const Index = () => {
 
       <main className="grid grid-cols-1 lg:grid-cols-[1fr_340px] min-h-[calc(100vh-128px)]">
         <section className="px-8 py-6 space-y-5">
-          {items.length > 0 && (
-            <LensInsight items={items} lens={lens} onSelectItem={openEdit} />
-          )}
 
           <article ref={matrixCardRef} className="border border-border rounded-lg bg-card overflow-hidden grid-paper">
             <header className="px-6 py-4 border-b border-border flex items-baseline justify-between bg-card">
