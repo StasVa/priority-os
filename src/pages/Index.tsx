@@ -173,10 +173,10 @@ const Index = () => {
               </span>
             </header>
             <div className="p-2">
-              {items.length > 0 ? (
+              {matrixItems.length > 0 ? (
                 <Matrix
                   lens={lens}
-                  items={items}
+                  items={matrixItems}
                   hoveredId={hoveredId}
                   onHover={setHoveredId}
                   onSelect={openEdit}
@@ -203,7 +203,7 @@ const Index = () => {
 
           {items.length > 0 && <FirstHint itemCount={items.length} />}
 
-          {items.length > 0 && (
+          {matrixItems.length > 0 && (
             <div className="grid grid-cols-2 gap-4">
               {otherLenses.map(l => (
                 <article
@@ -218,7 +218,7 @@ const Index = () => {
                   <div className="p-1.5 grid-paper">
                     <Matrix
                       lens={l.id}
-                      items={items}
+                      items={matrixItems}
                       hoveredId={hoveredId}
                       onHover={setHoveredId}
                       onSelect={openEdit}
