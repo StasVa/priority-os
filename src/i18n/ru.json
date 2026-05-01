@@ -1,0 +1,95 @@
+{
+  "brand": { "name": "Priority", "suffix": "OS" },
+  "nav": {
+    "newItem": "Новый пункт",
+    "insights": "Инсайты",
+    "lens": "Линза",
+    "addContext": "Добавить контекст",
+    "contextNamePrompt": "Название контекста?"
+  },
+  "queue": {
+    "title": "Очередь приоритетов",
+    "topRecommendations": "Главные рекомендации",
+    "empty": "Пока ничего нет. Добавь первый пункт.",
+    "rankedBy": "по сводной оценке",
+    "items_one": "{{count}} пункт",
+    "items_few": "{{count}} пункта",
+    "items_many": "{{count}} пунктов",
+    "items_other": "{{count}} пункта"
+  },
+  "editor": {
+    "newItem": "Новый пункт",
+    "editItem": "Редактировать",
+    "titlePlaceholder": "О чём решаешь?",
+    "noteLabel": "Заметка (необязательно)",
+    "notePlaceholder": "Контекст, гипотеза, почему сейчас…",
+    "compositeScore": "Сводная оценка",
+    "saveChanges": "Сохранить",
+    "addToContext": "Добавить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "close": "Закрыть"
+  },
+  "matrix": {
+    "empty": "В <0>{{name}}</0> пока ничего нет.",
+    "addFirst": "Добавь первый пункт",
+    "view": "Открыть",
+    "axis": "НИЗКО  ←  {{label}}  →  ВЫСОКО",
+    "low": "НИЗКО",
+    "high": "ВЫСОКО"
+  },
+  "sliders": {
+    "impact": { "label": "Влияние", "hint": "ожидаемая отдача, если сработает" },
+    "effort": { "label": "Усилия", "hint": "цена, время, сложность" },
+    "importance": { "label": "Важность", "hint": "насколько критична эта потребность" },
+    "satisfaction": { "label": "Удовлетворённость", "hint": "насколько потребность закрыта сегодня" },
+    "confidence": { "label": "Уверенность", "hint": "уверенность в оценках" },
+    "risk": { "label": "Риск", "hint": "что будет, если пойдёт не так" }
+  },
+  "axes": {
+    "EFFORT": "УСИЛИЯ",
+    "IMPACT": "ВЛИЯНИЕ",
+    "SATISFACTION": "УДОВЛЕТВОРЁННОСТЬ",
+    "IMPORTANCE": "ВАЖНОСТЬ",
+    "RISK": "РИСК",
+    "CONFIDENCE": "УВЕРЕННОСТЬ"
+  },
+  "lenses": {
+    "value-effort": "Ценность и усилия",
+    "importance-satisfaction": "Важность и удовлетворённость",
+    "confidence-risk": "Уверенность и риск"
+  },
+  "quadrants": {
+    "QUICK_WINS": "Быстрые победы",
+    "BIG_BETS": "Большие ставки",
+    "FILLER": "Заполнители",
+    "TIME_SINKS": "Бесполезное",
+    "OPPORTUNITY": "Возможность",
+    "MAINTAIN": "Поддерживать",
+    "LOW_PRIORITY": "Низкий приоритет",
+    "OVER_SERVED": "Избыточно решено",
+    "SAFE_TO_SHIP": "Можно делать",
+    "KNOWN_RISK": "Осознанный риск",
+    "SOFT_SIGNAL": "Слабый сигнал",
+    "VALIDATE_FIRST": "Сначала проверить"
+  },
+  "verdicts": {
+    "win": "Победа",
+    "bet": "Ставка",
+    "drop": "Отказ",
+    "neutral": "Пауза"
+  },
+  "recommendations": {
+    "lowConfidence": "Низкая уверенность — проверь, прежде чем браться.",
+    "opportunityGap": "Высокая важность, низкая удовлетворённость — явная возможность.",
+    "quickWin": "Быстрая победа. Запланируй на эту неделю.",
+    "highEffortThinPayoff": "Много усилий, мало отдачи — стоит отказаться.",
+    "riskyUncertain": "Рискованно и неточно — разбей на маленький тест.",
+    "bigBet": "Большая ставка — стоит, если готов к цене.",
+    "averageSignal": "Слабый сигнал — вернись, когда что-то изменится."
+  },
+  "contexts": {
+    "Startup": "Стартап",
+    "Personal": "Личное"
+  }
+}

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { TopBar } from "@/components/decision/TopBar";
 import { LensSwitcher } from "@/components/decision/LensSwitcher";
 import { Matrix } from "@/components/decision/Matrix";
@@ -9,6 +10,7 @@ import type { Item, LensId } from "@/lib/decision/types";
 import { LENSES } from "@/lib/decision/logic";
 
 const Index = () => {
+  const { t } = useTranslation();
   const { state, activeContext, setActiveContext, addContext, upsertItem, deleteItem } = useDecisionStore();
 
   const [lens, setLens] = useState<LensId>("value-effort");
@@ -30,14 +32,21 @@ const Index = () => {
   };
 
   const handleAddContext = () => {
-    const name = window.prompt("Context name?")?.trim();
+    const name = window.prompt(t("nav.contextNamePrompt"))?.trim();
     if (name) addContext(name);
   };
+
+  // Translate seed context names if they match known keys.
+  const translatedContexts = useMemo(
+    () => state.contexts.map(c => ({ ...c, name: t(`contexts.${c.name}`, { defaultValue: c.name }) })),
+    [state.contexts, t],
+  );
+  const activeContextName = t(`contexts.${activeContext.name}`, { defaultValue: activeContext.name });
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <TopBar
-        contexts={state.contexts}
+        contexts={translatedContexts}
         activeContextId={state.activeContextId}
         onSelectContext={setActiveContext}
         onAddContext={handleAddContext}
@@ -50,11 +59,10 @@ const Index = () => {
 
       <main className="grid grid-cols-1 lg:grid-cols-[1fr_380px] min-h-[calc(100vh-128px)]">
         <section className="px-8 py-8 space-y-8">
-          {/* Primary matrix */}
           <article className="border border-border rounded-lg bg-card overflow-hidden">
             <header className="px-6 py-4 border-b border-border flex items-baseline justify-between">
               <h1 className="font-serif text-2xl leading-none" style={{ fontVariationSettings: '"opsz" 144' }}>
-                {activeLens.name}
+                {t(`lenses.${activeLens.id}`)}
               </h1>
               <span className="font-mono text-[11px] text-muted-foreground">
                 {activeLens.xHint}  ·  {activeLens.yHint}
@@ -72,27 +80,30 @@ const Index = () => {
               ) : (
                 <div className="h-[420px] flex flex-col items-center justify-center text-center">
                   <p className="font-serif italic text-lg text-muted-foreground">
-                    No items in <span className="not-italic font-medium text-foreground">{activeContext.name}</span> yet.
+                    <Trans
+                      i18nKey="matrix.empty"
+                      values={{ name: activeContextName }}
+                      components={[<span key="0" className="not-italic font-medium text-foreground" />]}
+                    />
                   </p>
                   <button
                     onClick={openNew}
                     className="mt-4 px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
                   >
-                    Add your first item
+                    {t("matrix.addFirst")}
                   </button>
                 </div>
               )}
             </div>
           </article>
 
-          {/* Mini matrices */}
           {items.length > 0 && (
             <div className="grid grid-cols-2 gap-6">
               {otherLenses.map(l => (
                 <article key={l.id} className="border border-border rounded-lg bg-card overflow-hidden ease-editorial transition-shadow hover:shadow-md">
                   <header className="px-4 py-3 border-b border-border flex items-baseline justify-between">
-                    <h2 className="font-serif text-sm">{l.name}</h2>
-                    <span className="label-mono">View</span>
+                    <h2 className="font-serif text-sm">{t(`lenses.${l.id}`)}</h2>
+                    <span className="label-mono">{t("matrix.view")}</span>
                   </header>
                   <div className="p-2 grid-paper">
                     <Matrix

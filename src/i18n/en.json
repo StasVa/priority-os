@@ -1,0 +1,93 @@
+{
+  "brand": { "name": "Priority", "suffix": "OS" },
+  "nav": {
+    "newItem": "New item",
+    "insights": "Insights",
+    "lens": "Lens",
+    "addContext": "Add context",
+    "contextNamePrompt": "Context name?"
+  },
+  "queue": {
+    "title": "Priority queue",
+    "topRecommendations": "Top recommendations",
+    "empty": "No items yet. Add one to begin.",
+    "rankedBy": "ranked by composite score",
+    "items_one": "{{count}} item",
+    "items_other": "{{count}} items"
+  },
+  "editor": {
+    "newItem": "New item",
+    "editItem": "Edit item",
+    "titlePlaceholder": "What are you deciding on?",
+    "noteLabel": "Note",
+    "notePlaceholder": "Context, hypothesis, why now…",
+    "compositeScore": "Composite score",
+    "saveChanges": "Save changes",
+    "addToContext": "Add to context",
+    "cancel": "Cancel",
+    "delete": "Delete item",
+    "close": "Close"
+  },
+  "matrix": {
+    "empty": "No items in <0>{{name}}</0> yet.",
+    "addFirst": "Add your first item",
+    "view": "View",
+    "axis": "LOW  ←  {{label}}  →  HIGH",
+    "low": "LOW",
+    "high": "HIGH"
+  },
+  "sliders": {
+    "impact": { "label": "Impact", "hint": "expected value if it works" },
+    "effort": { "label": "Effort", "hint": "cost, time, complexity" },
+    "importance": { "label": "Importance", "hint": "how critical the underlying need is" },
+    "satisfaction": { "label": "Satisfaction", "hint": "how well that need is met today" },
+    "confidence": { "label": "Confidence", "hint": "certainty in the estimates" },
+    "risk": { "label": "Risk", "hint": "downside if it goes wrong" }
+  },
+  "axes": {
+    "EFFORT": "EFFORT",
+    "IMPACT": "IMPACT",
+    "SATISFACTION": "SATISFACTION",
+    "IMPORTANCE": "IMPORTANCE",
+    "RISK": "RISK",
+    "CONFIDENCE": "CONFIDENCE"
+  },
+  "lenses": {
+    "value-effort": "Value vs Effort",
+    "importance-satisfaction": "Importance vs Satisfaction",
+    "confidence-risk": "Confidence vs Risk"
+  },
+  "quadrants": {
+    "QUICK_WINS": "Quick wins",
+    "BIG_BETS": "Big bets",
+    "FILLER": "Filler",
+    "TIME_SINKS": "Time sinks",
+    "OPPORTUNITY": "Opportunity",
+    "MAINTAIN": "Maintain",
+    "LOW_PRIORITY": "Low priority",
+    "OVER_SERVED": "Over-served",
+    "SAFE_TO_SHIP": "Safe to ship",
+    "KNOWN_RISK": "Known risk",
+    "SOFT_SIGNAL": "Soft signal",
+    "VALIDATE_FIRST": "Validate first"
+  },
+  "verdicts": {
+    "win": "Win",
+    "bet": "Bet",
+    "drop": "Drop",
+    "neutral": "Hold"
+  },
+  "recommendations": {
+    "lowConfidence": "Low confidence — validate before committing.",
+    "opportunityGap": "High importance, low satisfaction — strong opportunity gap.",
+    "quickWin": "Quick win. Schedule it this week.",
+    "highEffortThinPayoff": "High effort, thin payoff — consider dropping.",
+    "riskyUncertain": "Risky and uncertain — break into a smaller test.",
+    "bigBet": "Big bet — worth it if you can stomach the cost.",
+    "averageSignal": "Average signal — revisit when context changes."
+  },
+  "contexts": {
+    "Startup": "Startup",
+    "Personal": "Personal"
+  }
+}
