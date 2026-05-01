@@ -15,8 +15,8 @@ interface MatrixProps {
 }
 
 const PAD = 64; // padding for axis labels
-const W = 720;
-const H = 540;
+const W = 1000;
+const H = 700;
 
 export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "primary", onClick }: MatrixProps) {
   const { t } = useTranslation();
@@ -30,10 +30,18 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
   const plot = useMemo(() => {
     return items.map(it => {
       const { x, y } = lensCoords(it, lens);
-      const cx = pad + x * (w - pad * 2);
-      const cy = (h - pad) - y * (h - pad * 2);
-      const tone = verdictForLens(it, lens);
       const r = isMini ? 4 + (it.confidence / 10) * 4 : 8 + (it.confidence / 10) * 12;
+      // Safe area: keep dot fully inside matrix, never closer than r + 4 to any edge.
+      const safe = r + 4;
+      const xMin = pad + safe;
+      const xMax = w - pad - safe;
+      const yMin = pad + safe;
+      const yMax = h - pad - safe;
+      const rawCx = pad + x * (w - pad * 2);
+      const rawCy = (h - pad) - y * (h - pad * 2);
+      const cx = Math.max(xMin, Math.min(xMax, rawCx));
+      const cy = Math.max(yMin, Math.min(yMax, rawCy));
+      const tone = verdictForLens(it, lens);
       return { it, cx, cy, r, tone };
     });
   }, [items, lens, w, h, pad, isMini]);
