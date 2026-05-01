@@ -102,9 +102,6 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     }
     return computed;
   }, [plot, showLabels, w, h, pad]);
-    }
-    return result;
-  }, [plot, showLabels, w, h, pad]);
 
 
   const svgRef = useRef<SVGSVGElement | null>(null);
