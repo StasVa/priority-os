@@ -76,17 +76,17 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
 
       {/* All items block — primary navigation, not a footer */}
       {showAllBlock && (
-        <div className="border-t border-b border-stone-200 bg-stone-50 px-5 py-4">
+        <div className="border-t border-b border-border bg-muted/50 px-5 py-4">
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2 mb-3">
             <CounterPair color="hsl(var(--win))" count={counts.active} label={t("all.shortLabels.active")} />
-            <span className="text-stone-300" aria-hidden>·</span>
+            <span className="text-muted-foreground/50" aria-hidden>·</span>
             <CounterPair color="hsl(var(--neutral))" count={counts.done} label={t("all.shortLabels.done")} />
-            <span className="text-stone-300" aria-hidden>·</span>
+            <span className="text-muted-foreground/50" aria-hidden>·</span>
             <CounterPair color="hsl(var(--drop) / 0.7)" count={counts.dropped} label={t("all.shortLabels.dropped")} />
           </div>
           <button
             onClick={onViewAll}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded border border-stone-900 bg-transparent text-stone-900 font-serif text-sm hover:bg-stone-900 hover:text-stone-50 transition-colors duration-[180ms]"
+            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded border border-foreground bg-transparent text-foreground font-serif text-sm hover:bg-ink hover:text-paper transition-colors duration-[180ms]"
           >
             <span>{buttonLabel}</span>
             <span aria-hidden>→</span>
@@ -117,8 +117,8 @@ function CounterPair({ color, count, label }: { color: string; count: number; la
   return (
     <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
       <span className="inline-block w-2 h-2 rounded-full self-center" style={{ background: color }} />
-      <span className="font-mono text-sm tabular-nums text-stone-900">{count}</span>
-      <span className="font-serif text-[13px] text-stone-500">{label}</span>
+      <span className="font-mono text-sm tabular-nums text-foreground">{count}</span>
+      <span className="font-serif text-[13px] text-muted-foreground">{label}</span>
     </span>
   );
 }
