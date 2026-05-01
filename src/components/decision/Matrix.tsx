@@ -21,7 +21,7 @@ const CLUSTER_DIST = 6; // px distance threshold (in svg viewBox units)
 
 type Dot = { it: Item; cx: number; cy: number; r: number; tone: Tone };
 
-type Node = {
+type MatrixNode = {
   id: string;             // cluster id (first item's id)
   items: Item[];          // 1 (singleton) or 2+ (cluster)
   cx: number;
@@ -62,7 +62,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
   }, [items, lens, w, h, pad, isMini]);
 
   // 2) Cluster dots within CLUSTER_DIST px of each other (Euclidean, against existing groups).
-  const nodes = useMemo<Node[]>(() => {
+  const nodes = useMemo<MatrixNode[]>(() => {
     const groups: Dot[][] = [];
     for (const d of plot) {
       let added = false;
@@ -105,7 +105,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
 
   // Map any item id → its containing node (so hovering an item in PriorityQueue still highlights the cluster).
   const itemToNode = useMemo(() => {
-    const m = new Map<string, Node>();
+    const m = new Map<string, MatrixNode>();
     for (const n of nodes) for (const it of n.items) m.set(it.id, n);
     return m;
   }, [nodes]);
@@ -168,7 +168,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
   const tipRef = useRef<HTMLDivElement | null>(null);
 
   // Cluster popover state
-  const [popoverNode, setPopoverNode] = useState<Node | null>(null);
+  const [popoverNode, setPopoverNode] = useState<MatrixNode | null>(null);
   const [popoverPos, setPopoverPos] = useState<{ left: number; top: number } | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
 
@@ -286,7 +286,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     }
   };
 
-  const handleNodeClick = (n: Node, evt: React.MouseEvent) => {
+  const handleNodeClick = (n: MatrixNode, evt: React.MouseEvent) => {
     evt.stopPropagation();
     if (isMini) {
       // mini matrices: clicking just triggers the parent onClick (lens switch).
