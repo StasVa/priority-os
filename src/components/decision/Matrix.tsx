@@ -114,6 +114,17 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
         </g>
       )}
 
+      {/* Always-visible labels */}
+      {showLabels && (
+        <g style={{ fontFamily: "Fraunces, serif", fontSize: 11, fill: "hsl(var(--foreground))" }}>
+          {labels.map(l => (
+            l.visible && hoveredId !== l.id ? (
+              <text key={l.id} x={l.x} y={l.y + 4} style={{ pointerEvents: "none" }}>{l.text}</text>
+            ) : null
+          ))}
+        </g>
+      )}
+
       {/* Dots */}
       {plot.map(({ it, cx, cy, r, tone }) => {
         const hovered = hoveredId === it.id;
