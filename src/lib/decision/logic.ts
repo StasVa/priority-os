@@ -1,46 +1,54 @@
 import type { Item, LensId, Tone } from "./types";
 
-export const LENSES: { id: LensId; name: string; xLabel: string; yLabel: string; xHint: string; yHint: string; quadrants: Record<"tl" | "tr" | "bl" | "br", { label: string; tone: Tone }> }[] = [
+export type QuadrantKey =
+  | "QUICK_WINS" | "BIG_BETS" | "FILLER" | "TIME_SINKS"
+  | "OPPORTUNITY" | "MAINTAIN" | "LOW_PRIORITY" | "OVER_SERVED"
+  | "SAFE_TO_SHIP" | "KNOWN_RISK" | "SOFT_SIGNAL" | "VALIDATE_FIRST";
+
+export type AxisKey = "EFFORT" | "IMPACT" | "SATISFACTION" | "IMPORTANCE" | "RISK" | "CONFIDENCE";
+
+export type RecommendationKey =
+  | "lowConfidence" | "opportunityGap" | "quickWin"
+  | "highEffortThinPayoff" | "riskyUncertain" | "bigBet" | "averageSignal";
+
+export const LENSES: { id: LensId; xLabel: AxisKey; yLabel: AxisKey; xHint: string; yHint: string; quadrants: Record<"tl" | "tr" | "bl" | "br", { key: QuadrantKey; tone: Tone }> }[] = [
   {
     id: "value-effort",
-    name: "Value vs Effort",
     xLabel: "EFFORT",
     yLabel: "IMPACT",
     xHint: "x: effort (low → high, inverted)",
     yHint: "y: impact",
     quadrants: {
-      tl: { label: "QUICK WINS", tone: "win" },     // low effort, high impact
-      tr: { label: "BIG BETS",   tone: "bet" },     // high effort, high impact
-      bl: { label: "FILLER",     tone: "neutral" }, // low effort, low impact
-      br: { label: "TIME SINKS", tone: "drop" },    // high effort, low impact
+      tl: { key: "QUICK_WINS", tone: "win" },
+      tr: { key: "BIG_BETS",   tone: "bet" },
+      bl: { key: "FILLER",     tone: "neutral" },
+      br: { key: "TIME_SINKS", tone: "drop" },
     },
   },
   {
     id: "importance-satisfaction",
-    name: "Importance vs Satisfaction",
     xLabel: "SATISFACTION",
     yLabel: "IMPORTANCE",
     xHint: "x: satisfaction (low → high, inverted)",
     yHint: "y: importance",
     quadrants: {
-      tl: { label: "OPPORTUNITY",  tone: "win" },     // low sat, high imp
-      tr: { label: "MAINTAIN",     tone: "neutral" }, // high sat, high imp
-      bl: { label: "LOW PRIORITY", tone: "neutral" }, // low sat, low imp
-      br: { label: "OVER-SERVED",  tone: "drop" },    // high sat, low imp
+      tl: { key: "OPPORTUNITY",  tone: "win" },
+      tr: { key: "MAINTAIN",     tone: "neutral" },
+      bl: { key: "LOW_PRIORITY", tone: "neutral" },
+      br: { key: "OVER_SERVED",  tone: "drop" },
     },
   },
   {
     id: "confidence-risk",
-    name: "Confidence vs Risk",
     xLabel: "RISK",
     yLabel: "CONFIDENCE",
     xHint: "x: risk (low → high, inverted)",
     yHint: "y: confidence",
     quadrants: {
-      tl: { label: "SAFE TO SHIP",   tone: "win" },
-      tr: { label: "KNOWN RISK",     tone: "bet" },
-      bl: { label: "SOFT SIGNAL",    tone: "neutral" },
-      br: { label: "VALIDATE FIRST", tone: "drop" },
+      tl: { key: "SAFE_TO_SHIP",   tone: "win" },
+      tr: { key: "KNOWN_RISK",     tone: "bet" },
+      bl: { key: "SOFT_SIGNAL",    tone: "neutral" },
+      br: { key: "VALIDATE_FIRST", tone: "drop" },
     },
   },
 ];
@@ -49,13 +57,6 @@ export function compositeScore(it: Item): number {
   return (it.impact * it.importance * it.confidence) / (Math.max(1, it.effort) * (1 + it.risk / 10));
 }
 
-/**
- * For each lens, x and y are normalized 0..1 from the item's raw values.
- * "Inverted" axes mean: low raw value sits on the LEFT but represents the
- * "good" side conceptually — e.g. low effort is on the left for value-effort.
- * We just plot raw value on x (0 = left, 10 = right). Quadrant labels above
- * are written for that orientation.
- */
 export function lensCoords(item: Item, lens: LensId): { x: number; y: number } {
   switch (lens) {
     case "value-effort":
@@ -76,21 +77,21 @@ export function verdictForLens(item: Item, lens: LensId): Tone {
   return q.tone;
 }
 
-export function recommendation(it: Item): string {
-  if (it.confidence <= 4) return "Low confidence — validate before committing.";
-  if (it.importance >= 8 && it.satisfaction <= 3) return "High importance, low satisfaction — strong opportunity gap.";
-  if (it.impact >= 7 && it.effort <= 4) return "Quick win. Schedule it this week.";
-  if (it.effort >= 8 && it.impact <= 4) return "High effort, thin payoff — consider dropping.";
-  if (it.risk >= 7 && it.confidence <= 5) return "Risky and uncertain — break into a smaller test.";
-  if (it.impact >= 7 && it.effort >= 7) return "Big bet — worth it if you can stomach the cost.";
-  return "Average signal — revisit when context changes.";
+export function recommendationKey(it: Item): RecommendationKey {
+  if (it.confidence <= 4) return "lowConfidence";
+  if (it.importance >= 8 && it.satisfaction <= 3) return "opportunityGap";
+  if (it.impact >= 7 && it.effort <= 4) return "quickWin";
+  if (it.effort >= 8 && it.impact <= 4) return "highEffortThinPayoff";
+  if (it.risk >= 7 && it.confidence <= 5) return "riskyUncertain";
+  if (it.impact >= 7 && it.effort >= 7) return "bigBet";
+  return "averageSignal";
 }
 
-export const TONE_CLASSES: Record<Tone, { dot: string; text: string; bg: string; ring: string; label: string }> = {
-  win:     { dot: "fill-verdict-win",     text: "text-verdict-win-strong",     bg: "bg-verdict-win-bg",     ring: "ring-verdict-win",     label: "Win" },
-  bet:     { dot: "fill-verdict-bet",     text: "text-verdict-bet-strong",     bg: "bg-verdict-bet-bg",     ring: "ring-verdict-bet",     label: "Bet" },
-  drop:    { dot: "fill-verdict-drop",    text: "text-verdict-drop-strong",    bg: "bg-verdict-drop-bg",    ring: "ring-verdict-drop",    label: "Drop" },
-  neutral: { dot: "fill-verdict-neutral", text: "text-verdict-neutral-strong", bg: "bg-verdict-neutral-bg", ring: "ring-verdict-neutral", label: "Hold" },
+export const TONE_CLASSES: Record<Tone, { dot: string; text: string; bg: string; ring: string; verdictKey: Tone }> = {
+  win:     { dot: "fill-verdict-win",     text: "text-verdict-win-strong",     bg: "bg-verdict-win-bg",     ring: "ring-verdict-win",     verdictKey: "win" },
+  bet:     { dot: "fill-verdict-bet",     text: "text-verdict-bet-strong",     bg: "bg-verdict-bet-bg",     ring: "ring-verdict-bet",     verdictKey: "bet" },
+  drop:    { dot: "fill-verdict-drop",    text: "text-verdict-drop-strong",    bg: "bg-verdict-drop-bg",    ring: "ring-verdict-drop",    verdictKey: "drop" },
+  neutral: { dot: "fill-verdict-neutral", text: "text-verdict-neutral-strong", bg: "bg-verdict-neutral-bg", ring: "ring-verdict-neutral", verdictKey: "neutral" },
 };
 
 export function toneHsl(tone: Tone): string {
