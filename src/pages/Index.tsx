@@ -210,7 +210,7 @@ const Index = () => {
                     <h2 className="font-serif text-xs">{t(`lenses.${l.id}`)}</h2>
                     <span className="label-mono">{t("matrix.view")}</span>
                   </header>
-                  <div className="p-1.5 grid-paper" style={{ height: 140 }}>
+                  <div className="p-1.5 grid-paper">
                     <Matrix
                       lens={l.id}
                       items={items}
