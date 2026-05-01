@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { MoreHorizontal, X } from "lucide-react";
+import { ChevronDown, MoreHorizontal, X } from "lucide-react";
 import type { Item, ItemStatus } from "@/lib/decision/types";
 import { TONE_CLASSES, compositeScore, verdictForLens } from "@/lib/decision/logic";
 import { StatusConfirm, statusToToastKey } from "@/components/decision/StatusConfirm";
@@ -14,6 +14,7 @@ interface AllItemsViewProps {
   onEdit: (id: string) => void;
   onSetStatus: (id: string, status: ItemStatus, note?: string) => void;
   onDelete: (id: string) => void;
+  onUpdateItem: (draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => void;
 }
 
 type Tab = "active" | "done" | "dropped";
