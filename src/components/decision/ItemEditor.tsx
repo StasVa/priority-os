@@ -19,7 +19,7 @@ const SLIDER_KEYS: Array<keyof Pick<Item, "impact" | "effort" | "importance" | "
 const empty = (): Item => ({
   id: "", title: "", note: "",
   impact: 5, effort: 5, importance: 5, satisfaction: 5, confidence: 5, risk: 3,
-  createdAt: 0, updatedAt: 0,
+  createdAt: 0, updatedAt: 0, status: "active",
 });
 
 export function ItemEditor({ open, initial, onClose, onSave, onDelete }: ItemEditorProps) {
