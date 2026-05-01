@@ -141,6 +141,7 @@ const Index = () => {
   };
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const handleCreateProject = (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => {
     addProject(draft.name, {
