@@ -149,7 +149,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     pos.top = Math.max(4, Math.min(pos.top, vh - tipH - 4));
 
     setTipPos({ ...pos, placement });
-  }, [hoveredDot?.id, hoveredDot?.cx, hoveredDot?.cy, hoveredDot?.r, isMini, w, h]);
+  }, [hoveredDot?.it.id, hoveredDot?.cx, hoveredDot?.cy, hoveredDot?.r, isMini, w, h]);
 
   const tooltipNote = hoveredDot ? (() => {
     const n = (hoveredDot.it.note ?? "").trim();
