@@ -35,6 +35,35 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     });
   }, [items, lens, w, h, pad, isMini]);
 
+  // Always-visible labels (primary only, ≤12 items). Resolve vertical overlaps with ±14px offsets; hide if still colliding.
+  const showLabels = !isMini && items.length > 0 && items.length <= 12;
+  const labels = useMemo(() => {
+    if (!showLabels) return [] as { id: string; x: number; y: number; text: string; visible: boolean }[];
+    const charW = 6.2; // approx for Fraunces 11px
+    const labelH = 14;
+    const placed: { x1: number; x2: number; y1: number; y2: number }[] = [];
+    const offsets = [0, -14, 14, -28, 28];
+    return plot.map(({ it, cx, cy, r }) => {
+      const lx = cx + r + 8;
+      const width = it.title.length * charW;
+      let visible = false;
+      let ly = cy;
+      for (const off of offsets) {
+        const tryY = cy + off;
+        const box = { x1: lx, x2: lx + width, y1: tryY - labelH / 2, y2: tryY + labelH / 2 };
+        const collides = placed.some(p => !(box.x2 < p.x1 || box.x1 > p.x2 || box.y2 < p.y1 || box.y1 > p.y2));
+        if (!collides) {
+          placed.push(box);
+          ly = tryY;
+          visible = true;
+          break;
+        }
+      }
+      return { id: it.id, x: lx, y: ly, text: it.title, visible };
+    });
+  }, [plot, showLabels]);
+
+
   return (
     <svg
       viewBox={`0 0 ${w} ${h}`}
