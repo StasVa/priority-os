@@ -126,11 +126,11 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
   );
 }
 
-function CounterPair({ color, count, label }: { color: string; count: number; label: string }) {
+function CounterPair({ color, count, label, countColor }: { color: string; count: number; label: string; countColor?: string }) {
   return (
     <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
       <span className="inline-block w-2 h-2 rounded-full self-center" style={{ background: color }} />
-      <span className="font-mono text-sm tabular-nums text-foreground">{count}</span>
+      <span className="font-mono text-sm tabular-nums" style={{ color: countColor ?? "hsl(var(--foreground))" }}>{count}</span>
       <span className="font-serif text-[13px] text-muted-foreground">{label}</span>
     </span>
   );
