@@ -237,7 +237,7 @@ const Index = () => {
                 <article
                   key={l.id}
                   className="border border-border rounded-lg bg-card overflow-hidden ease-editorial transition-shadow hover:shadow-md cursor-pointer"
-                  onClick={() => setLens(l.id)}
+                  onClick={() => handleLensChange(l.id)}
                 >
                   <header className="px-3 py-2 border-b border-border flex items-baseline justify-between">
                     <h2 className="font-serif text-xs">{t(`lenses.${l.id}`)}</h2>
