@@ -11,6 +11,7 @@ import { LensInsight } from "@/components/decision/LensInsight";
 import { WelcomeOnboarding } from "@/components/decision/WelcomeOnboarding";
 import { FirstHint } from "@/components/decision/FirstHint";
 import { ProjectSettingsDrawer } from "@/components/decision/ProjectSettingsDrawer";
+import { HelpDrawer } from "@/components/decision/HelpDrawer";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import type { Item, LensId, ProjectColor } from "@/lib/decision/types";
 import { autoEmojiForProject } from "@/lib/decision/projectEmoji";
