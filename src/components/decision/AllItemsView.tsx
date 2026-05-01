@@ -351,11 +351,63 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                     />
                   </li>
                 );
-                  </li>
-                );
               })}
             </ul>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface InlineEditPanelProps {
+  item: Item;
+  open: boolean;
+  onChange: (patch: Partial<Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence">>) => void;
+}
+
+const PANEL_KEYS: Array<keyof Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence">> = [
+  "impact", "effort", "importance", "satisfaction", "confidence",
+];
+
+function InlineEditPanel({ item, open, onChange }: InlineEditPanelProps) {
+  const { t } = useTranslation();
+  const ref = useRef<HTMLDivElement>(null);
+  const [maxH, setMaxH] = useState(0);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    setMaxH(open ? ref.current.scrollHeight : 0);
+  }, [open, item]);
+
+  return (
+    <div
+      style={{ maxHeight: maxH, transition: "max-height 240ms ease-out" }}
+      className="overflow-hidden"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div ref={ref} className="border-t border-stone-100 bg-stone-50/50 px-2 py-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4 pl-10 pr-4">
+          {PANEL_KEYS.map(key => {
+            const value = item[key];
+            return (
+              <div key={key} className="flex items-center gap-3">
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-stone-500 w-28 shrink-0">
+                  {t(`sliders.${key}.label`)}
+                </span>
+                <input
+                  type="range"
+                  min={0}
+                  max={10}
+                  step={1}
+                  value={value}
+                  onChange={(e) => onChange({ [key]: Number(e.target.value) } as Partial<Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence">>)}
+                  className="flex-1 accent-foreground"
+                />
+                <span className="font-mono text-sm tabular-nums w-6 text-right text-stone-700">{value}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
