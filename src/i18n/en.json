@@ -150,5 +150,15 @@
     "markedDropped": "Dropped",
     "restored": "Restored to active",
     "undo": "Undo"
+  },
+  "references": {
+    "title": "References",
+    "add": "Add reference",
+    "placeholder": "Paste URL or drag a link here",
+    "placeholderEmpty": "Link to Jira, Notion, Figma...",
+    "labelPlaceholder": "Optional label, e.g. 'Tech spec'",
+    "invalid": "Not a valid URL",
+    "count_one": "{{count}} reference",
+    "count_other": "{{count}} references"
   }
 }
