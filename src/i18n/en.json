@@ -124,6 +124,7 @@
     },
     "actions": {
       "edit": "Edit",
+      "editDetails": "Edit details",
       "markDone": "Mark as done",
       "markDropped": "Mark as dropped",
       "restore": "Restore to active",
