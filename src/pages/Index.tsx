@@ -13,7 +13,7 @@ import { FirstHint } from "@/components/decision/FirstHint";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import type { Item, LensId } from "@/lib/decision/types";
 import { LENSES } from "@/lib/decision/logic";
-import { isFirstVisit, markOnboarded, seed as buildSeed } from "@/lib/decision/storage";
+import { isFirstVisit, markOnboarded, skipSeed } from "@/lib/decision/storage";
 
 const Index = () => {
   const { t } = useTranslation();
@@ -52,9 +52,7 @@ const Index = () => {
   };
 
   const handleWelcomeSkip = () => {
-    // Load demo seed (one default context with demo items) so user has something to explore.
     try {
-      const { skipSeed } = await import("@/lib/decision/storage");
       const defaultName = t("contexts.My decisions", { defaultValue: "My decisions" });
       const s = skipSeed(defaultName);
       localStorage.setItem("decision-os.v1", JSON.stringify(s));
