@@ -54,7 +54,10 @@ export const LENSES: { id: LensId; xLabel: AxisKey; yLabel: AxisKey; xHint: stri
 ];
 
 export function compositeScore(it: Item): number {
-  return (it.impact * it.importance * it.confidence) / (Math.max(1, it.effort) * (1 + it.risk / 10));
+  const opportunityGap = it.importance * (1 - it.satisfaction / 10);
+  const numerator = it.impact * opportunityGap * it.confidence;
+  const denominator = Math.max(1, it.effort) * (1 + it.risk / 5);
+  return numerator / denominator;
 }
 
 export function lensCoords(item: Item, lens: LensId): { x: number; y: number } {
