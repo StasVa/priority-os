@@ -10,14 +10,20 @@ import { AllItemsView } from "@/components/decision/AllItemsView";
 import { LensInsight } from "@/components/decision/LensInsight";
 import { WelcomeOnboarding } from "@/components/decision/WelcomeOnboarding";
 import { FirstHint } from "@/components/decision/FirstHint";
+import { ProjectSettingsDrawer } from "@/components/decision/ProjectSettingsDrawer";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
-import type { Item, LensId } from "@/lib/decision/types";
+import type { Item, LensId, ProjectColor } from "@/lib/decision/types";
 import { LENSES } from "@/lib/decision/logic";
 import { isFirstVisit, markOnboarded, skipSeed } from "@/lib/decision/storage";
 
 const Index = () => {
   const { t } = useTranslation();
-  const { state, activeProject, setActiveProject, addProject, upsertItem, deleteItem, setItemStatus } = useDecisionStore();
+  const {
+    state, activeProject,
+    setActiveProject, addProject, updateProject, deleteProject,
+    archiveProject, restoreProject, toggleFavoriteProject,
+    upsertItem, deleteItem, setItemStatus,
+  } = useDecisionStore();
 
   const [lens, setLens] = useState<LensId>("value-effort");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -117,9 +123,10 @@ const Index = () => {
     setEditorOpen(true);
   };
 
-  const handleAddProject = () => {
-    const name = window.prompt(t("projects.namePrompt"))?.trim();
-    if (name) addProject(name);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const handleCreateProject = (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => {
+    addProject(draft.name, { emoji: draft.emoji, color: draft.color, description: draft.description });
   };
 
   // Translate seed project names if they match known keys.
@@ -129,6 +136,10 @@ const Index = () => {
       name: t(`projects.${p.name}`, { defaultValue: p.name }),
       activeCount: p.items.filter(i => i.status === "active").length,
       lastAccessedAt: p.lastAccessedAt,
+      emoji: p.emoji,
+      color: p.color,
+      isFavorite: p.isFavorite,
+      archivedAt: p.archivedAt,
     })),
     [state.projects, t],
   );
@@ -141,9 +152,12 @@ const Index = () => {
         projects={projectsForSwitcher}
         activeProjectId={state.activeProjectId}
         activeProjectName={activeProjectName}
+        activeProjectEmoji={activeProject?.emoji}
+        activeProjectColor={activeProject?.color}
         activeProjectCount={activeProjectCount}
         onSelectProject={setActiveProject}
-        onAddProject={handleAddProject}
+        onCreateProject={handleCreateProject}
+        onOpenSettings={() => setSettingsOpen(true)}
         insightsOn={insightsOn}
         onToggleInsights={() => setInsightsOn(v => !v)}
         onNewItem={openNew}
@@ -180,7 +194,7 @@ const Index = () => {
                   <p className="font-serif italic text-lg text-muted-foreground">
                     <Trans
                       i18nKey="matrix.empty"
-                      values={{ name: activeProjectName }}
+                      values={{ name: `${activeProject?.emoji ? activeProject.emoji + " " : ""}${activeProjectName}` }}
                       components={[<span key="0" className="not-italic font-medium text-foreground" />]}
                     />
                   </p>
@@ -250,12 +264,23 @@ const Index = () => {
       <AllItemsView
         open={allOpen}
         onClose={() => setAllOpen(false)}
-        contextName={activeProjectName}
+        contextName={`${activeProject?.emoji ? activeProject.emoji + " " : ""}${activeProjectName}`}
         items={allItems}
         onEdit={openEdit}
         onSetStatus={setItemStatus}
         onDelete={deleteItem}
         onUpdateItem={upsertItem}
+      />
+
+      <ProjectSettingsDrawer
+        open={settingsOpen}
+        project={activeProject ?? null}
+        onClose={() => setSettingsOpen(false)}
+        onUpdate={updateProject}
+        onArchive={archiveProject}
+        onRestore={restoreProject}
+        onDelete={deleteProject}
+        onToggleFavorite={toggleFavoriteProject}
       />
 
       <WelcomeOnboarding

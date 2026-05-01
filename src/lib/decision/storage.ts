@@ -7,12 +7,14 @@ function uid(): string {
 }
 
 function makeProject(name: string, items: Item[] = []): Project {
+  const now = Date.now();
   return {
     id: uid(),
     name,
     items,
     isFavorite: false,
-    lastAccessedAt: Date.now(),
+    lastAccessedAt: now,
+    createdAt: now,
     visibility: "private",
   };
 }
@@ -129,9 +131,12 @@ export function loadState(): DecisionState {
       })) as Item[],
       isFavorite: p.isFavorite ?? false,
       lastAccessedAt: p.lastAccessedAt ?? now,
+      createdAt: p.createdAt ?? p.lastAccessedAt ?? now,
       visibility: p.visibility ?? "private",
       archivedAt: p.archivedAt,
       color: p.color,
+      emoji: p.emoji,
+      description: p.description,
     }));
     const activeProjectId =
       parsed.activeProjectId ?? parsed.activeContextId ?? projects[0]?.id ?? "";

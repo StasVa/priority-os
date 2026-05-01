@@ -30,15 +30,22 @@ export interface Item {
 
 export type ProjectVisibility = "private";
 
+export type ProjectColor =
+  | "neutral" | "sage" | "ochre" | "rose"
+  | "indigo" | "plum" | "moss" | "ink";
+
 export interface Project {
   id: string;
   name: string;
   items: Item[];
   isFavorite: boolean;
   lastAccessedAt: number;
+  createdAt?: number;
   archivedAt?: string;
   visibility: ProjectVisibility;
-  color?: string;
+  color?: ProjectColor;
+  emoji?: string;
+  description?: string;
 }
 
 /** @deprecated use Project */

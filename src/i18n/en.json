@@ -20,7 +20,44 @@
     "empty": "No projects yet.",
     "Startup": "Startup",
     "Personal": "Personal",
-    "My decisions": "My decisions"
+    "My decisions": "My decisions",
+    "settings": {
+      "title": "Project settings",
+      "gearTooltip": "Project settings",
+      "name": "Name",
+      "namePlaceholder": "Project name",
+      "description": "Description",
+      "descriptionPlaceholder": "What's this project about?",
+      "color": "Color",
+      "emoji": "Pick emoji",
+      "removeEmoji": "Remove",
+      "stats": "Stats",
+      "created": "Created · {{time}}",
+      "lastActivity": "Last activity · {{time}}",
+      "comingSoon": "Coming soon",
+      "members": "Members",
+      "sharing": "Sharing",
+      "integrations": "Jira / Linear integration",
+      "addFavorite": "Add to favorites",
+      "removeFavorite": "Remove from favorites",
+      "archive": "Archive project",
+      "archiveConfirm": "Archive this project? It will be hidden from the main navigation but you can restore it later.",
+      "delete": "Delete project",
+      "deleteConfirm": "Delete this project and all {{count}} items? This cannot be undone.",
+      "deleteConfirmType": "Type {{name}} to confirm",
+      "restore": "Restore project",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "create": {
+      "title": "New project",
+      "button": "Create project",
+      "back": "Back"
+    },
+    "dropdown": {
+      "archived_one": "{{count}} archived",
+      "archived_other": "{{count}} archived"
+    }
   },
   "queue": {
     "title": "Priority queue",
