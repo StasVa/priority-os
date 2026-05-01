@@ -213,8 +213,8 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       {/* Axis labels (bidirectional) */}
       {!isMini && (
         <g style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.2em", fill: "hsl(var(--ink))", textTransform: "uppercase" }}>
-          <text x={pad + (w - pad * 2) / 2} y={h - 18} textAnchor="middle">{t("matrix.axis", { label: t(`axes.${def.xLabel}`) })}</text>
-          <text x={20} y={pad + (h - pad * 2) / 2} textAnchor="middle" transform={`rotate(-90, 20, ${pad + (h - pad * 2) / 2})`}>{t("matrix.axis", { label: t(`axes.${def.yLabel}`) })}</text>
+          <text x={pad + (w - pad * 2) / 2} y={h - 8} textAnchor="middle">{t("matrix.axis", { label: t(`axes.${def.xLabel}`) })}</text>
+          <text x={10} y={pad + (h - pad * 2) / 2} textAnchor="middle" transform={`rotate(-90, 10, ${pad + (h - pad * 2) / 2})`}>{t("matrix.axis", { label: t(`axes.${def.yLabel}`) })}</text>
         </g>
       )}
 
