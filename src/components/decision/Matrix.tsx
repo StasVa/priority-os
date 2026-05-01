@@ -131,10 +131,10 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     const charW = 7;
     const labelH = 14;
     const gap = 8;
-    const rightEdge = w - pad - 4;
-    const leftEdge = pad + 4;
-    const topEdge = pad + 4;
-    const bottomEdge = h - pad - 4;
+    const rightEdge = w - padR - 4;
+    const leftEdge = padL + 4;
+    const topEdge = padT + 4;
+    const bottomEdge = h - padB - 4;
 
     const computed: L[] = nodes.map(n => {
       const text = n.isCluster
