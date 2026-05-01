@@ -19,8 +19,8 @@ interface AllItemsViewProps {
   onUpdateItem: (draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => void;
 }
 
-type Tab = "active" | "done" | "dropped";
-type SortKey = "score" | "title" | "added" | "resolved";
+type Tab = "active" | "in_progress" | "done" | "dropped";
+type SortKey = "score" | "title" | "added" | "started" | "resolved";
 
 const TAB_KEY = "priority-os.all-items.tab";
 
@@ -87,6 +87,7 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
 
   const counts = useMemo(() => ({
     active: items.filter(i => i.status === "active").length,
+    in_progress: items.filter(i => i.status === "in_progress").length,
     done: items.filter(i => i.status === "done").length,
     dropped: items.filter(i => i.status === "dropped").length,
   }), [items]);
@@ -104,6 +105,11 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
       switch (sort) {
         case "title": return a.it.title.localeCompare(b.it.title);
         case "added": return b.it.createdAt - a.it.createdAt;
+        case "started": {
+          const as = a.it.startedAt ? new Date(a.it.startedAt).getTime() : 0;
+          const bs = b.it.startedAt ? new Date(b.it.startedAt).getTime() : 0;
+          return bs - as;
+        }
         case "resolved": {
           const ar = a.it.resolvedAt ? new Date(a.it.resolvedAt).getTime() : 0;
           const br = b.it.resolvedAt ? new Date(b.it.resolvedAt).getTime() : 0;
@@ -127,7 +133,9 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
 
   const sortOptions: SortKey[] = (tab === "active")
     ? ["score", "title", "added"]
-    : ["score", "title", "added", "resolved"];
+    : (tab === "in_progress")
+      ? ["score", "title", "added", "started"]
+      : ["score", "title", "added", "resolved"];
 
   const doStatus = (id: string, status: ItemStatus, note?: string) => {
     onSetStatus(id, status, note);
@@ -175,7 +183,7 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
           <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
             <div className="inline-flex items-center gap-2">
               <div className="inline-flex items-center rounded-full border border-border bg-card overflow-hidden">
-                {(["active", "done", "dropped"] as Tab[]).map((t2, idx) => {
+                {(["active", "in_progress", "done", "dropped"] as Tab[]).map((t2, idx) => {
                   const active = tab === t2;
                   const isActiveTab = t2 === "active";
                   const level = focusLevelFor(counts.active);
