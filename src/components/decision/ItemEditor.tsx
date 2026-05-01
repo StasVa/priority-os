@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Trash2, X } from "lucide-react";
 import type { Item, ItemStatus, Reference } from "@/lib/decision/types";
 import { compositeScore, recommendationKey } from "@/lib/decision/logic";
-import { StatusConfirm, statusToToastKey } from "@/components/decision/StatusConfirm";
+import { statusToToastKey } from "@/components/decision/StatusConfirm";
 import { ReferenceList } from "@/components/decision/ReferenceList";
 
 interface ItemEditorProps {
