@@ -23,7 +23,7 @@ export function LeftRail() {
     <TooltipProvider delayDuration={200}>
       <nav
         aria-label={t("sidebar.views.title")}
-        className="w-[60px] shrink-0 border-r border-border bg-card flex flex-col items-center justify-center gap-3 sticky top-0 h-screen self-start"
+        className="w-[60px] shrink-0 border-r border-border bg-card flex flex-col justify-center gap-3 px-[10px] sticky top-0 h-screen self-start"
       >
         {ITEMS.map((item) => {
           const Icon = item.icon;
@@ -36,7 +36,7 @@ export function LeftRail() {
                   end={item.end}
                   aria-label={label}
                   className={({ isActive }) =>
-                    `flex items-center justify-center w-10 h-10 rounded-md ease-editorial transition-colors ${
+                    `flex items-center justify-center w-full h-10 rounded-md ease-editorial transition-colors ${
                       isActive
                         ? "bg-secondary text-foreground"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
