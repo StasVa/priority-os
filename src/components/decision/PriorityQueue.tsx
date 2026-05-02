@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router-dom";
+import { CalendarDays, LayoutGrid, RotateCcw } from "lucide-react";
 import type { Item, LensId } from "@/lib/decision/types";
 import { TONE_CLASSES, compositeScore, recommendationKey, verdictForLens } from "@/lib/decision/logic";
 import { RefStack } from "./RefStack";
