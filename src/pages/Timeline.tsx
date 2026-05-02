@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import { Check, ChevronDown, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 import { TopBar } from "@/components/decision/TopBar";
+import { LeftRail } from "@/components/decision/LeftRail";
 import { ItemEditor } from "@/components/decision/ItemEditor";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import type { Item, ProjectColor } from "@/lib/decision/types";
