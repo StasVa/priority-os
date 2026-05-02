@@ -125,7 +125,7 @@ interface PositionAcrossLensesProps {
 
 export function PositionAcrossLenses({ draft, contextItems, t, sectionLabel }: PositionAcrossLensesProps) {
   const others = useMemo(
-    () => contextItems.filter(i => i.id !== draft.id && i.status === "active"),
+    () => contextItems.filter(i => i.id !== draft.id && (i.status === "active" || i.status === "in_progress")),
     [contextItems, draft.id],
   );
 
