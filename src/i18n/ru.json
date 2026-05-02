@@ -516,5 +516,13 @@
       "unchanged_many": "{{count}} без изменений",
       "unchanged_other": "{{count}} без изменений"
     }
+  },
+  "sidebar": {
+    "views": {
+      "title": "Виды",
+      "matrix": "Матрица",
+      "timeline": "Хронология",
+      "review": "Пересмотр"
+    }
   }
 }

@@ -473,5 +473,13 @@
       "unchanged_one": "{{count}} sin cambios",
       "unchanged_other": "{{count}} sin cambios"
     }
+  },
+  "sidebar": {
+    "views": {
+      "title": "Vistas",
+      "matrix": "Matriz",
+      "timeline": "Cronología",
+      "review": "Revisión"
+    }
   }
 }
