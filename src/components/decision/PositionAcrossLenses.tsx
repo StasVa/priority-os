@@ -71,11 +71,21 @@ function PositionMini({ lens, draft, others }: PositionMiniProps) {
       {/* other items — small, faded, clustered */}
       {otherClusters.map(d => {
         const r = d.count > 1 ? 4 : 3;
+        const ringR = r + 2 + 0.5; // 2px gap + half stroke (1px)
         return (
           <g key={d.id}>
             <circle cx={d.cx} cy={d.cy} r={r}
               fill={toneHsl(d.tone)} fillOpacity={0.5}
             />
+            {d.hasInProgress && (
+              <circle cx={d.cx} cy={d.cy} r={ringR}
+                fill="none"
+                stroke={toneHsl(d.ringTone)}
+                strokeOpacity={0.5}
+                strokeWidth={1}
+                style={{ pointerEvents: "none" }}
+              />
+            )}
             {d.count > 1 && (
               <text
                 x={d.cx} y={d.cy}
