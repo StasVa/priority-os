@@ -41,7 +41,6 @@ const Index = () => {
     });
   };
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [insightsOn, setInsightsOn] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<Item | null>(null);
   const [allOpen, setAllOpen] = useState(false);
