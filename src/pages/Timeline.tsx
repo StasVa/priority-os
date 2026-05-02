@@ -154,7 +154,9 @@ const Timeline = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground flex">
+      <LeftRail />
+      <div className="flex-1 min-w-0 flex flex-col">
       <TopBar
         projects={projectsForSwitcher}
         activeProjectId={state.activeProjectId}
