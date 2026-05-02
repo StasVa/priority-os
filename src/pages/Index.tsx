@@ -8,6 +8,7 @@ import { PriorityQueue } from "@/components/decision/PriorityQueue";
 import { ItemEditor } from "@/components/decision/ItemEditor";
 import { AllItemsView } from "@/components/decision/AllItemsView";
 // LensInsight intentionally not rendered; kept in codebase for potential reuse.
+import { LeftRail } from "@/components/decision/LeftRail";
 import { WelcomeOnboarding } from "@/components/decision/WelcomeOnboarding";
 import { FirstHint } from "@/components/decision/FirstHint";
 import { ProjectSettingsDrawer } from "@/components/decision/ProjectSettingsDrawer";
@@ -307,6 +308,7 @@ const Index = () => {
       />
 
       <HelpDrawer open={helpOpen} onClose={() => setHelpOpen(false)} />
+      </div>
     </div>
   );
 };
