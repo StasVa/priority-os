@@ -94,7 +94,19 @@
     "markInProgress": "Démarrer",
     "backToActive": "Remettre en actif",
     "drop": "Abandonner",
-    "positionAcrossLenses": "Position selon les lentilles"
+    "positionAcrossLenses": "Position selon les lentilles",
+    "startWorkingDialog": {
+      "heading": "Démarrer le travail sur « {{title}} »",
+      "dateQuestion": "Quand t'engages-tu à terminer ?",
+      "skipNoDate": "Passer — sans date",
+      "cancel": "Annuler",
+      "start": "Démarrer",
+      "addTargetDate": "+ Ajouter une date cible",
+      "editTargetDate": "Modifier la date cible",
+      "targetDateLabel": "Date cible",
+      "pickDate": "Choisir une date",
+      "save": "Enregistrer"
+    }
   },
   "matrix": {
     "empty": "Aucun élément dans <0>{{name}}</0> pour l'instant.",
@@ -256,7 +268,8 @@
       "markDropped": "Marquer abandonné",
       "restore": "Remettre en actif",
       "delete": "Supprimer"
-    }
+    },
+    "targetAt": "Cible · {{date}}"
   },
   "confirm": {
     "doneTitle": "Marquer comme terminé ?",
@@ -385,5 +398,41 @@
   },
   "language": {
     "tooltip": "Langue"
+  },
+  "topBar": {
+    "timeline": "Chronologie"
+  },
+  "timeline": {
+    "title": "Chronologie",
+    "subtitle": "Tous les engagements à travers les projets",
+    "today": "Aujourd'hui",
+    "earlier": "← Avant",
+    "later": "Après →",
+    "empty": "Aucun engagement pour l'instant. Démarre un élément pour qu'il apparaisse ici.",
+    "sections": {
+      "pastDue": "En retard",
+      "pastDueSubtitle": "Réinitialise la date ou marque comme terminé",
+      "thisWeek": "Cette semaine",
+      "nextWeek": "Semaine prochaine",
+      "later": "Plus tard",
+      "noDate": "Sans date",
+      "recentlyCompleted": "Récemment terminés"
+    },
+    "dateInfo": {
+      "promisedInDays_one": "Promis dans {{count}} jour",
+      "promisedInDays_other": "Promis dans {{count}} jours",
+      "promisedAgoDays_one": "Promis il y a {{count}} jour",
+      "promisedAgoDays_other": "Promis il y a {{count}} jours",
+      "promisedToday": "Promis aujourd'hui",
+      "noDate": "Sans date",
+      "completedAgo_one": "Terminé il y a {{count}} jour",
+      "completedAgo_other": "Terminé il y a {{count}} jours",
+      "completedToday": "Terminé aujourd'hui",
+      "startedAgo_one": "Commencé il y a {{count}} jour",
+      "startedAgo_other": "Commencé il y a {{count}} jours",
+      "droppedAgo_one": "Abandonné il y a {{count}} jour",
+      "droppedAgo_other": "Abandonné il y a {{count}} jours"
+    },
+    "projectLabel": "Projet"
   }
 }

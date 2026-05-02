@@ -61,6 +61,11 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { localStorage.setItem(TAB_KEY, tab); }, [tab]);
+  useEffect(() => {
+    if (tab === "done" || tab === "dropped") setSort("resolved");
+    else if (tab === "in_progress") setSort("started");
+    else setSort("score");
+  }, [tab]);
 
   useEffect(() => {
     if (!open) return;
@@ -261,12 +266,20 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
                       className="px-2 py-4 cursor-pointer hover:bg-muted/50 ease-editorial transition-colors"
                     >
                       {(isDone || isDropped || isInProgress) && (
-                        <div className="font-mono text-[10px] text-muted-foreground/70 mb-1 ml-10">
-                          {isDone
-                            ? t("all.doneAt", { date: fmtDate(it.resolvedAt, i18n.language) })
-                            : isDropped
-                              ? t("all.droppedAt", { date: fmtDate(it.resolvedAt, i18n.language) })
-                              : t("all.startedAt", { date: fmtDate(it.startedAt, i18n.language) })}
+                        <div className="font-mono text-[10px] text-muted-foreground/70 mb-1 ml-10 flex items-center gap-2">
+                          <span>
+                            {isDone
+                              ? t("all.doneAt", { date: fmtDate(it.resolvedAt, i18n.language) })
+                              : isDropped
+                                ? t("all.droppedAt", { date: fmtDate(it.resolvedAt, i18n.language) })
+                                : t("all.startedAt", { date: fmtDate(it.startedAt, i18n.language) })}
+                          </span>
+                          {isInProgress && it.targetDate && (
+                            <>
+                              <span aria-hidden>·</span>
+                              <span>{t("all.targetAt", { date: fmtDate(it.targetDate, i18n.language) })}</span>
+                            </>
+                          )}
                         </div>
                       )}
                       <div className="flex items-start gap-4">

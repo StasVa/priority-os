@@ -41,7 +41,6 @@ const Index = () => {
     });
   };
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [insightsOn, setInsightsOn] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<Item | null>(null);
   const [allOpen, setAllOpen] = useState(false);
@@ -181,8 +180,6 @@ const Index = () => {
         onCreateProject={handleCreateProject}
         onOpenSettings={() => setSettingsOpen(true)}
         onOpenHelp={() => setHelpOpen(true)}
-        insightsOn={insightsOn}
-        onToggleInsights={() => setInsightsOn(v => !v)}
         onNewItem={openNew}
       />
 
@@ -263,7 +260,7 @@ const Index = () => {
           hoveredId={hoveredId}
           onHover={setHoveredId}
           onSelect={openEdit}
-          insightsOn={insightsOn}
+          insightsOn={true}
           counts={counts}
           onViewAll={() => setAllOpen(true)}
         />

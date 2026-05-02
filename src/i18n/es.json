@@ -94,7 +94,19 @@
     "markInProgress": "Empezar",
     "backToActive": "Volver a activos",
     "drop": "Descartar",
-    "positionAcrossLenses": "Posición en las lentes"
+    "positionAcrossLenses": "Posición en las lentes",
+    "startWorkingDialog": {
+      "heading": "Comenzando con «{{title}}»",
+      "dateQuestion": "¿Cuándo te comprometes a terminar?",
+      "skipNoDate": "Omitir — sin fecha",
+      "cancel": "Cancelar",
+      "start": "Comenzar",
+      "addTargetDate": "+ Añadir fecha objetivo",
+      "editTargetDate": "Editar fecha objetivo",
+      "targetDateLabel": "Fecha objetivo",
+      "pickDate": "Elegir fecha",
+      "save": "Guardar"
+    }
   },
   "matrix": {
     "empty": "Aún no hay elementos en <0>{{name}}</0>.",
@@ -256,7 +268,8 @@
       "markDropped": "Marcar descartado",
       "restore": "Volver a activo",
       "delete": "Eliminar"
-    }
+    },
+    "targetAt": "Objetivo · {{date}}"
   },
   "confirm": {
     "doneTitle": "¿Marcar como hecho?",
@@ -385,5 +398,41 @@
   },
   "language": {
     "tooltip": "Idioma"
+  },
+  "topBar": {
+    "timeline": "Cronología"
+  },
+  "timeline": {
+    "title": "Cronología",
+    "subtitle": "Todos los compromisos en todos los proyectos",
+    "today": "Hoy",
+    "earlier": "← Antes",
+    "later": "Después →",
+    "empty": "Sin compromisos aún. Comienza un elemento para que aparezca aquí.",
+    "sections": {
+      "pastDue": "Vencido",
+      "pastDueSubtitle": "Restablece la fecha o márcalo como hecho",
+      "thisWeek": "Esta semana",
+      "nextWeek": "Semana próxima",
+      "later": "Más adelante",
+      "noDate": "Sin fecha",
+      "recentlyCompleted": "Completados recientemente"
+    },
+    "dateInfo": {
+      "promisedInDays_one": "Prometido en {{count}} día",
+      "promisedInDays_other": "Prometido en {{count}} días",
+      "promisedAgoDays_one": "Prometido hace {{count}} día",
+      "promisedAgoDays_other": "Prometido hace {{count}} días",
+      "promisedToday": "Prometido hoy",
+      "noDate": "Sin fecha",
+      "completedAgo_one": "Completado hace {{count}} día",
+      "completedAgo_other": "Completado hace {{count}} días",
+      "completedToday": "Completado hoy",
+      "startedAgo_one": "Comenzado hace {{count}} día",
+      "startedAgo_other": "Comenzado hace {{count}} días",
+      "droppedAgo_one": "Descartado hace {{count}} día",
+      "droppedAgo_other": "Descartado hace {{count}} días"
+    },
+    "projectLabel": "Proyecto"
   }
 }

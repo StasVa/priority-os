@@ -133,7 +133,7 @@ export function useDecisionStore() {
     }));
   }, []);
 
-  const setItemStatus = useCallback((id: string, status: Item["status"], resolutionNote?: string) => {
+  const setItemStatus = useCallback((id: string, status: Item["status"], resolutionNote?: string, targetDate?: string) => {
     setState(s => ({
       ...s,
       projects: s.projects.map(p => ({
@@ -142,7 +142,8 @@ export function useDecisionStore() {
           if (i.id !== id) return i;
           const now = Date.now();
           if (status === "active") {
-            const { resolvedAt: _r, resolutionNote: _n, startedAt: _s, ...rest } = i;
+            // Reconsidered — clear resolution + start + target
+            const { resolvedAt: _r, resolutionNote: _n, startedAt: _s, targetDate: _td, ...rest } = i;
             return { ...rest, status: "active", updatedAt: now } as Item;
           }
           if (status === "in_progress") {
@@ -151,16 +152,20 @@ export function useDecisionStore() {
               ...rest,
               status: "in_progress",
               startedAt: i.startedAt ?? new Date().toISOString(),
+              // explicit empty string clears; undefined keeps existing
+              targetDate: targetDate === "" ? undefined : (targetDate ?? i.targetDate),
               updatedAt: now,
             } as Item;
           }
+          // done | dropped — clear targetDate (commitment fulfilled / abandoned)
+          const { targetDate: _td, ...restNoTarget } = i;
           return {
-            ...i,
+            ...restNoTarget,
             status,
             resolvedAt: new Date().toISOString(),
             resolutionNote: resolutionNote ?? i.resolutionNote,
             updatedAt: now,
-          };
+          } as Item;
         }),
       })),
     }));

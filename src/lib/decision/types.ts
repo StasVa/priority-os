@@ -26,6 +26,8 @@ export interface Item {
   resolvedAt?: string;
   resolutionNote?: string;
   references: Reference[];
+  /** ISO date the user committed to complete by (set on active→in_progress) */
+  targetDate?: string;
 }
 
 export type ProjectVisibility = "private";

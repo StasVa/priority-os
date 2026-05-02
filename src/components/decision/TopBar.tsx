@@ -1,5 +1,6 @@
-import { Eye, EyeOff, HelpCircle, Plus, Settings } from "lucide-react";
+import { CalendarDays, HelpCircle, Plus, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router-dom";
 import { LanguageSwitcher } from "@/components/decision/LanguageSwitcher";
 import { ThemeToggle } from "@/components/decision/ThemeToggle";
 import { ProjectSwitcher, type ProjectLite } from "@/components/decision/ProjectSwitcher";
@@ -16,15 +17,13 @@ interface TopBarProps {
   onCreateProject: (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => void;
   onOpenSettings: () => void;
   onOpenHelp: () => void;
-  insightsOn: boolean;
-  onToggleInsights: () => void;
   onNewItem: () => void;
 }
 
 export function TopBar({
   projects, activeProjectId, activeProjectName, activeProjectEmoji, activeProjectColor, activeProjectCount,
   onSelectProject, onCreateProject, onOpenSettings, onOpenHelp,
-  insightsOn, onToggleInsights, onNewItem,
+  onNewItem,
 }: TopBarProps) {
   const { t } = useTranslation();
   return (
@@ -58,16 +57,36 @@ export function TopBar({
           )}
         </div>
 
-        <div className="ml-auto flex items-center gap-3">
-          <button
-            onClick={onToggleInsights}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm border ease-editorial transition-colors
-              ${insightsOn ? "border-foreground text-foreground bg-secondary" : "border-border text-muted-foreground hover:text-foreground"}`}
-            aria-pressed={insightsOn}
+        <nav className="ml-2 flex items-center gap-1">
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              `inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-mono text-[11px] uppercase tracking-widest ease-editorial transition-colors ${
+                isActive
+                  ? "text-foreground bg-secondary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`
+            }
           >
-            {insightsOn ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-            <span className="font-mono text-[11px] uppercase tracking-widest">{t("nav.insights")}</span>
-          </button>
+            {t("nav.lens")}
+          </NavLink>
+          <NavLink
+            to="/timeline"
+            className={({ isActive }) =>
+              `inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-mono text-[11px] uppercase tracking-widest ease-editorial transition-colors ${
+                isActive
+                  ? "text-foreground bg-secondary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`
+            }
+          >
+            <CalendarDays className="w-3.5 h-3.5" />
+            <span>{t("topBar.timeline")}</span>
+          </NavLink>
+        </nav>
+
+        <div className="ml-auto flex items-center gap-3">
           <button
             onClick={onNewItem}
             className="inline-flex items-center gap-1.5 pl-3 pr-4 py-1.5 rounded-full text-sm bg-ink text-paper hover:opacity-90 ease-editorial transition-opacity"

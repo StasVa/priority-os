@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Trash2, X } from "lucide-react";
+import { CalendarIcon, Pencil, Trash2, X } from "lucide-react";
 import type { Item, ItemStatus, Reference } from "@/lib/decision/types";
 import { compositeScore, recommendationKey } from "@/lib/decision/logic";
 import { statusToToastKey } from "@/components/decision/StatusConfirm";
 import { ReferenceList } from "@/components/decision/ReferenceList";
 import { PositionAcrossLenses } from "@/components/decision/PositionAcrossLenses";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { formatLongDate, todayStart } from "@/lib/decision/dates";
+import { cn } from "@/lib/utils";
 
 interface ItemEditorProps {
   open: boolean;
@@ -14,7 +18,7 @@ interface ItemEditorProps {
   onClose: () => void;
   onSave: (draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => void;
   onDelete?: (id: string) => void;
-  onSetStatus?: (id: string, status: ItemStatus, resolutionNote?: string) => void;
+  onSetStatus?: (id: string, status: ItemStatus, resolutionNote?: string, targetDate?: string) => void;
   contextItems?: Item[];
 }
 
@@ -29,9 +33,10 @@ const empty = (): Item => ({
 });
 
 export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStatus, contextItems = [] }: ItemEditorProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [draft, setDraft] = useState<Item>(empty());
   const [confirming, setConfirming] = useState<null | "done" | "dropped">(null);
+  const [starting, setStarting] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
   const isEdit = !!initial;
 
@@ -39,6 +44,7 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
     if (open) {
       setDraft(initial ? { ...initial } : empty());
       setConfirming(null);
+      setStarting(false);
       requestAnimationFrame(() => titleRef.current?.focus());
     }
   }, [open, initial]);
@@ -129,6 +135,17 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
 
           <ScoreBlock score={score} recText={t(`recommendations.${recKey}`)} />
 
+          {isEdit && draft.status === "in_progress" && (
+            <TargetDateRow
+              value={draft.targetDate}
+              locale={i18n.language}
+              onChange={(iso) => {
+                setDraft(d => ({ ...d, targetDate: iso }));
+                if (onSetStatus) onSetStatus(draft.id, "in_progress", undefined, iso ?? "");
+              }}
+            />
+          )}
+
           <PositionAcrossLenses
             draft={draft}
             contextItems={contextItems}
@@ -154,6 +171,23 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
               });
             }}
           />
+        ) : starting ? (
+          <StartWorkingPanel
+            title={draft.title}
+            locale={i18n.language}
+            onCancel={() => setStarting(false)}
+            onConfirm={(iso) => {
+              if (!onSetStatus) return;
+              const id = draft.id;
+              onSetStatus(id, "in_progress", undefined, iso);
+              setStarting(false);
+              onClose();
+              toast(t("toast.markedInProgress"), {
+                action: { label: t("toast.undo"), onClick: () => onSetStatus(id, "active") },
+                duration: 5000,
+              });
+            }}
+          />
         ) : (
           <div className="px-8 py-5 border-t border-border flex items-center gap-3">
             {isEdit && onDelete && (
@@ -168,14 +202,7 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
             {isEdit && onSetStatus && draft.status === "active" && (
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => {
-                    onSetStatus(draft.id, "in_progress");
-                    onClose();
-                    toast(t("toast.markedInProgress"), {
-                      action: { label: t("toast.undo"), onClick: () => onSetStatus(draft.id, "active") },
-                      duration: 5000,
-                    });
-                  }}
+                  onClick={() => setStarting(true)}
                   className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-foreground ease-editorial transition-colors"
                 >
                   {t("editor.markInProgress")}
@@ -416,3 +443,156 @@ function WhyField({ value, onChange }: WhyFieldProps) {
     </div>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Start-working dialog
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface StartWorkingPanelProps {
+  title: string;
+  locale: string;
+  onCancel: () => void;
+  onConfirm: (targetDateIso: string | undefined) => void;
+}
+
+function defaultTargetDate(): Date {
+  const d = todayStart();
+  d.setDate(d.getDate() + 7);
+  return d;
+}
+
+function StartWorkingPanel({ title, locale, onCancel, onConfirm }: StartWorkingPanelProps) {
+  const { t } = useTranslation();
+  const [date, setDate] = useState<Date | undefined>(defaultTargetDate());
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
+  return (
+    <div className="px-8 py-5 border-t border-border bg-muted/50 animate-fade-up">
+      <div className="font-serif text-base text-foreground mb-3">
+        {t("editor.startWorkingDialog.heading", { title })}
+      </div>
+      <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70 mb-2">
+        {t("editor.startWorkingDialog.dateQuestion")}
+      </div>
+      <div className="flex items-center gap-2 flex-wrap">
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className={cn(
+                "inline-flex items-center gap-2 px-3 py-2 rounded-full border border-border bg-background font-serif text-sm hover:border-foreground ease-editorial transition-colors",
+                !date && "text-muted-foreground",
+              )}
+            >
+              <CalendarIcon className="w-3.5 h-3.5" />
+              <span>{date ? formatLongDate(date.toISOString(), locale) : t("editor.startWorkingDialog.pickDate")}</span>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(d) => { setDate(d ?? undefined); setPopoverOpen(false); }}
+              disabled={(d) => d < todayStart()}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
+        <button
+          type="button"
+          onClick={() => onConfirm(undefined)}
+          className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground border border-transparent hover:border-border ease-editorial transition-colors"
+        >
+          {t("editor.startWorkingDialog.skipNoDate")}
+        </button>
+      </div>
+      <div className="mt-4 flex items-center justify-end gap-2">
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
+        >
+          {t("editor.startWorkingDialog.cancel")}
+        </button>
+        <button
+          onClick={() => onConfirm(date ? date.toISOString() : undefined)}
+          className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
+        >
+          {t("editor.startWorkingDialog.start")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Target-date row (for in_progress items)
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface TargetDateRowProps {
+  value: string | undefined;
+  locale: string;
+  onChange: (iso: string | undefined) => void;
+}
+
+function TargetDateRow({ value, locale, onChange }: TargetDateRowProps) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const date = value ? new Date(value) : undefined;
+
+  return (
+    <div className="border-t border-border pt-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-baseline gap-2">
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
+            {t("editor.startWorkingDialog.targetDateLabel")}
+          </span>
+          {value && (
+            <span className="font-serif text-sm text-foreground">
+              {formatLongDate(value, locale)}
+            </span>
+          )}
+        </div>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-serif text-muted-foreground hover:text-foreground hover:bg-muted ease-editorial transition-colors"
+            >
+              {value ? (
+                <>
+                  <Pencil className="w-3 h-3" />
+                  <span>{t("editor.startWorkingDialog.editTargetDate")}</span>
+                </>
+              ) : (
+                <span>{t("editor.startWorkingDialog.addTargetDate")}</span>
+              )}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="end">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(d) => { onChange(d ? d.toISOString() : undefined); setOpen(false); }}
+              disabled={(d) => d < todayStart()}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+            {value && (
+              <div className="border-t border-border p-2">
+                <button
+                  type="button"
+                  onClick={() => { onChange(undefined); setOpen(false); }}
+                  className="w-full text-left px-2 py-1.5 font-serif text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded"
+                >
+                  {t("editor.startWorkingDialog.skipNoDate")}
+                </button>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
+  );
+}
+
