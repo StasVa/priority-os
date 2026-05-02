@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { Item, LensId } from "@/lib/decision/types";
-import { LENSES, lensCoords, toneHsl, verdictForLens } from "@/lib/decision/logic";
+import { LENSES, lensCoords, toneHsl, verdictForLens, compositeScore } from "@/lib/decision/logic";
 
 interface PositionMiniProps {
   lens: LensId;
