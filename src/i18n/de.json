@@ -473,5 +473,13 @@
       "unchanged_one": "{{count}} unverändert",
       "unchanged_other": "{{count}} unverändert"
     }
+  },
+  "sidebar": {
+    "views": {
+      "title": "Ansichten",
+      "matrix": "Matrix",
+      "timeline": "Zeitachse",
+      "review": "Rückblick"
+    }
   }
 }

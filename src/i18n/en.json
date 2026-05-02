@@ -472,5 +472,13 @@
       "unchanged_one": "{{count}} unchanged",
       "unchanged_other": "{{count}} unchanged"
     }
+  },
+  "sidebar": {
+    "views": {
+      "title": "Views",
+      "matrix": "Matrix",
+      "timeline": "Timeline",
+      "review": "Review"
+    }
   }
 }
