@@ -243,6 +243,7 @@ const Timeline = () => {
         {String(typeof archiveProject)}{String(typeof restoreProject)}
         {String(typeof toggleFavoriteProject)}
       </span>
+      </div>
     </div>
   );
 };
