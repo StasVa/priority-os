@@ -407,9 +407,10 @@ function TimelineGraph({ inProgress, recentlyDone, locale, allMode, windowOffset
   }, [inProgress, recentlyDone, today, windowStart, windowEnd]);
 
   const W = 1000;
-  const TRACK_TOP = 56;
-  const ROW_H = 22;
-  const PAD_X = 24;
+  const TRACK_TOP = 64;
+  const ROW_H = 28;
+  const PAD_X = 28;
+  const MIN_GRAPH_H = 280;
   const innerW = W - PAD_X * 2;
 
   const xFor = (ms: number) => PAD_X + ((ms - windowStart) / (windowEnd - windowStart)) * innerW;
@@ -426,7 +427,8 @@ function TimelineGraph({ inProgress, recentlyDone, locale, allMode, windowOffset
     placed.push({ ...d, row, xStart, xEnd });
   }
   const rows = Math.max(1, rowEnds.length);
-  const H = TRACK_TOP + rows * ROW_H + 28;
+  const contentH = TRACK_TOP + rows * ROW_H + 28;
+  const H = Math.max(MIN_GRAPH_H, contentH);
 
   const ticks: Array<{ ms: number; label: string; isToday: boolean }> = [];
   for (let i = 0; i <= WINDOW_DAYS; i += 7) {
