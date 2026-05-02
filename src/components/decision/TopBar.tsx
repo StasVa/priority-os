@@ -1,5 +1,6 @@
-import { Eye, EyeOff, HelpCircle, Plus, Settings } from "lucide-react";
+import { CalendarDays, HelpCircle, Plus, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router-dom";
 import { LanguageSwitcher } from "@/components/decision/LanguageSwitcher";
 import { ThemeToggle } from "@/components/decision/ThemeToggle";
 import { ProjectSwitcher, type ProjectLite } from "@/components/decision/ProjectSwitcher";
@@ -16,8 +17,6 @@ interface TopBarProps {
   onCreateProject: (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => void;
   onOpenSettings: () => void;
   onOpenHelp: () => void;
-  insightsOn: boolean;
-  onToggleInsights: () => void;
   onNewItem: () => void;
 }
 
