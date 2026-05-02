@@ -400,7 +400,8 @@
     "tooltip": "Idioma"
   },
   "topBar": {
-    "timeline": "Cronología"
+    "timeline": "Cronología",
+    "review": "Revisión"
   },
   "timeline": {
     "title": "Cronología",
@@ -434,5 +435,43 @@
       "droppedAgo_other": "Descartado hace {{count}} días"
     },
     "projectLabel": "Proyecto"
+  },
+  "review": {
+    "title": {
+      "intro": "Revisaste {{count}} elementos.",
+      "complete": "Revisión completada"
+    },
+    "empty": {
+      "title": "Nada que revisar",
+      "subtitle": "Añade algunos elementos para empezar"
+    },
+    "cancel": {
+      "confirm": "¿Cancelar la sesión de revisión?",
+      "subtitle": "Tus cambios se guardarán."
+    },
+    "actions": {
+      "drop": "Descartar",
+      "done": "Hecho",
+      "skip": "Omitir",
+      "update": "Actualizar y siguiente",
+      "cancel": "Cancelar",
+      "backToMatrix": "Volver a la matriz"
+    },
+    "toast": {
+      "updated": "Actualizado",
+      "done": "Marcado como hecho",
+      "dropped": "Descartado",
+      "skipped": "Omitido"
+    },
+    "summary": {
+      "updated_one": "{{count}} actualizado",
+      "updated_other": "{{count}} actualizados",
+      "done_one": "{{count}} hecho",
+      "done_other": "{{count}} hechos",
+      "dropped_one": "{{count}} descartado",
+      "dropped_other": "{{count}} descartados",
+      "unchanged_one": "{{count}} sin cambios",
+      "unchanged_other": "{{count}} sin cambios"
+    }
   }
 }

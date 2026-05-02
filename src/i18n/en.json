@@ -399,7 +399,8 @@
     "tooltip": "Language"
   },
   "topBar": {
-    "timeline": "Timeline"
+    "timeline": "Timeline",
+    "review": "Review"
   },
   "timeline": {
     "title": "Timeline",
@@ -433,5 +434,43 @@
       "droppedAgo_other": "Dropped {{count}} days ago"
     },
     "projectLabel": "Project"
+  },
+  "review": {
+    "title": {
+      "intro": "You went through {{count}} items.",
+      "complete": "Review complete"
+    },
+    "empty": {
+      "title": "Nothing to review",
+      "subtitle": "Add some items to get started"
+    },
+    "cancel": {
+      "confirm": "Cancel review session?",
+      "subtitle": "Your changes will be saved."
+    },
+    "actions": {
+      "drop": "Drop",
+      "done": "Done",
+      "skip": "Skip",
+      "update": "Update & next",
+      "cancel": "Cancel",
+      "backToMatrix": "Back to matrix"
+    },
+    "toast": {
+      "updated": "Updated",
+      "done": "Marked as done",
+      "dropped": "Dropped",
+      "skipped": "Skipped"
+    },
+    "summary": {
+      "updated_one": "{{count}} updated",
+      "updated_other": "{{count}} updated",
+      "done_one": "{{count}} done",
+      "done_other": "{{count}} done",
+      "dropped_one": "{{count}} dropped",
+      "dropped_other": "{{count}} dropped",
+      "unchanged_one": "{{count}} unchanged",
+      "unchanged_other": "{{count}} unchanged"
+    }
   }
 }

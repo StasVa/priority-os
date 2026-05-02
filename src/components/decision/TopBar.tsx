@@ -1,4 +1,4 @@
-import { CalendarDays, HelpCircle, Plus, Settings } from "lucide-react";
+import { CalendarDays, HelpCircle, Plus, RotateCcw, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { LanguageSwitcher } from "@/components/decision/LanguageSwitcher";
@@ -83,6 +83,19 @@ export function TopBar({
           >
             <CalendarDays className="w-3.5 h-3.5" />
             <span>{t("topBar.timeline")}</span>
+          </NavLink>
+          <NavLink
+            to="/review"
+            className={({ isActive }) =>
+              `inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-mono text-[11px] uppercase tracking-widest ease-editorial transition-colors ${
+                isActive
+                  ? "text-foreground bg-secondary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`
+            }
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>{t("topBar.review")}</span>
           </NavLink>
         </nav>
 
