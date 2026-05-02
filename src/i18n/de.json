@@ -400,7 +400,8 @@
     "tooltip": "Sprache"
   },
   "topBar": {
-    "timeline": "Zeitachse"
+    "timeline": "Zeitachse",
+    "review": "Überprüfung"
   },
   "timeline": {
     "title": "Zeitachse",
@@ -434,5 +435,43 @@
       "droppedAgo_other": "Vor {{count}} Tagen verworfen"
     },
     "projectLabel": "Projekt"
+  },
+  "review": {
+    "title": {
+      "intro": "Sie haben {{count}} Elemente durchgesehen.",
+      "complete": "Überprüfung abgeschlossen"
+    },
+    "empty": {
+      "title": "Nichts zu überprüfen",
+      "subtitle": "Fügen Sie Elemente hinzu, um zu beginnen"
+    },
+    "cancel": {
+      "confirm": "Überprüfungssitzung abbrechen?",
+      "subtitle": "Ihre Änderungen werden gespeichert."
+    },
+    "actions": {
+      "drop": "Verwerfen",
+      "done": "Erledigt",
+      "skip": "Überspringen",
+      "update": "Aktualisieren & weiter",
+      "cancel": "Abbrechen",
+      "backToMatrix": "Zurück zur Matrix"
+    },
+    "toast": {
+      "updated": "Aktualisiert",
+      "done": "Als erledigt markiert",
+      "dropped": "Verworfen",
+      "skipped": "Übersprungen"
+    },
+    "summary": {
+      "updated_one": "{{count}} aktualisiert",
+      "updated_other": "{{count}} aktualisiert",
+      "done_one": "{{count}} erledigt",
+      "done_other": "{{count}} erledigt",
+      "dropped_one": "{{count}} verworfen",
+      "dropped_other": "{{count}} verworfen",
+      "unchanged_one": "{{count}} unverändert",
+      "unchanged_other": "{{count}} unverändert"
+    }
   }
 }

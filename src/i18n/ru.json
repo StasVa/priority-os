@@ -422,7 +422,8 @@
     "tooltip": "Язык"
   },
   "topBar": {
-    "timeline": "Хронология"
+    "timeline": "Хронология",
+    "review": "Пересмотр"
   },
   "timeline": {
     "title": "Хронология",
@@ -466,5 +467,54 @@
       "droppedAgo_other": "Отброшено {{count}} дней назад"
     },
     "projectLabel": "Проект"
+  },
+  "review": {
+    "title": {
+      "intro_one": "Ты прошёл {{count}} пункт.",
+      "intro_few": "Ты прошёл {{count}} пункта.",
+      "intro_many": "Ты прошёл {{count}} пунктов.",
+      "intro_other": "Ты прошёл {{count}} пунктов.",
+      "complete": "Пересмотр завершён"
+    },
+    "empty": {
+      "title": "Нечего пересматривать",
+      "subtitle": "Добавь несколько пунктов, чтобы начать"
+    },
+    "cancel": {
+      "confirm": "Отменить сессию пересмотра?",
+      "subtitle": "Изменения будут сохранены."
+    },
+    "actions": {
+      "drop": "Отказ",
+      "done": "Завершено",
+      "skip": "Пропустить",
+      "update": "Обновить и далее",
+      "cancel": "Отмена",
+      "backToMatrix": "Вернуться к матрице"
+    },
+    "toast": {
+      "updated": "Обновлено",
+      "done": "Отмечено как завершено",
+      "dropped": "Отброшено",
+      "skipped": "Пропущено"
+    },
+    "summary": {
+      "updated_one": "{{count}} обновлён",
+      "updated_few": "{{count}} обновлено",
+      "updated_many": "{{count}} обновлено",
+      "updated_other": "{{count}} обновлено",
+      "done_one": "{{count}} завершён",
+      "done_few": "{{count}} завершено",
+      "done_many": "{{count}} завершено",
+      "done_other": "{{count}} завершено",
+      "dropped_one": "{{count}} отброшен",
+      "dropped_few": "{{count}} отброшено",
+      "dropped_many": "{{count}} отброшено",
+      "dropped_other": "{{count}} отброшено",
+      "unchanged_one": "{{count}} без изменений",
+      "unchanged_few": "{{count}} без изменений",
+      "unchanged_many": "{{count}} без изменений",
+      "unchanged_other": "{{count}} без изменений"
+    }
   }
 }

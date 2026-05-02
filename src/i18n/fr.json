@@ -400,7 +400,8 @@
     "tooltip": "Langue"
   },
   "topBar": {
-    "timeline": "Chronologie"
+    "timeline": "Chronologie",
+    "review": "Révision"
   },
   "timeline": {
     "title": "Chronologie",
@@ -434,5 +435,43 @@
       "droppedAgo_other": "Abandonné il y a {{count}} jours"
     },
     "projectLabel": "Projet"
+  },
+  "review": {
+    "title": {
+      "intro": "Vous avez parcouru {{count}} éléments.",
+      "complete": "Révision terminée"
+    },
+    "empty": {
+      "title": "Rien à réviser",
+      "subtitle": "Ajoutez quelques éléments pour commencer"
+    },
+    "cancel": {
+      "confirm": "Annuler la session de révision ?",
+      "subtitle": "Vos modifications seront enregistrées."
+    },
+    "actions": {
+      "drop": "Abandonner",
+      "done": "Terminé",
+      "skip": "Passer",
+      "update": "Mettre à jour",
+      "cancel": "Annuler",
+      "backToMatrix": "Retour à la matrice"
+    },
+    "toast": {
+      "updated": "Mis à jour",
+      "done": "Marqué comme terminé",
+      "dropped": "Abandonné",
+      "skipped": "Passé"
+    },
+    "summary": {
+      "updated_one": "{{count}} mis à jour",
+      "updated_other": "{{count}} mis à jour",
+      "done_one": "{{count}} terminé",
+      "done_other": "{{count}} terminés",
+      "dropped_one": "{{count}} abandonné",
+      "dropped_other": "{{count}} abandonnés",
+      "unchanged_one": "{{count}} inchangé",
+      "unchanged_other": "{{count}} inchangés"
+    }
   }
 }
