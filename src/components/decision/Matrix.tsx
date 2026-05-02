@@ -35,7 +35,8 @@ type MatrixNode = {
   mixed: boolean;         // true if items have mixed tones
   topScore: number;       // highest composite score in node
   isCluster: boolean;
-  hollow: boolean;        // singleton in_progress, or cluster where ALL items are in_progress
+  hasInProgress: boolean; // any item in node is in_progress → render outer ring
+  ringTone: Tone;         // tone of highest-scoring in_progress item (if any)
 };
 
 export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "primary", onClick }: MatrixProps) {
@@ -101,6 +102,8 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       const extra = Math.min(6, g.length - 1) * (isMini ? 0.5 : 1);
       const cx = g.reduce((s, x) => s + x.cx, 0) / g.length;
       const cy = g.reduce((s, x) => s + x.cy, 0) / g.length;
+      const inProgressMembers = ranked.filter(x => x.inProgress);
+      const ringTone = inProgressMembers[0]?.tone ?? top.tone;
       return {
         id: top.it.id,
         items: ranked.map(x => x.it),
@@ -111,7 +114,8 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
         mixed,
         topScore: compositeScore(top.it),
         isCluster: g.length > 1,
-        hollow: g.every(x => x.inProgress),
+        hasInProgress: inProgressMembers.length > 0,
+        ringTone,
       };
     });
   }, [plot, isMini]);
@@ -422,7 +426,9 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       {nodes.map(n => {
         const hovered = hoveredNode?.id === n.id;
         const fillOpacity = hovered ? 1 : n.tone === "neutral" ? "var(--matrix-neutral-dot-alpha)" : "var(--matrix-dot-alpha)";
-        const isHollow = n.hollow;
+        // Ring effect for in_progress: only on the main (non-mini) matrix.
+        const showRing = !isMini && n.hasInProgress;
+        const ringR = n.r + 3 + 0.75; // 3px gap + half stroke width
         return (
           <g key={n.id}
              onMouseEnter={() => onHover(n.id)}
@@ -438,18 +444,25 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
               />
             )}
             <circle cx={n.cx} cy={n.cy} r={n.r}
-              fill={isHollow ? "hsl(var(--paper))" : toneHsl(n.tone)}
-              fillOpacity={isHollow ? 1 : fillOpacity}
+              fill={toneHsl(n.tone)}
+              fillOpacity={fillOpacity}
               stroke={
-                isHollow
-                  ? toneHsl(n.tone)
-                  : n.isCluster && n.mixed
-                    ? toneHsl(contrastTone(n.tone))
-                    : "hsl(var(--paper))"
+                n.isCluster && n.mixed
+                  ? toneHsl(contrastTone(n.tone))
+                  : "hsl(var(--paper))"
               }
-              strokeWidth={isHollow ? 2 : (n.isCluster && n.mixed ? 2 : 1.5)}
+              strokeWidth={n.isCluster && n.mixed ? 2 : 1.5}
               style={{ transition: "all 280ms cubic-bezier(0.22, 0.61, 0.36, 1)" }}
             />
+            {showRing && (
+              <circle cx={n.cx} cy={n.cy} r={ringR}
+                fill="none"
+                stroke={toneHsl(n.ringTone)}
+                strokeOpacity={0.5}
+                strokeWidth={1.5}
+                style={{ pointerEvents: "none", transition: "all 280ms cubic-bezier(0.22, 0.61, 0.36, 1)" }}
+              />
+            )}
             {n.isCluster && (
               <text
                 x={n.cx}
@@ -460,7 +473,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
                   fontFamily: "JetBrains Mono, monospace",
                   fontSize: isMini ? 9 : 13,
                   fontWeight: 700,
-                  fill: isHollow ? toneHsl(n.tone) : "hsl(var(--paper))",
+                  fill: "hsl(var(--paper))",
                   pointerEvents: "none",
                 }}
               >
