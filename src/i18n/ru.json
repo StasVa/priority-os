@@ -522,6 +522,20 @@
       "unchanged_few": "{{count}} без изменений",
       "unchanged_many": "{{count}} без изменений",
       "unchanged_other": "{{count}} без изменений"
+    },
+    "intro": {
+      "title": "Пересмотр",
+      "body": "Ты пройдёшь по {{count}} активным пунктам. Для каждого: обнови оценки, пометь как сделанное или отброшенное, или пропусти.",
+      "estimatedTime": "Это займёт {{time}}.",
+      "startButton": "Начать пересмотр",
+      "empty": {
+        "title": "Нечего пересматривать",
+        "body": "Добавь несколько пунктов и возвращайся."
+      },
+      "estimatedMinutes_one": "около минуты",
+      "estimatedMinutes_few": "около {{count}} минут",
+      "estimatedMinutes_many": "около {{count}} минут",
+      "estimatedMinutes_other": "около {{count}} минут"
     }
   },
   "sidebar": {
