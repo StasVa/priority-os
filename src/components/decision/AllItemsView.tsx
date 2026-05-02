@@ -61,6 +61,11 @@ export function AllItemsView({ open, onClose, contextName, items, onEdit, onSetS
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { localStorage.setItem(TAB_KEY, tab); }, [tab]);
+  useEffect(() => {
+    if (tab === "done" || tab === "dropped") setSort("resolved");
+    else if (tab === "in_progress") setSort("started");
+    else setSort("score");
+  }, [tab]);
 
   useEffect(() => {
     if (!open) return;
