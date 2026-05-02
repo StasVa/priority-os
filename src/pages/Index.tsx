@@ -189,10 +189,10 @@ const Index = () => {
       <LensSwitcher active={lens} onChange={handleLensChange} itemCount={items.length} />
 
       <main className="grid grid-cols-1 lg:grid-cols-[1fr_340px] min-h-[calc(100vh-128px)]">
-        <section className="px-8 py-6 space-y-5">
+        <section className="pl-8 pr-6 pt-4 pb-6 space-y-6">
 
-          <article ref={matrixCardRef} className="border border-border rounded-lg bg-card overflow-hidden grid-paper">
-            <header className="px-6 py-4 border-b border-border flex items-baseline justify-between bg-card">
+          <section ref={matrixCardRef} aria-label={t(`lenses.${activeLens.id}`)}>
+            <header className="flex items-baseline justify-between mb-3">
               <h1 className="font-serif text-2xl leading-none" style={{ fontVariationSettings: '"opsz" 144' }}>
                 {t(`lenses.${activeLens.id}`)}
               </h1>
@@ -200,34 +200,32 @@ const Index = () => {
                 {activeLens.xHint}  ·  {activeLens.yHint}
               </span>
             </header>
-            <div className="p-2">
-              {matrixItems.length > 0 ? (
-                <Matrix
-                  lens={lens}
-                  items={matrixItems}
-                  hoveredId={hoveredId}
-                  onHover={setHoveredId}
-                  onSelect={openEdit}
-                />
-              ) : (
-                <div className="h-[70vh] flex flex-col items-center justify-center text-center">
-                  <p className="font-serif italic text-lg text-muted-foreground">
-                    <Trans
-                      i18nKey="matrix.empty"
-                      values={{ name: `${activeProject?.emoji ? activeProject.emoji + " " : ""}${activeProjectName}` }}
-                      components={[<span key="0" className="not-italic font-medium text-foreground" />]}
-                    />
-                  </p>
-                  <button
-                    onClick={openNew}
-                    className="mt-4 px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
-                  >
-                    {t("matrix.addFirst")}
-                  </button>
-                </div>
-              )}
-            </div>
-          </article>
+            {matrixItems.length > 0 ? (
+              <Matrix
+                lens={lens}
+                items={matrixItems}
+                hoveredId={hoveredId}
+                onHover={setHoveredId}
+                onSelect={openEdit}
+              />
+            ) : (
+              <div className="h-[70vh] flex flex-col items-center justify-center text-center">
+                <p className="font-serif italic text-lg text-muted-foreground">
+                  <Trans
+                    i18nKey="matrix.empty"
+                    values={{ name: `${activeProject?.emoji ? activeProject.emoji + " " : ""}${activeProjectName}` }}
+                    components={[<span key="0" className="not-italic font-medium text-foreground" />]}
+                  />
+                </p>
+                <button
+                  onClick={openNew}
+                  className="mt-4 px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
+                >
+                  {t("matrix.addFirst")}
+                </button>
+              </div>
+            )}
+          </section>
 
           {items.length > 0 && <FirstHint itemCount={items.length} />}
 
