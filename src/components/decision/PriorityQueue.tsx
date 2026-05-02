@@ -145,25 +145,3 @@ function CounterPair({ color, count, label, countColor, hollow }: { color: strin
     </span>
   );
 }
-
-function ViewLink({ to, icon: Icon, label, end }: { to: string; icon: ComponentType<{ className?: string }>; label: string; end?: boolean }) {
-  return (
-    <NavLink
-      to={to}
-      end={end}
-      className={({ isActive }) =>
-        `group flex items-center gap-2.5 px-2 py-1.5 rounded-md font-serif text-sm ease-editorial transition-colors ${
-          isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-        }`
-      }
-    >
-      {({ isActive }) => (
-        <>
-          <Icon className="w-3.5 h-3.5 shrink-0" />
-          <span className="flex-1">{label}</span>
-          {isActive && <span className="w-1.5 h-1.5 rounded-full bg-foreground" aria-hidden />}
-        </>
-      )}
-    </NavLink>
-  );
-}
