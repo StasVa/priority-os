@@ -18,7 +18,7 @@ interface ItemEditorProps {
   onClose: () => void;
   onSave: (draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string }) => void;
   onDelete?: (id: string) => void;
-  onSetStatus?: (id: string, status: ItemStatus, resolutionNote?: string) => void;
+  onSetStatus?: (id: string, status: ItemStatus, resolutionNote?: string, targetDate?: string) => void;
   contextItems?: Item[];
 }
 
