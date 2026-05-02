@@ -433,7 +433,14 @@
       "droppedAgo_one": "Dropped {{count}} day ago",
       "droppedAgo_other": "Dropped {{count}} days ago"
     },
-    "projectLabel": "Project"
+    "projectLabel": "Project",
+    "filter": {
+      "allProjects": "All projects",
+      "thisProject": "This project"
+    },
+    "row": {
+      "editTooltip": "Edit"
+    }
   },
   "review": {
     "title": {

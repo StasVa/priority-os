@@ -466,7 +466,14 @@
       "droppedAgo_many": "Отброшено {{count}} дней назад",
       "droppedAgo_other": "Отброшено {{count}} дней назад"
     },
-    "projectLabel": "Проект"
+    "projectLabel": "Проект",
+    "filter": {
+      "allProjects": "Все проекты",
+      "thisProject": "Этот проект"
+    },
+    "row": {
+      "editTooltip": "Редактировать"
+    }
   },
   "review": {
     "title": {
