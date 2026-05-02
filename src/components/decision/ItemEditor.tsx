@@ -171,6 +171,23 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
               });
             }}
           />
+        ) : starting ? (
+          <StartWorkingPanel
+            title={draft.title}
+            locale={i18n.language}
+            onCancel={() => setStarting(false)}
+            onConfirm={(iso) => {
+              if (!onSetStatus) return;
+              const id = draft.id;
+              onSetStatus(id, "in_progress", undefined, iso);
+              setStarting(false);
+              onClose();
+              toast(t("toast.markedInProgress"), {
+                action: { label: t("toast.undo"), onClick: () => onSetStatus(id, "active") },
+                duration: 5000,
+              });
+            }}
+          />
         ) : (
           <div className="px-8 py-5 border-t border-border flex items-center gap-3">
             {isEdit && onDelete && (
@@ -185,14 +202,7 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
             {isEdit && onSetStatus && draft.status === "active" && (
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => {
-                    onSetStatus(draft.id, "in_progress");
-                    onClose();
-                    toast(t("toast.markedInProgress"), {
-                      action: { label: t("toast.undo"), onClick: () => onSetStatus(draft.id, "active") },
-                      duration: 5000,
-                    });
-                  }}
+                  onClick={() => setStarting(true)}
                   className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground border border-transparent hover:text-foreground hover:border-foreground ease-editorial transition-colors"
                 >
                   {t("editor.markInProgress")}
