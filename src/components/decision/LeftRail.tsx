@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CalendarDays, LayoutGrid, RotateCcw } from "lucide-react";
+import { CalendarDays, LayoutGrid, ListChecks } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface RailItem {
@@ -14,7 +14,7 @@ interface RailItem {
 const ITEMS: RailItem[] = [
   { to: "/", end: true, icon: LayoutGrid, labelKey: "sidebar.views.matrix" },
   { to: "/timeline", icon: CalendarDays, labelKey: "sidebar.views.timeline" },
-  { to: "/review", icon: RotateCcw, labelKey: "sidebar.views.review" },
+  { to: "/review", icon: ListChecks, labelKey: "sidebar.views.review" },
 ];
 
 export function LeftRail() {
@@ -23,7 +23,7 @@ export function LeftRail() {
     <TooltipProvider delayDuration={200}>
       <nav
         aria-label={t("sidebar.views.title")}
-        className="w-[60px] shrink-0 border-r border-border bg-card flex flex-col items-center pt-5 gap-3"
+        className="w-[60px] shrink-0 border-r border-border bg-card flex flex-col items-center justify-center gap-3 sticky top-0 h-screen self-start"
       >
         {ITEMS.map((item) => {
           const Icon = item.icon;
