@@ -438,47 +438,57 @@ function TimelineGraph({ inProgress, recentlyDone, locale, allMode, windowOffset
   const todayX = xFor(today);
 
   return (
-    <section className="rounded-lg border border-border bg-card overflow-hidden">
-      <header className="flex items-center justify-between px-4 py-2 border-b border-border">
+    <section className="space-y-3">
+      <header className="flex items-center justify-between">
         <button
-          onClick={() => onPan(-14)}
+          onClick={() => onPan(-28)}
           className="inline-flex items-center gap-1 px-2 py-1 rounded font-mono text-[11px] uppercase tracking-widest text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className="w-3 h-3" />
-          {t("timeline.earlier")}
+          {t("timeline.controls.earlier")}
         </button>
         <button
           onClick={onResetPan}
           className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground hover:text-foreground"
         >
-          {t("timeline.today")}
+          {t("timeline.controls.today")}
         </button>
         <button
-          onClick={() => onPan(14)}
+          onClick={() => onPan(28)}
           className="inline-flex items-center gap-1 px-2 py-1 rounded font-mono text-[11px] uppercase tracking-widest text-muted-foreground hover:text-foreground"
         >
-          {t("timeline.later")}
+          {t("timeline.controls.later")}
           <ChevronRight className="w-3 h-3" />
         </button>
       </header>
-      <div className="p-2">
-        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label={t("timeline.title")}>
+      <div>
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          className="w-full h-auto"
+          preserveAspectRatio="xMidYMid meet"
+          style={{ minHeight: 280 }}
+          role="img"
+          aria-label={t("timeline.title")}
+        >
+          {/* Horizontal axis line */}
+          <line x1={PAD_X} x2={W - PAD_X} y1={TRACK_TOP - 8} y2={TRACK_TOP - 8} stroke="hsl(var(--border))" strokeWidth={1} />
           {ticks.map((tk, i) => {
             const x = xFor(tk.ms);
             return (
               <g key={i}>
-                <line x1={x} x2={x} y1={TRACK_TOP - 8} y2={H - 12} stroke="hsl(var(--border))" strokeWidth={1} />
-                <text x={x} y={TRACK_TOP - 14} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 10, fontFamily: "ui-monospace, monospace" }}>
+                <line x1={x} x2={x} y1={TRACK_TOP - 8} y2={H - 12} stroke="hsl(var(--border))" strokeOpacity={0.6} strokeWidth={1} />
+                <text x={x} y={TRACK_TOP - 18} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 11, fontFamily: "ui-monospace, monospace", textTransform: "uppercase", letterSpacing: 1 }}>
                   {tk.label}
                 </text>
               </g>
             );
           })}
+          {/* Today vertical line — full graph height, prominent */}
           {todayX >= PAD_X && todayX <= W - PAD_X && (
             <g>
-              <line x1={todayX} x2={todayX} y1={TRACK_TOP - 18} y2={H - 8} stroke="hsl(var(--foreground))" strokeWidth={1.25} />
-              <text x={todayX} y={TRACK_TOP - 24} textAnchor="middle" className="fill-foreground" style={{ fontSize: 10, fontFamily: "ui-monospace, monospace", textTransform: "uppercase", letterSpacing: 1.5 }}>
-                {t("timeline.today")}
+              <line x1={todayX} x2={todayX} y1={TRACK_TOP - 8} y2={H - 8} stroke="hsl(var(--foreground))" strokeWidth={1.5} />
+              <text x={todayX} y={TRACK_TOP - 36} textAnchor="middle" className="fill-foreground" style={{ fontSize: 10, fontFamily: "ui-monospace, monospace", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 600 }}>
+                {t("timeline.controls.today")}
               </text>
             </g>
           )}
@@ -495,12 +505,12 @@ function TimelineGraph({ inProgress, recentlyDone, locale, allMode, windowOffset
                 {d.status === "in_progress" && d.isPastDue && todayX > xEnd && (
                   <line x1={xEnd} x2={Math.min(W - PAD_X, todayX)} y1={cy} y2={cy} stroke={color} strokeOpacity={0.5} strokeWidth={1} strokeDasharray="2 3" />
                 )}
-                <circle cx={xEnd} cy={cy} r={4} fill={color} fillOpacity={d.status === "done" ? 0.7 : 1} />
+                <circle cx={xEnd} cy={cy} r={4.5} fill={color} fillOpacity={d.status === "done" ? 0.7 : 1} />
                 {/* Project mini-dot in all-projects mode */}
                 {allMode && (
-                  <circle cx={xEnd} cy={cy + 7} r={1.75} fill={colorDot(d.projectColor)} />
+                  <circle cx={xEnd} cy={cy + 8} r={1.75} fill={colorDot(d.projectColor)} />
                 )}
-                <text x={xEnd + 8} y={cy + 3} className="fill-foreground" style={{ fontSize: 11, fontFamily: "var(--font-serif, serif)" }}>
+                <text x={xEnd + 9} y={cy + 4} className="fill-foreground" style={{ fontSize: 12, fontFamily: "var(--font-serif, serif)" }}>
                   {truncate(d.title, 36)}
                 </text>
                 <title>{allMode ? `${d.title} · ${d.project}` : d.title}</title>
