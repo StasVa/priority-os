@@ -434,7 +434,14 @@
       "droppedAgo_one": "Vor {{count}} Tag verworfen",
       "droppedAgo_other": "Vor {{count}} Tagen verworfen"
     },
-    "projectLabel": "Projekt"
+    "projectLabel": "Projekt",
+    "filter": {
+      "allProjects": "Alle Projekte",
+      "thisProject": "Dieses Projekt"
+    },
+    "row": {
+      "editTooltip": "Bearbeiten"
+    }
   },
   "review": {
     "title": {

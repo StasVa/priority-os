@@ -434,7 +434,14 @@
       "droppedAgo_one": "Abandonné il y a {{count}} jour",
       "droppedAgo_other": "Abandonné il y a {{count}} jours"
     },
-    "projectLabel": "Projet"
+    "projectLabel": "Projet",
+    "filter": {
+      "allProjects": "Tous les projets",
+      "thisProject": "Ce projet"
+    },
+    "row": {
+      "editTooltip": "Modifier"
+    }
   },
   "review": {
     "title": {

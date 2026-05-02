@@ -434,7 +434,14 @@
       "droppedAgo_one": "Descartado hace {{count}} día",
       "droppedAgo_other": "Descartado hace {{count}} días"
     },
-    "projectLabel": "Proyecto"
+    "projectLabel": "Proyecto",
+    "filter": {
+      "allProjects": "Todos los proyectos",
+      "thisProject": "Este proyecto"
+    },
+    "row": {
+      "editTooltip": "Editar"
+    }
   },
   "review": {
     "title": {
