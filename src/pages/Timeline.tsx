@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import { Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Pencil } from "lucide-react";
 import { TopBar } from "@/components/decision/TopBar";
 import { LeftRail } from "@/components/decision/LeftRail";
 import { ItemEditor } from "@/components/decision/ItemEditor";
@@ -556,32 +556,71 @@ interface ListProps {
 }
 
 function CommitmentList({ groups, recentlyDone, allMode, onSelect, t }: ListProps) {
-  const sections: Array<{ key: string; titleKey: string; subtitleKey?: string; rows: CommitmentRow[]; tone: "rose" | "neutral" }> = [
-    { key: "pastDue", titleKey: "timeline.sections.pastDue", subtitleKey: "timeline.sections.pastDueSubtitle", rows: groups.pastDue, tone: "rose" },
-    { key: "thisWeek", titleKey: "timeline.sections.thisWeek", rows: groups.thisWeek, tone: "neutral" },
-    { key: "nextWeek", titleKey: "timeline.sections.nextWeek", rows: groups.nextWeek, tone: "neutral" },
-    { key: "later", titleKey: "timeline.sections.later", rows: groups.later, tone: "neutral" },
-    { key: "noDate", titleKey: "timeline.sections.noDate", rows: groups.noDate, tone: "neutral" },
-    { key: "recentlyCompleted", titleKey: "timeline.sections.recentlyCompleted", rows: recentlyDone, tone: "neutral" },
+  type SectionKey = "pastDue" | "thisWeek" | "nextWeek" | "later" | "noDate" | "recentlyCompleted";
+  const sections: Array<{ key: SectionKey; titleKey: string; subtitleKey?: string; rows: CommitmentRow[]; tone: "rose" | "neutral"; defaultOpen: boolean }> = [
+    { key: "pastDue", titleKey: "timeline.sections.pastDue", subtitleKey: "timeline.sections.pastDueSubtitle", rows: groups.pastDue, tone: "rose", defaultOpen: true },
+    { key: "thisWeek", titleKey: "timeline.sections.thisWeek", rows: groups.thisWeek, tone: "neutral", defaultOpen: true },
+    { key: "nextWeek", titleKey: "timeline.sections.nextWeek", rows: groups.nextWeek, tone: "neutral", defaultOpen: false },
+    { key: "later", titleKey: "timeline.sections.later", rows: groups.later, tone: "neutral", defaultOpen: false },
+    { key: "noDate", titleKey: "timeline.sections.noDate", rows: groups.noDate, tone: "neutral", defaultOpen: false },
+    { key: "recentlyCompleted", titleKey: "timeline.sections.recentlyCompleted", rows: recentlyDone, tone: "neutral", defaultOpen: false },
   ];
 
+  const [openMap, setOpenMap] = useState<Record<SectionKey, boolean>>(() => {
+    const init = {} as Record<SectionKey, boolean>;
+    for (const s of sections) init[s.key] = s.defaultOpen;
+    return init;
+  });
+
+  const toggle = (k: SectionKey) =>
+    setOpenMap(prev => ({ ...prev, [k]: !prev[k] }));
+
   return (
-    <section className="space-y-8">
-      {sections.map(s => s.rows.length === 0 ? null : (
-        <div key={s.key}>
-          <header className="mb-3">
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{t(s.titleKey)}</h2>
-            {s.subtitleKey && (
-              <p className="font-serif italic text-[13px] text-muted-foreground/80 mt-0.5">{t(s.subtitleKey)}</p>
+    <section className="space-y-6">
+      {sections.map(s => {
+        if (s.rows.length === 0) return null;
+        const open = openMap[s.key];
+        const countLabel = t("timeline.section.itemCount", { count: s.rows.length });
+        const toggleLabel = open ? t("timeline.toggleSection.collapse") : t("timeline.toggleSection.expand");
+        return (
+          <div key={s.key}>
+            <button
+              type="button"
+              onClick={() => toggle(s.key)}
+              aria-expanded={open}
+              aria-label={`${t(s.titleKey)} — ${toggleLabel}`}
+              className="w-full flex items-center gap-2 py-2 text-left group cursor-pointer"
+            >
+              <h2 className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground group-hover:text-foreground ease-editorial transition-colors">
+                {t(s.titleKey)}
+              </h2>
+              {open ? (
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-transform" />
+              ) : (
+                <ChevronUp className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-transform" />
+              )}
+              <span className="ml-auto font-mono text-[11px] text-muted-foreground tabular-nums">
+                {countLabel}
+              </span>
+            </button>
+            {s.subtitleKey && open && (
+              <p className="font-serif italic text-[13px] text-muted-foreground/80 -mt-1 mb-2">{t(s.subtitleKey)}</p>
             )}
-          </header>
-          <ul className="divide-y divide-border border-y border-border">
-            {s.rows.map(r => (
-              <CommitmentRowItem key={r.item.id} row={r} tone={s.tone} allMode={allMode} onSelect={onSelect} t={t} />
-            ))}
-          </ul>
-        </div>
-      ))}
+            <div
+              className="grid transition-[grid-template-rows] duration-200 ease-out"
+              style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+            >
+              <div className="overflow-hidden">
+                <ul className="divide-y divide-border border-y border-border">
+                  {s.rows.map(r => (
+                    <CommitmentRowItem key={r.item.id} row={r} tone={s.tone} allMode={allMode} onSelect={onSelect} t={t} />
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </section>
   );
 }
