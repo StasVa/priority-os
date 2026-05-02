@@ -443,3 +443,156 @@ function WhyField({ value, onChange }: WhyFieldProps) {
     </div>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Start-working dialog
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface StartWorkingPanelProps {
+  title: string;
+  locale: string;
+  onCancel: () => void;
+  onConfirm: (targetDateIso: string | undefined) => void;
+}
+
+function defaultTargetDate(): Date {
+  const d = todayStart();
+  d.setDate(d.getDate() + 7);
+  return d;
+}
+
+function StartWorkingPanel({ title, locale, onCancel, onConfirm }: StartWorkingPanelProps) {
+  const { t } = useTranslation();
+  const [date, setDate] = useState<Date | undefined>(defaultTargetDate());
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
+  return (
+    <div className="px-8 py-5 border-t border-border bg-muted/50 animate-fade-up">
+      <div className="font-serif text-base text-foreground mb-3">
+        {t("editor.startWorkingDialog.heading", { title })}
+      </div>
+      <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70 mb-2">
+        {t("editor.startWorkingDialog.dateQuestion")}
+      </div>
+      <div className="flex items-center gap-2 flex-wrap">
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className={cn(
+                "inline-flex items-center gap-2 px-3 py-2 rounded-full border border-border bg-background font-serif text-sm hover:border-foreground ease-editorial transition-colors",
+                !date && "text-muted-foreground",
+              )}
+            >
+              <CalendarIcon className="w-3.5 h-3.5" />
+              <span>{date ? formatLongDate(date.toISOString(), locale) : t("editor.startWorkingDialog.pickDate")}</span>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(d) => { setDate(d ?? undefined); setPopoverOpen(false); }}
+              disabled={(d) => d < todayStart()}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
+        <button
+          type="button"
+          onClick={() => onConfirm(undefined)}
+          className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground border border-transparent hover:border-border ease-editorial transition-colors"
+        >
+          {t("editor.startWorkingDialog.skipNoDate")}
+        </button>
+      </div>
+      <div className="mt-4 flex items-center justify-end gap-2">
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
+        >
+          {t("editor.startWorkingDialog.cancel")}
+        </button>
+        <button
+          onClick={() => onConfirm(date ? date.toISOString() : undefined)}
+          className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
+        >
+          {t("editor.startWorkingDialog.start")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Target-date row (for in_progress items)
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface TargetDateRowProps {
+  value: string | undefined;
+  locale: string;
+  onChange: (iso: string | undefined) => void;
+}
+
+function TargetDateRow({ value, locale, onChange }: TargetDateRowProps) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const date = value ? new Date(value) : undefined;
+
+  return (
+    <div className="border-t border-border pt-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-baseline gap-2">
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
+            {t("editor.startWorkingDialog.targetDateLabel")}
+          </span>
+          {value && (
+            <span className="font-serif text-sm text-foreground">
+              {formatLongDate(value, locale)}
+            </span>
+          )}
+        </div>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-serif text-muted-foreground hover:text-foreground hover:bg-muted ease-editorial transition-colors"
+            >
+              {value ? (
+                <>
+                  <Pencil className="w-3 h-3" />
+                  <span>{t("editor.startWorkingDialog.editTargetDate")}</span>
+                </>
+              ) : (
+                <span>{t("editor.startWorkingDialog.addTargetDate")}</span>
+              )}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="end">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(d) => { onChange(d ? d.toISOString() : undefined); setOpen(false); }}
+              disabled={(d) => d < todayStart()}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+            {value && (
+              <div className="border-t border-border p-2">
+                <button
+                  type="button"
+                  onClick={() => { onChange(undefined); setOpen(false); }}
+                  className="w-full text-left px-2 py-1.5 font-serif text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded"
+                >
+                  {t("editor.startWorkingDialog.skipNoDate")}
+                </button>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
+  );
+}
+
