@@ -426,9 +426,11 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
       {nodes.map(n => {
         const hovered = hoveredNode?.id === n.id;
         const fillOpacity = hovered ? 1 : n.tone === "neutral" ? "var(--matrix-neutral-dot-alpha)" : "var(--matrix-dot-alpha)";
-        // Ring effect for in_progress: only on the main (non-mini) matrix.
-        const showRing = !isMini && n.hasInProgress;
-        const ringR = n.r + 3 + 0.75; // 3px gap + half stroke width
+        // Ring effect for in_progress items. Smaller/thinner on mini matrices.
+        const showRing = n.hasInProgress;
+        const ringStroke = isMini ? 1 : 1.5;
+        const ringGap = isMini ? 2 : 3;
+        const ringR = n.r + ringGap + ringStroke / 2;
         return (
           <g key={n.id}
              onMouseEnter={() => onHover(n.id)}
