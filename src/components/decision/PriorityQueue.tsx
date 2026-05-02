@@ -158,7 +158,7 @@ function CounterPair({ color, count, label, countColor, hollow }: { color: strin
   );
 }
 
-function ViewLink({ to, icon: Icon, label, end }: { to: string; icon: React.ComponentType<{ className?: string }>; label: string; end?: boolean }) {
+function ViewLink({ to, icon: Icon, label, end }: { to: string; icon: ComponentType<{ className?: string }>; label: string; end?: boolean }) {
   return (
     <NavLink
       to={to}
