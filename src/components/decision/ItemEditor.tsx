@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Trash2, X } from "lucide-react";
+import { CalendarIcon, Pencil, Trash2, X } from "lucide-react";
 import type { Item, ItemStatus, Reference } from "@/lib/decision/types";
 import { compositeScore, recommendationKey } from "@/lib/decision/logic";
 import { statusToToastKey } from "@/components/decision/StatusConfirm";
 import { ReferenceList } from "@/components/decision/ReferenceList";
 import { PositionAcrossLenses } from "@/components/decision/PositionAcrossLenses";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { formatLongDate, todayStart } from "@/lib/decision/dates";
+import { cn } from "@/lib/utils";
 
 interface ItemEditorProps {
   open: boolean;
