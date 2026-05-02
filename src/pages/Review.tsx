@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Check, X } from "lucide-react";
+import { Check, ChevronRight, Hourglass, X } from "lucide-react";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import { TONE_CLASSES, compositeScore, verdictForLens } from "@/lib/decision/logic";
 import type { Item } from "@/lib/decision/types";
@@ -18,26 +18,29 @@ const Review = () => {
   const navigate = useNavigate();
   const { activeProject, upsertItem, setItemStatus } = useDecisionStore();
 
-  // Snapshot active items at mount so the queue doesn't shift mid-session.
-  const queue = useMemo<Item[]>(
+  const activeItems = useMemo<Item[]>(
     () => (activeProject?.items ?? []).filter(i => i.status === "active"),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [activeProject],
   );
 
+  const [started, setStarted] = useState(false);
+
+  // Frozen queue once started
+  const [queue, setQueue] = useState<Item[]>([]);
   const [index, setIndex] = useState(0);
-  const [draft, setDraft] = useState<Item | null>(queue[0] ?? null);
-  const [outcomes, setOutcomes] = useState<Outcome[]>(() => Array(queue.length).fill("unchanged"));
-  const [done, setDone] = useState(queue.length === 0);
+  const [draft, setDraft] = useState<Item | null>(null);
+  const [outcomes, setOutcomes] = useState<Outcome[]>([]);
+  const [done, setDone] = useState(false);
   const [fading, setFading] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [scorePulse, setScorePulse] = useState(false);
 
   // Reset draft when index changes
   useEffect(() => {
-    if (index < queue.length) {
+    if (started && index < queue.length) {
       setDraft({ ...queue[index] });
     }
-  }, [index, queue]);
+  }, [index, queue, started]);
 
   const current = draft;
   const total = queue.length;
@@ -48,6 +51,23 @@ const Review = () => {
     const orig = queue[index];
     return SLIDER_KEYS.some(k => orig[k] !== current[k]);
   }, [current, queue, index]);
+
+  // Pulse score on changes
+  useEffect(() => {
+    if (!current) return;
+    setScorePulse(true);
+    const id = window.setTimeout(() => setScorePulse(false), 350);
+    return () => window.clearTimeout(id);
+  }, [current?.impact, current?.effort, current?.importance, current?.satisfaction, current?.confidence, current?.risk]);
+
+  const startReview = () => {
+    setQueue(activeItems);
+    setOutcomes(Array(activeItems.length).fill("unchanged"));
+    setIndex(0);
+    setDraft(activeItems[0] ? { ...activeItems[0] } : null);
+    setDone(activeItems.length === 0);
+    setStarted(true);
+  };
 
   const advance = (outcome: Outcome) => {
     setOutcomes(prev => {
@@ -99,9 +119,9 @@ const Review = () => {
     advance("dropped");
   };
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts (only during session)
   useEffect(() => {
-    if (done || confirmCancel) return;
+    if (!started || done || confirmCancel) return;
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
@@ -112,20 +132,69 @@ const Review = () => {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [current, hasChanges, index, done, confirmCancel]); // eslint-disable-line
+  }, [current, hasChanges, index, done, confirmCancel, started]); // eslint-disable-line
 
-  // ────────── Empty state ──────────
-  if (total === 0) {
+  // ────────── Intro screen ──────────
+  if (!started) {
+    const count = activeItems.length;
+
+    if (count === 0) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center px-8 bg-background">
+          <div className="max-w-[520px] w-full text-center">
+            <Hourglass className="w-8 h-8 text-muted-foreground mx-auto mb-6" strokeWidth={1.5} />
+            <h1 className="font-serif text-foreground mb-6" style={{ fontSize: 32, fontVariationSettings: '"opsz" 144' }}>
+              {t("review.intro.empty.title")}
+            </h1>
+            <p className="font-serif text-muted-foreground mb-10" style={{ fontSize: 16, lineHeight: 1.6 }}>
+              {t("review.intro.empty.body")}
+            </p>
+            <button
+              onClick={() => navigate("/")}
+              className="px-5 py-2 rounded-full bg-foreground text-background font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
+            >
+              {t("review.actions.backToMatrix")}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    const minutes = Math.max(1, Math.round((count * 30) / 60));
+    const timeStr = t("review.intro.estimatedMinutes", { count: minutes });
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-8 bg-background">
-        <h1 className="font-serif text-3xl text-foreground mb-3">{t("review.empty.title")}</h1>
-        <p className="font-serif italic text-muted-foreground mb-8">{t("review.empty.subtitle")}</p>
-        <button
-          onClick={() => navigate("/")}
-          className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
-        >
-          {t("review.actions.backToMatrix")}
-        </button>
+        <div className="max-w-[520px] w-full text-center">
+          <Hourglass className="w-8 h-8 text-muted-foreground mx-auto mt-8 mb-6" strokeWidth={1.5} />
+          <h1
+            className="font-serif text-foreground mb-6"
+            style={{ fontSize: 32, fontVariationSettings: '"opsz" 144' }}
+          >
+            {t("review.intro.title")}
+          </h1>
+          <p className="font-serif text-muted-foreground" style={{ fontSize: 16, lineHeight: 1.6 }}>
+            {t("review.intro.body", { count })}
+          </p>
+          <p className="font-serif italic text-muted-foreground/70 mt-4" style={{ fontSize: 14, lineHeight: 1.6 }}>
+            {t("review.intro.estimatedTime", { time: timeStr })}
+          </p>
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <button
+              onClick={() => navigate("/")}
+              className="px-4 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
+            >
+              {t("review.actions.cancel")}
+            </button>
+            <button
+              onClick={startReview}
+              className="px-5 py-2 rounded-full bg-foreground text-background font-serif text-sm hover:opacity-90 ease-editorial transition-opacity inline-flex items-center gap-1.5"
+            >
+              {t("review.intro.startButton")}
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -156,7 +225,7 @@ const Review = () => {
           <div>
             <button
               onClick={() => navigate("/")}
-              className="px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
+              className="px-5 py-2 rounded-full bg-foreground text-background font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
             >
               {t("review.actions.backToMatrix")}
             </button>
@@ -175,7 +244,7 @@ const Review = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Progress bar */}
-      <div className="px-8 pt-10 pb-6">
+      <div className="px-8 pt-10 pb-0">
         <div className="max-w-[640px] mx-auto flex items-center gap-3">
           <div className="flex-1 h-px bg-foreground/40" style={{ flexBasis: `${((index + 1) / total) * 100}%`, flexGrow: 0 }} />
           <span className="font-mono text-[12px] text-muted-foreground tabular-nums whitespace-nowrap">
@@ -188,7 +257,7 @@ const Review = () => {
       {/* Content */}
       <div className="flex-1 px-8 overflow-y-auto">
         <div
-          className="max-w-[640px] mx-auto pt-10 pb-32 transition-opacity duration-200"
+          className="max-w-[640px] mx-auto pt-12 pb-10 transition-opacity duration-200"
           style={{ opacity: fading ? 0 : 1 }}
         >
           <h1
@@ -198,12 +267,15 @@ const Review = () => {
             {current.title}
           </h1>
           {current.note && (
-            <p className="font-serif italic text-muted-foreground text-center mt-8 max-w-[520px] mx-auto" style={{ fontSize: 16, lineHeight: 1.5 }}>
+            <p
+              className="font-serif italic text-center mt-4 max-w-[480px] mx-auto"
+              style={{ fontSize: 18, lineHeight: 1.5, color: "hsl(var(--muted-foreground) / 0.8)" }}
+            >
               {current.note}
             </p>
           )}
 
-          <div className="mt-16 space-y-6">
+          <div className="mt-12 space-y-6">
             {SLIDER_KEYS.map(key => (
               <div key={key}>
                 <div className="flex items-baseline justify-between mb-2">
@@ -227,7 +299,12 @@ const Review = () => {
             ))}
           </div>
 
-          <div className="mt-10 flex items-center justify-center gap-3">
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <span
+              className={`inline-block w-1.5 h-1.5 rounded-full bg-foreground/60 transition-transform duration-300 ${
+                scorePulse ? "scale-150" : "scale-100"
+              }`}
+            />
             <span className={`inline-block text-[10px] font-mono uppercase tracking-widest px-2 py-1 rounded ${cls.bg} ${cls.text}`}>
               {t(`verdicts.${cls.verdictKey}`)}
             </span>
@@ -238,43 +315,56 @@ const Review = () => {
         </div>
       </div>
 
-      {/* Bottom action bar */}
-      <div className="border-t border-border bg-background/95 backdrop-blur-sm">
-        <div className="max-w-[960px] mx-auto px-8 py-4 flex items-center gap-3">
+      {/* Bottom action bar — prominent, sticky */}
+      <div className="sticky bottom-0 border-t border-border bg-muted/40 backdrop-blur-sm">
+        <div
+          className="max-w-[960px] mx-auto px-8 flex items-center gap-3"
+          style={{ minHeight: 80 }}
+        >
           <button
             onClick={() => setConfirmCancel(true)}
-            className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
+            className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground hover:bg-background/60 ease-editorial transition-colors"
           >
             {t("review.actions.cancel")}
           </button>
+
           <div className="ml-auto flex items-center gap-2">
+            {/* Terminal cluster */}
             <button
               onClick={handleDrop}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-serif text-sm text-[hsl(var(--drop))] border border-transparent hover:border-[hsl(var(--drop))] ease-editorial transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-serif text-sm text-[hsl(var(--drop))] hover:bg-[hsl(var(--drop)/0.1)] ease-editorial transition-colors"
             >
               <X className="w-3.5 h-3.5" />
               {t("review.actions.drop")}
             </button>
             <button
               onClick={handleDone}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-serif text-sm text-[hsl(var(--win))] border border-transparent hover:border-[hsl(var(--win))] ease-editorial transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-serif text-sm text-[hsl(var(--win))] hover:bg-[hsl(var(--win)/0.1)] ease-editorial transition-colors"
             >
               <Check className="w-3.5 h-3.5" />
               {t("review.actions.done")}
             </button>
+
+            {/* Divider */}
+            <div className="mx-2 h-10 w-px bg-border" />
+
+            {/* Continuation cluster */}
             <button
               onClick={handleSkip}
-              className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
+              className="px-3 py-2 rounded-full font-serif text-sm text-muted-foreground hover:text-foreground hover:bg-background/60 ease-editorial transition-colors"
             >
               {t("review.actions.skip")}
             </button>
             <button
               onClick={handleUpdate}
-              className={`px-5 py-2 rounded-full font-serif text-sm ease-editorial transition-opacity ${
-                hasChanges ? "bg-ink text-paper hover:opacity-90" : "bg-secondary text-foreground hover:opacity-90"
+              className={`inline-flex items-center gap-1.5 px-5 py-2 rounded-full font-serif text-sm ease-editorial transition-all ${
+                hasChanges
+                  ? "bg-foreground text-background hover:opacity-90 shadow-md scale-[1.02]"
+                  : "bg-foreground text-background hover:opacity-90"
               }`}
             >
-              {t("review.actions.update")} →
+              {t("review.actions.update")}
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -295,7 +385,7 @@ const Review = () => {
               </button>
               <button
                 onClick={() => navigate("/")}
-                className="px-4 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
+                className="px-4 py-2 rounded-full bg-foreground text-background font-serif text-sm hover:opacity-90 ease-editorial transition-opacity"
               >
                 {t("review.actions.backToMatrix")}
               </button>

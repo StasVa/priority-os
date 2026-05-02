@@ -479,6 +479,18 @@
       "dropped_other": "{{count}} abandonnés",
       "unchanged_one": "{{count}} inchangé",
       "unchanged_other": "{{count}} inchangés"
+    },
+    "intro": {
+      "title": "Révision",
+      "body": "Vous allez parcourir {{count}} éléments actifs. Pour chacun : mettez à jour les notes, marquez-le comme terminé ou abandonné, ou passez.",
+      "estimatedTime": "Cela prend {{time}}.",
+      "startButton": "Commencer la révision",
+      "empty": {
+        "title": "Rien à réviser",
+        "body": "Ajoutez quelques éléments et revenez."
+      },
+      "estimatedMinutes_one": "environ une minute",
+      "estimatedMinutes_other": "environ {{count}} minutes"
     }
   },
   "sidebar": {

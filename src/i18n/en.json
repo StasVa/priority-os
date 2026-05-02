@@ -478,6 +478,18 @@
       "dropped_other": "{{count}} dropped",
       "unchanged_one": "{{count}} unchanged",
       "unchanged_other": "{{count}} unchanged"
+    },
+    "intro": {
+      "title": "Review",
+      "body": "You'll go through {{count}} active items. For each one: update your ratings, mark it as done or dropped, or skip.",
+      "estimatedTime": "Takes {{time}}.",
+      "startButton": "Start review",
+      "empty": {
+        "title": "Nothing to review",
+        "body": "Add some items and come back."
+      },
+      "estimatedMinutes_one": "about a minute",
+      "estimatedMinutes_other": "about {{count}} minutes"
     }
   },
   "sidebar": {

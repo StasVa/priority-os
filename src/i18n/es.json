@@ -479,6 +479,18 @@
       "dropped_other": "{{count}} descartados",
       "unchanged_one": "{{count}} sin cambios",
       "unchanged_other": "{{count}} sin cambios"
+    },
+    "intro": {
+      "title": "Revisión",
+      "body": "Pasarás por {{count}} elementos activos. Para cada uno: actualiza las valoraciones, márcalo como hecho o descartado, o sáltalo.",
+      "estimatedTime": "Lleva {{time}}.",
+      "startButton": "Empezar revisión",
+      "empty": {
+        "title": "Nada que revisar",
+        "body": "Añade algunos elementos y vuelve."
+      },
+      "estimatedMinutes_one": "alrededor de un minuto",
+      "estimatedMinutes_other": "alrededor de {{count}} minutos"
     }
   },
   "sidebar": {

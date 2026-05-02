@@ -479,6 +479,18 @@
       "dropped_other": "{{count}} verworfen",
       "unchanged_one": "{{count}} unverändert",
       "unchanged_other": "{{count}} unverändert"
+    },
+    "intro": {
+      "title": "Rückblick",
+      "body": "Sie werden {{count}} aktive Elemente durchgehen. Für jedes: Bewertungen aktualisieren, als erledigt oder verworfen markieren oder überspringen.",
+      "estimatedTime": "Dauert {{time}}.",
+      "startButton": "Rückblick starten",
+      "empty": {
+        "title": "Nichts zu überprüfen",
+        "body": "Fügen Sie Elemente hinzu und kommen Sie zurück."
+      },
+      "estimatedMinutes_one": "etwa eine Minute",
+      "estimatedMinutes_other": "etwa {{count}} Minuten"
     }
   },
   "sidebar": {
