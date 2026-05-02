@@ -267,7 +267,8 @@
       "markDropped": "Mark as dropped",
       "restore": "Restore to active",
       "delete": "Delete"
-    }
+    },
+    "targetAt": "Target · {{date}}"
   },
   "confirm": {
     "doneTitle": "Mark this as done?",

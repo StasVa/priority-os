@@ -268,7 +268,8 @@
       "markDropped": "Als verworfen",
       "restore": "Zurück zu aktiv",
       "delete": "Löschen"
-    }
+    },
+    "targetAt": "Ziel · {{date}}"
   },
   "confirm": {
     "doneTitle": "Als erledigt markieren?",

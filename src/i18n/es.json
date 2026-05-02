@@ -268,7 +268,8 @@
       "markDropped": "Marcar descartado",
       "restore": "Volver a activo",
       "delete": "Eliminar"
-    }
+    },
+    "targetAt": "Objetivo · {{date}}"
   },
   "confirm": {
     "doneTitle": "¿Marcar como hecho?",

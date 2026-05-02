@@ -288,7 +288,8 @@
       "markDropped": "Отбросить",
       "restore": "Вернуть в активные",
       "delete": "Удалить"
-    }
+    },
+    "targetAt": "Срок · {{date}}"
   },
   "confirm": {
     "doneTitle": "Завершить?",

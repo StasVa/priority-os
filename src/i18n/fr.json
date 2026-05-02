@@ -268,7 +268,8 @@
       "markDropped": "Marquer abandonné",
       "restore": "Remettre en actif",
       "delete": "Supprimer"
-    }
+    },
+    "targetAt": "Cible · {{date}}"
   },
   "confirm": {
     "doneTitle": "Marquer comme terminé ?",
