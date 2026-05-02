@@ -440,6 +440,19 @@
     },
     "row": {
       "editTooltip": "Edit"
+    },
+    "section": {
+      "itemCount_one": "{{count}} item",
+      "itemCount_other": "{{count}} items"
+    },
+    "toggleSection": {
+      "expand": "Expand",
+      "collapse": "Collapse"
+    },
+    "controls": {
+      "earlier": "← Earlier",
+      "today": "Today",
+      "later": "Later →"
     }
   },
   "review": {

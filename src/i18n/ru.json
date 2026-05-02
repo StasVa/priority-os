@@ -473,6 +473,21 @@
     },
     "row": {
       "editTooltip": "Редактировать"
+    },
+    "section": {
+      "itemCount_one": "{{count}} пункт",
+      "itemCount_few": "{{count}} пункта",
+      "itemCount_many": "{{count}} пунктов",
+      "itemCount_other": "{{count}} пунктов"
+    },
+    "toggleSection": {
+      "expand": "Развернуть",
+      "collapse": "Свернуть"
+    },
+    "controls": {
+      "earlier": "← Раньше",
+      "today": "Сегодня",
+      "later": "Позже →"
     }
   },
   "review": {
