@@ -513,5 +513,32 @@
       "timeline": "Chronologie",
       "review": "Revue"
     }
+  },
+  "login": {
+    "title": "Priority OS",
+    "subtitle": "Décisions, structurées",
+    "signIn": {
+      "heading": "Connexion",
+      "button": "Se connecter"
+    },
+    "signUp": {
+      "heading": "Inscription",
+      "button": "S'inscrire"
+    },
+    "fields": {
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "displayName": "Nom affiché (facultatif)"
+    },
+    "toggle": {
+      "toSignUp": "Pas de compte ? S'inscrire",
+      "toSignIn": "Déjà un compte ? Se connecter"
+    },
+    "loading": "Chargement...",
+    "errors": {
+      "invalidEmail": "Saisis une adresse e-mail valide.",
+      "passwordTooShort": "Le mot de passe doit faire au moins 6 caractères."
+    },
+    "signOut": "Se déconnecter"
   }
 }

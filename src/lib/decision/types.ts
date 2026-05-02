@@ -11,6 +11,7 @@ export interface Reference {
 
 export interface Item {
   id: string;
+  projectId: string;
   title: string;
   note?: string;
   impact: number;
@@ -52,11 +53,3 @@ export interface Project {
 
 /** @deprecated use Project */
 export type Context = Project;
-
-export interface DecisionState {
-  version: number;
-  projects: Project[];
-  activeProjectId: string;
-  /** Per-item evaluation history (so we don't lose data when sliders move). */
-  history: Record<string, Array<{ at: number; snapshot: Omit<Item, "id" | "title" | "note" | "createdAt" | "updatedAt"> }>>;
-}

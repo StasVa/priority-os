@@ -512,5 +512,32 @@
       "timeline": "Timeline",
       "review": "Review"
     }
+  },
+  "login": {
+    "title": "Priority OS",
+    "subtitle": "Decisions, structured",
+    "signIn": {
+      "heading": "Sign in",
+      "button": "Sign in"
+    },
+    "signUp": {
+      "heading": "Sign up",
+      "button": "Sign up"
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "displayName": "Display name (optional)"
+    },
+    "toggle": {
+      "toSignUp": "Don't have an account? Sign up",
+      "toSignIn": "Already have an account? Sign in"
+    },
+    "loading": "Loading...",
+    "errors": {
+      "invalidEmail": "Enter a valid email address.",
+      "passwordTooShort": "Password must be at least 6 characters."
+    },
+    "signOut": "Sign out"
   }
 }

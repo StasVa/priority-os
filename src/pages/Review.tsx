@@ -3,9 +3,11 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Check, ChevronRight, Hourglass, X } from "lucide-react";
-import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import { TONE_CLASSES, compositeScore, verdictForLens } from "@/lib/decision/logic";
 import type { Item } from "@/lib/decision/types";
+import { useProjects } from "@/lib/query/projects";
+import { useItems, useUpdateItem, useUpdateItemStatus } from "@/lib/query/items";
+import { useActiveProjectId } from "@/lib/store/useActiveProjectId";
 
 const SLIDER_KEYS: Array<keyof Pick<Item, "impact" | "effort" | "importance" | "satisfaction" | "confidence" | "risk">> = [
   "impact", "effort", "importance", "satisfaction", "confidence", "risk",
@@ -16,11 +18,23 @@ type Outcome = "updated" | "done" | "dropped" | "unchanged";
 const Review = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { activeProject, upsertItem, setItemStatus } = useDecisionStore();
+
+  const projectsQuery = useProjects();
+  const projects = projectsQuery.data ?? [];
+  const [activeIdRaw] = useActiveProjectId();
+  const activeProjectBase =
+    projects.find((p) => p.id === activeIdRaw && !p.archivedAt) ??
+    projects.find((p) => !p.archivedAt) ??
+    null;
+  const effectiveActiveId = activeProjectBase?.id ?? "";
+
+  const itemsQuery = useItems(effectiveActiveId || undefined);
+  const updateItem = useUpdateItem();
+  const updateItemStatus = useUpdateItemStatus();
 
   const activeItems = useMemo<Item[]>(
-    () => (activeProject?.items ?? []).filter(i => i.status === "active"),
-    [activeProject],
+    () => (itemsQuery.data ?? []).filter(i => i.status === "active"),
+    [itemsQuery.data],
   );
 
   const [started, setStarted] = useState(false);
@@ -90,8 +104,16 @@ const Review = () => {
   const handleUpdate = () => {
     if (!current) return;
     if (hasChanges) {
-      const { createdAt: _c, updatedAt: _u, ...rest } = current;
-      upsertItem({ ...rest, id: current.id });
+      updateItem.mutate({
+        id: current.id,
+        projectId: current.projectId,
+        impact: current.impact,
+        effort: current.effort,
+        importance: current.importance,
+        satisfaction: current.satisfaction,
+        confidence: current.confidence,
+        risk: current.risk,
+      });
       toast(t("review.toast.updated"), { duration: 2000 });
       advance("updated");
     } else {
@@ -107,14 +129,14 @@ const Review = () => {
 
   const handleDone = () => {
     if (!current) return;
-    setItemStatus(current.id, "done");
+    updateItemStatus.mutate({ id: current.id, projectId: current.projectId, status: "done" });
     toast(t("review.toast.done"), { duration: 2000 });
     advance("done");
   };
 
   const handleDrop = () => {
     if (!current) return;
-    setItemStatus(current.id, "dropped");
+    updateItemStatus.mutate({ id: current.id, projectId: current.projectId, status: "dropped" });
     toast(t("review.toast.dropped"), { duration: 2000 });
     advance("dropped");
   };

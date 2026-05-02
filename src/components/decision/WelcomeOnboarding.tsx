@@ -52,7 +52,7 @@ export function WelcomeOnboarding({ open, onSubmit, onSkip }: WelcomeOnboardingP
 
   // Build a synthetic Item-like for score/recommendation calc
   const synthetic: Item = {
-    id: "_preview", title: trimmedTitle || "_", note: "",
+    id: "_preview", projectId: "_preview", title: trimmedTitle || "_", note: "",
     ...scores,
     createdAt: 0, updatedAt: 0, status: "active", references: [],
   };

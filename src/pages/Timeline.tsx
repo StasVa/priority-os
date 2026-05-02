@@ -5,8 +5,7 @@ import { Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Pencil } from
 import { TopBar } from "@/components/decision/TopBar";
 import { LeftRail } from "@/components/decision/LeftRail";
 import { ItemEditor } from "@/components/decision/ItemEditor";
-import { useDecisionStore } from "@/lib/decision/useDecisionStore";
-import type { Item, ProjectColor } from "@/lib/decision/types";
+import type { Item, ItemStatus, Project, ProjectColor } from "@/lib/decision/types";
 import { autoEmojiForProject } from "@/lib/decision/projectEmoji";
 import { colorDot } from "@/lib/decision/projectColors";
 import { TONE_CLASSES, compositeScore, verdictForLens } from "@/lib/decision/logic";
@@ -16,6 +15,15 @@ import {
 } from "@/lib/decision/dates";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useCreateProject, useProjects, useUpdateProject } from "@/lib/query/projects";
+import {
+  useAllItems,
+  useCreateItem,
+  useDeleteItem,
+  useUpdateItem,
+  useUpdateItemStatus,
+} from "@/lib/query/items";
+import { useActiveProjectId } from "@/lib/store/useActiveProjectId";
 
 interface CommitmentRow {
   item: Item;
@@ -30,12 +38,45 @@ const DAY_MS = 86_400_000;
 const Timeline = () => {
   const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const {
-    state, activeProject,
-    setActiveProject, addProject, updateProject, deleteProject,
-    archiveProject, restoreProject, toggleFavoriteProject,
-    upsertItem, deleteItem, setItemStatus,
-  } = useDecisionStore();
+
+  const projectsQuery = useProjects();
+  const projects = useMemo<Project[]>(() => projectsQuery.data ?? [], [projectsQuery.data]);
+  const allItemsQuery = useAllItems();
+  const allItemsAcrossProjects = useMemo<Item[]>(
+    () => allItemsQuery.data ?? [],
+    [allItemsQuery.data],
+  );
+
+  const [activeIdRaw, setActiveProjectId] = useActiveProjectId();
+  const activeProjectBase = useMemo(
+    () =>
+      projects.find((p) => p.id === activeIdRaw && !p.archivedAt) ??
+      projects.find((p) => !p.archivedAt) ??
+      null,
+    [projects, activeIdRaw],
+  );
+  const effectiveActiveId = activeProjectBase?.id ?? "";
+
+  // Items scoped to the currently visible project (used by the editor).
+  const activeProjectItems = useMemo<Item[]>(
+    () => allItemsAcrossProjects.filter((i) => i.projectId === effectiveActiveId),
+    [allItemsAcrossProjects, effectiveActiveId],
+  );
+  const activeProject: Project | null = activeProjectBase
+    ? { ...activeProjectBase, items: activeProjectItems }
+    : null;
+
+  const createProject = useCreateProject();
+  const updateProject = useUpdateProject();
+  const createItem = useCreateItem();
+  const updateItem = useUpdateItem();
+  const deleteItem = useDeleteItem();
+  const updateItemStatus = useUpdateItemStatus();
+
+  const handleSelectProject = (id: string) => {
+    setActiveProjectId(id);
+    updateProject.mutate({ id, lastAccessedAt: Date.now() });
+  };
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<Item | null>(null);
@@ -54,24 +95,23 @@ const Timeline = () => {
   // Gather rows scoped to the filter
   const allRows: CommitmentRow[] = useMemo(() => {
     const rows: CommitmentRow[] = [];
-    for (const p of state.projects) {
+    const projectById = new Map(projects.map((p) => [p.id, p]));
+    for (const it of allItemsAcrossProjects) {
+      const p = projectById.get(it.projectId);
+      if (!p) continue;
       if (p.archivedAt) continue;
-      if (!allMode && p.id !== state.activeProjectId) continue;
-      const projName = t(`projects.${p.name}`, { defaultValue: p.name });
-      for (const it of p.items) {
-        if (it.status === "in_progress" || it.status === "done") {
-          rows.push({
-            item: it,
-            projectId: p.id,
-            projectName: projName,
-            projectEmoji: p.emoji,
-            projectColor: p.color,
-          });
-        }
-      }
+      if (!allMode && p.id !== effectiveActiveId) continue;
+      if (it.status !== "in_progress" && it.status !== "done") continue;
+      rows.push({
+        item: it,
+        projectId: p.id,
+        projectName: t(`projects.${p.name}`, { defaultValue: p.name }),
+        projectEmoji: p.emoji,
+        projectColor: p.color,
+      });
     }
     return rows;
-  }, [state.projects, state.activeProjectId, allMode, t]);
+  }, [projects, allItemsAcrossProjects, effectiveActiveId, allMode, t]);
 
   const inProgress = useMemo(() => allRows.filter(r => r.item.status === "in_progress"), [allRows]);
   const recentlyDone = useMemo(() => {
@@ -110,47 +150,107 @@ const Timeline = () => {
   }, [inProgress]);
 
   const openEdit = (id: string) => {
-    for (const p of state.projects) {
-      const it = p.items.find(i => i.id === id);
-      if (it) {
-        if (state.activeProjectId !== p.id) setActiveProject(p.id);
-        setEditing(it);
-        setEditorOpen(true);
-        return;
-      }
-    }
+    const it = allItemsAcrossProjects.find(i => i.id === id);
+    if (!it) return;
+    if (effectiveActiveId !== it.projectId) handleSelectProject(it.projectId);
+    setEditing(it);
+    setEditorOpen(true);
   };
 
   const handleCreateProject = (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => {
-    addProject(draft.name, {
-      emoji: draft.emoji ?? autoEmojiForProject(draft.name),
-      color: draft.color ?? "neutral",
-      description: draft.description,
+    createProject.mutate(
+      {
+        name: draft.name,
+        emoji: draft.emoji ?? autoEmojiForProject(draft.name),
+        color: draft.color ?? "neutral",
+        description: draft.description,
+      },
+      { onSuccess: (p) => setActiveProjectId(p.id) },
+    );
+  };
+
+  const handleUpsertItem = (
+    draft: Omit<Item, "createdAt" | "updatedAt"> & { id?: string },
+  ) => {
+    const targetProject = draft.id
+      ? allItemsAcrossProjects.find((i) => i.id === draft.id)?.projectId ?? effectiveActiveId
+      : effectiveActiveId;
+    if (!targetProject) return;
+    if (draft.id) {
+      updateItem.mutate({
+        id: draft.id,
+        projectId: targetProject,
+        title: draft.title,
+        note: draft.note ?? null,
+        impact: draft.impact,
+        effort: draft.effort,
+        importance: draft.importance,
+        satisfaction: draft.satisfaction,
+        confidence: draft.confidence,
+        risk: draft.risk,
+        status: draft.status,
+      });
+    } else {
+      createItem.mutate({
+        projectId: targetProject,
+        title: draft.title,
+        note: draft.note,
+        impact: draft.impact,
+        effort: draft.effort,
+        importance: draft.importance,
+        satisfaction: draft.satisfaction,
+        confidence: draft.confidence,
+        risk: draft.risk,
+        status: draft.status ?? "active",
+      });
+    }
+  };
+
+  const handleDeleteItem = (id: string) => {
+    const proj = allItemsAcrossProjects.find((i) => i.id === id)?.projectId;
+    if (!proj) return;
+    deleteItem.mutate({ id, projectId: proj });
+  };
+
+  const handleSetItemStatus = (
+    id: string,
+    status: ItemStatus,
+    resolutionNote?: string,
+    targetDate?: string,
+  ) => {
+    const proj = allItemsAcrossProjects.find((i) => i.id === id)?.projectId;
+    if (!proj) return;
+    updateItemStatus.mutate({
+      id,
+      projectId: proj,
+      status,
+      resolutionNote,
+      targetDate: targetDate === "" ? null : targetDate ?? undefined,
     });
   };
 
   const projectsForSwitcher = useMemo(
-    () => state.projects.map(p => ({
+    () => projects.map(p => ({
       id: p.id,
       name: t(`projects.${p.name}`, { defaultValue: p.name }),
-      activeCount: p.items.filter(i => i.status === "active").length,
+      activeCount: allItemsAcrossProjects.filter(i => i.projectId === p.id && i.status === "active").length,
       lastAccessedAt: p.lastAccessedAt,
       emoji: p.emoji,
       color: p.color,
       isFavorite: p.isFavorite,
       archivedAt: p.archivedAt,
     })),
-    [state.projects, t],
+    [projects, t, allItemsAcrossProjects],
   );
   const activeProjectName = activeProject ? t(`projects.${activeProject.name}`, { defaultValue: activeProject.name }) : "";
-  const activeProjectCount = activeProject?.items.filter(i => i.status === "active").length ?? 0;
+  const activeProjectCount = activeProjectItems.filter(i => i.status === "active").length;
 
-  const allItems = activeProject?.items ?? [];
+  const allItems = activeProjectItems;
 
   // Visible projects for filter dropdown (active first, then others, exclude archived)
   const visibleProjects = useMemo(
-    () => state.projects.filter(p => !p.archivedAt),
-    [state.projects],
+    () => projects.filter(p => !p.archivedAt),
+    [projects],
   );
 
   return (
@@ -159,12 +259,12 @@ const Timeline = () => {
       <div className="flex-1 min-w-0 flex flex-col">
       <TopBar
         projects={projectsForSwitcher}
-        activeProjectId={state.activeProjectId}
+        activeProjectId={effectiveActiveId}
         activeProjectName={activeProjectName}
         activeProjectEmoji={activeProject?.emoji}
         activeProjectColor={activeProject?.color}
         activeProjectCount={activeProjectCount}
-        onSelectProject={setActiveProject}
+        onSelectProject={handleSelectProject}
         onCreateProject={handleCreateProject}
         onOpenSettings={() => setSettingsOpen(true)}
         onOpenHelp={() => setHelpOpen(true)}
@@ -178,7 +278,7 @@ const Timeline = () => {
           </h1>
           <TimelineFilter
             allMode={allMode}
-            activeProjectId={state.activeProjectId}
+            activeProjectId={effectiveActiveId}
             activeProjectName={activeProjectName}
             activeProjectEmoji={activeProject?.emoji}
             projects={visibleProjects.map(p => ({
@@ -186,10 +286,10 @@ const Timeline = () => {
               name: t(`projects.${p.name}`, { defaultValue: p.name }),
               emoji: p.emoji,
               color: p.color,
-              inProgressCount: p.items.filter(i => i.status === "in_progress").length,
+              inProgressCount: allItemsAcrossProjects.filter(i => i.projectId === p.id && i.status === "in_progress").length,
             }))}
             onSelectProject={(id) => {
-              setActiveProject(id);
+              handleSelectProject(id);
               setAllMode(false);
             }}
             onSelectAll={() => setAllMode(true)}
@@ -231,18 +331,12 @@ const Timeline = () => {
         open={editorOpen}
         initial={editing}
         onClose={() => setEditorOpen(false)}
-        onSave={upsertItem}
-        onDelete={deleteItem}
-        onSetStatus={setItemStatus}
+        onSave={handleUpsertItem}
+        onDelete={handleDeleteItem}
+        onSetStatus={handleSetItemStatus}
         contextItems={allItems}
       />
 
-      {/* unused store actions kept referenced to satisfy lint */}
-      <span className="hidden">
-        {String(typeof updateProject)}{String(typeof deleteProject)}
-        {String(typeof archiveProject)}{String(typeof restoreProject)}
-        {String(typeof toggleFavoriteProject)}
-      </span>
       </div>
     </div>
   );

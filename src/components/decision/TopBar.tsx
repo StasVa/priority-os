@@ -1,8 +1,11 @@
-import { HelpCircle, Plus, Settings } from "lucide-react";
+import { HelpCircle, LogOut, Plus, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { LanguageSwitcher } from "@/components/decision/LanguageSwitcher";
 import { ThemeToggle } from "@/components/decision/ThemeToggle";
 import { ProjectSwitcher, type ProjectLite } from "@/components/decision/ProjectSwitcher";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAuth } from "@/lib/auth/useAuth";
 import type { ProjectColor } from "@/lib/decision/types";
 
 interface TopBarProps {
@@ -25,6 +28,12 @@ export function TopBar({
   onNewItem,
 }: TopBarProps) {
   const { t } = useTranslation();
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/login", { replace: true });
+  };
   return (
     <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="px-8 py-4 flex items-center gap-6">
@@ -77,6 +86,21 @@ export function TopBar({
           </button>
           <span className="w-px h-5 bg-border mx-1" aria-hidden />
           <ThemeToggle />
+          <span className="w-px h-5 bg-border mx-1" aria-hidden />
+          {/* TEMP: sign out — move to profile menu later */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                aria-label={t("login.signOut")}
+                className="inline-flex items-center justify-center p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary ease-editorial transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">{t("login.signOut")}</TooltipContent>
+          </Tooltip>
         </div>
       </div>
     </header>
