@@ -135,6 +135,17 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
 
           <ScoreBlock score={score} recText={t(`recommendations.${recKey}`)} />
 
+          {isEdit && draft.status === "in_progress" && (
+            <TargetDateRow
+              value={draft.targetDate}
+              locale={i18n.language}
+              onChange={(iso) => {
+                setDraft(d => ({ ...d, targetDate: iso }));
+                if (onSetStatus) onSetStatus(draft.id, "in_progress", undefined, iso ?? "");
+              }}
+            />
+          )}
+
           <PositionAcrossLenses
             draft={draft}
             contextItems={contextItems}
