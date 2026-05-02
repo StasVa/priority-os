@@ -461,7 +461,7 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
                 fill="none"
                 stroke={toneHsl(n.ringTone)}
                 strokeOpacity={0.5}
-                strokeWidth={1.5}
+                strokeWidth={ringStroke}
                 style={{ pointerEvents: "none", transition: "all 280ms cubic-bezier(0.22, 0.61, 0.36, 1)" }}
               />
             )}
