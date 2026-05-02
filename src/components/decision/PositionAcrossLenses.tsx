@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { Item, LensId } from "@/lib/decision/types";
-import { LENSES, lensCoords, toneHsl, verdictForLens } from "@/lib/decision/logic";
+import { LENSES, lensCoords, toneHsl, verdictForLens, compositeScore } from "@/lib/decision/logic";
 
 interface PositionMiniProps {
   lens: LensId;
@@ -19,6 +19,8 @@ function PositionMini({ lens, draft, others }: PositionMiniProps) {
       cx: PAD + x * (W - PAD * 2),
       cy: (H - PAD) - y * (H - PAD * 2),
       tone: verdictForLens(it, lens),
+      inProgress: it.status === "in_progress",
+      score: compositeScore(it),
     };
   };
 
@@ -39,7 +41,10 @@ function PositionMini({ lens, draft, others }: PositionMiniProps) {
     return groups.map(g => {
       const cx = g.reduce((s, x) => s + x.cx, 0) / g.length;
       const cy = g.reduce((s, x) => s + x.cy, 0) / g.length;
-      return { id: g[0].id, cx, cy, tone: g[0].tone, count: g.length };
+      const inProgressMembers = g.filter(x => x.inProgress).sort((a, b) => b.score - a.score);
+      const hasInProgress = inProgressMembers.length > 0;
+      const ringTone = inProgressMembers[0]?.tone ?? g[0].tone;
+      return { id: g[0].id, cx, cy, tone: g[0].tone, count: g.length, hasInProgress, ringTone };
     });
   }, [others, lens]);
   const me = project(draft);
@@ -66,11 +71,21 @@ function PositionMini({ lens, draft, others }: PositionMiniProps) {
       {/* other items — small, faded, clustered */}
       {otherClusters.map(d => {
         const r = d.count > 1 ? 4 : 3;
+        const ringR = r + 2 + 0.5; // 2px gap + half stroke (1px)
         return (
           <g key={d.id}>
             <circle cx={d.cx} cy={d.cy} r={r}
               fill={toneHsl(d.tone)} fillOpacity={0.5}
             />
+            {d.hasInProgress && (
+              <circle cx={d.cx} cy={d.cy} r={ringR}
+                fill="none"
+                stroke={toneHsl(d.ringTone)}
+                strokeOpacity={0.5}
+                strokeWidth={1}
+                style={{ pointerEvents: "none" }}
+              />
+            )}
             {d.count > 1 && (
               <text
                 x={d.cx} y={d.cy}
@@ -110,7 +125,7 @@ interface PositionAcrossLensesProps {
 
 export function PositionAcrossLenses({ draft, contextItems, t, sectionLabel }: PositionAcrossLensesProps) {
   const others = useMemo(
-    () => contextItems.filter(i => i.id !== draft.id && i.status === "active"),
+    () => contextItems.filter(i => i.id !== draft.id && (i.status === "active" || i.status === "in_progress")),
     [contextItems, draft.id],
   );
 
