@@ -34,6 +34,15 @@ export function PriorityQueue({ items, lens, hoveredId, onHover, onSelect, insig
 
   return (
     <aside className="border-l border-border bg-sidebar h-full overflow-y-auto flex flex-col">
+      <div className="px-6 py-5 border-b border-border">
+        <div className="label-mono mb-3">{t("sidebar.views.title")}</div>
+        <nav className="flex flex-col -mx-2">
+          <ViewLink to="/" icon={LayoutGrid} label={t("sidebar.views.matrix")} end />
+          <ViewLink to="/timeline" icon={CalendarDays} label={t("sidebar.views.timeline")} />
+          <ViewLink to="/review" icon={RotateCcw} label={t("sidebar.views.review")} />
+        </nav>
+      </div>
+
       <div className="px-6 py-5 border-b border-border flex items-baseline justify-between gap-3">
         <div className="label-mono">{t("queue.title")}</div>
         <div className="font-serif text-[12px] text-muted-foreground">
