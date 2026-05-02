@@ -1,3 +1,4 @@
+import type { ComponentType } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { CalendarDays, LayoutGrid, RotateCcw } from "lucide-react";
