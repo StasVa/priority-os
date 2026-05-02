@@ -100,7 +100,19 @@
     "markInProgress": "Начать",
     "backToActive": "В активные",
     "drop": "Отбросить",
-    "positionAcrossLenses": "Положение в линзах"
+    "positionAcrossLenses": "Положение в линзах",
+    "startWorkingDialog": {
+      "heading": "Начинаем работу над «{{title}}»",
+      "dateQuestion": "Когда обязуешься завершить?",
+      "skipNoDate": "Пропустить — без даты",
+      "cancel": "Отмена",
+      "start": "Начать",
+      "addTargetDate": "+ Добавить срок",
+      "editTargetDate": "Изменить срок",
+      "targetDateLabel": "Срок",
+      "pickDate": "Выбрать дату",
+      "save": "Сохранить"
+    }
   },
   "matrix": {
     "empty": "В <0>{{name}}</0> пока ничего нет.",
@@ -407,5 +419,51 @@
   },
   "language": {
     "tooltip": "Язык"
+  },
+  "topBar": {
+    "timeline": "Хронология"
+  },
+  "timeline": {
+    "title": "Хронология",
+    "subtitle": "Все обязательства по проектам",
+    "today": "Сегодня",
+    "earlier": "← Раньше",
+    "later": "Позже →",
+    "empty": "Обязательств пока нет. Начни работу над пунктом, чтобы он появился здесь.",
+    "sections": {
+      "pastDue": "Прошедший срок",
+      "pastDueSubtitle": "Сбрось дату или отметь как завершённое",
+      "thisWeek": "На этой неделе",
+      "nextWeek": "На следующей неделе",
+      "later": "Дальше",
+      "noDate": "Без даты",
+      "recentlyCompleted": "Недавно завершено"
+    },
+    "dateInfo": {
+      "promisedInDays_one": "Обещано через {{count}} день",
+      "promisedInDays_few": "Обещано через {{count}} дня",
+      "promisedInDays_many": "Обещано через {{count}} дней",
+      "promisedInDays_other": "Обещано через {{count}} дней",
+      "promisedAgoDays_one": "Обещано {{count}} день назад",
+      "promisedAgoDays_few": "Обещано {{count}} дня назад",
+      "promisedAgoDays_many": "Обещано {{count}} дней назад",
+      "promisedAgoDays_other": "Обещано {{count}} дней назад",
+      "promisedToday": "Обещано сегодня",
+      "noDate": "Без даты",
+      "completedAgo_one": "Завершено {{count}} день назад",
+      "completedAgo_few": "Завершено {{count}} дня назад",
+      "completedAgo_many": "Завершено {{count}} дней назад",
+      "completedAgo_other": "Завершено {{count}} дней назад",
+      "completedToday": "Завершено сегодня",
+      "startedAgo_one": "Начато {{count}} день назад",
+      "startedAgo_few": "Начато {{count}} дня назад",
+      "startedAgo_many": "Начато {{count}} дней назад",
+      "startedAgo_other": "Начато {{count}} дней назад",
+      "droppedAgo_one": "Отброшено {{count}} день назад",
+      "droppedAgo_few": "Отброшено {{count}} дня назад",
+      "droppedAgo_many": "Отброшено {{count}} дней назад",
+      "droppedAgo_other": "Отброшено {{count}} дней назад"
+    },
+    "projectLabel": "Проект"
   }
 }

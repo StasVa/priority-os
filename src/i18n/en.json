@@ -93,7 +93,19 @@
     "markInProgress": "Start",
     "backToActive": "Back to active",
     "drop": "Drop",
-    "positionAcrossLenses": "Position across lenses"
+    "positionAcrossLenses": "Position across lenses",
+    "startWorkingDialog": {
+      "heading": "Starting work on “{{title}}”",
+      "dateQuestion": "When do you commit to completing?",
+      "skipNoDate": "Skip — no date",
+      "cancel": "Cancel",
+      "start": "Start working",
+      "addTargetDate": "+ Add target date",
+      "editTargetDate": "Edit target date",
+      "targetDateLabel": "Target date",
+      "pickDate": "Pick a date",
+      "save": "Save"
+    }
   },
   "matrix": {
     "empty": "No items in <0>{{name}}</0> yet.",
@@ -384,5 +396,41 @@
   },
   "language": {
     "tooltip": "Language"
+  },
+  "topBar": {
+    "timeline": "Timeline"
+  },
+  "timeline": {
+    "title": "Timeline",
+    "subtitle": "All commitments across projects",
+    "today": "Today",
+    "earlier": "← Earlier",
+    "later": "Later →",
+    "empty": "No commitments yet. Start an item to add one here.",
+    "sections": {
+      "pastDue": "Past due",
+      "pastDueSubtitle": "Reset the date or mark as done",
+      "thisWeek": "This week",
+      "nextWeek": "Next week",
+      "later": "Later",
+      "noDate": "No date",
+      "recentlyCompleted": "Recently completed"
+    },
+    "dateInfo": {
+      "promisedInDays_one": "Promised in {{count}} day",
+      "promisedInDays_other": "Promised in {{count}} days",
+      "promisedAgoDays_one": "Promised {{count}} day ago",
+      "promisedAgoDays_other": "Promised {{count}} days ago",
+      "promisedToday": "Promised today",
+      "noDate": "No date",
+      "completedAgo_one": "Completed {{count}} day ago",
+      "completedAgo_other": "Completed {{count}} days ago",
+      "completedToday": "Completed today",
+      "startedAgo_one": "Started {{count}} day ago",
+      "startedAgo_other": "Started {{count}} days ago",
+      "droppedAgo_one": "Dropped {{count}} day ago",
+      "droppedAgo_other": "Dropped {{count}} days ago"
+    },
+    "projectLabel": "Project"
   }
 }

@@ -94,7 +94,19 @@
     "markInProgress": "Starten",
     "backToActive": "Zurück zu aktiv",
     "drop": "Verwerfen",
-    "positionAcrossLenses": "Position in den Linsen"
+    "positionAcrossLenses": "Position in den Linsen",
+    "startWorkingDialog": {
+      "heading": "Arbeit beginnen an „{{title}}“",
+      "dateQuestion": "Wann verpflichtest du dich, fertig zu sein?",
+      "skipNoDate": "Überspringen — kein Datum",
+      "cancel": "Abbrechen",
+      "start": "Beginnen",
+      "addTargetDate": "+ Zieldatum hinzufügen",
+      "editTargetDate": "Zieldatum ändern",
+      "targetDateLabel": "Zieldatum",
+      "pickDate": "Datum wählen",
+      "save": "Speichern"
+    }
   },
   "matrix": {
     "empty": "Noch keine Elemente in <0>{{name}}</0>.",
@@ -385,5 +397,41 @@
   },
   "language": {
     "tooltip": "Sprache"
+  },
+  "topBar": {
+    "timeline": "Zeitachse"
+  },
+  "timeline": {
+    "title": "Zeitachse",
+    "subtitle": "Alle Verpflichtungen über Projekte hinweg",
+    "today": "Heute",
+    "earlier": "← Früher",
+    "later": "Später →",
+    "empty": "Noch keine Verpflichtungen. Starte einen Eintrag, um ihn hier zu sehen.",
+    "sections": {
+      "pastDue": "Überfällig",
+      "pastDueSubtitle": "Datum neu setzen oder als erledigt markieren",
+      "thisWeek": "Diese Woche",
+      "nextWeek": "Nächste Woche",
+      "later": "Später",
+      "noDate": "Kein Datum",
+      "recentlyCompleted": "Kürzlich abgeschlossen"
+    },
+    "dateInfo": {
+      "promisedInDays_one": "Versprochen in {{count}} Tag",
+      "promisedInDays_other": "Versprochen in {{count}} Tagen",
+      "promisedAgoDays_one": "Versprochen vor {{count}} Tag",
+      "promisedAgoDays_other": "Versprochen vor {{count}} Tagen",
+      "promisedToday": "Heute versprochen",
+      "noDate": "Kein Datum",
+      "completedAgo_one": "Vor {{count}} Tag abgeschlossen",
+      "completedAgo_other": "Vor {{count}} Tagen abgeschlossen",
+      "completedToday": "Heute abgeschlossen",
+      "startedAgo_one": "Vor {{count}} Tag begonnen",
+      "startedAgo_other": "Vor {{count}} Tagen begonnen",
+      "droppedAgo_one": "Vor {{count}} Tag verworfen",
+      "droppedAgo_other": "Vor {{count}} Tagen verworfen"
+    },
+    "projectLabel": "Projekt"
   }
 }
