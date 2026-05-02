@@ -260,7 +260,7 @@ const Index = () => {
           hoveredId={hoveredId}
           onHover={setHoveredId}
           onSelect={openEdit}
-          insightsOn={insightsOn}
+          insightsOn={true}
           counts={counts}
           onViewAll={() => setAllOpen(true)}
         />
