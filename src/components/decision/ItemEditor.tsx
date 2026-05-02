@@ -33,9 +33,10 @@ const empty = (): Item => ({
 });
 
 export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStatus, contextItems = [] }: ItemEditorProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [draft, setDraft] = useState<Item>(empty());
   const [confirming, setConfirming] = useState<null | "done" | "dropped">(null);
+  const [starting, setStarting] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
   const isEdit = !!initial;
 
@@ -43,6 +44,7 @@ export function ItemEditor({ open, initial, onClose, onSave, onDelete, onSetStat
     if (open) {
       setDraft(initial ? { ...initial } : empty());
       setConfirming(null);
+      setStarting(false);
       requestAnimationFrame(() => titleRef.current?.focus());
     }
   }, [open, initial]);
