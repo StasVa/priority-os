@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import { Check, ChevronDown, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 import { TopBar } from "@/components/decision/TopBar";
+import { LeftRail } from "@/components/decision/LeftRail";
 import { ItemEditor } from "@/components/decision/ItemEditor";
 import { useDecisionStore } from "@/lib/decision/useDecisionStore";
 import type { Item, ProjectColor } from "@/lib/decision/types";
@@ -153,7 +154,9 @@ const Timeline = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground flex">
+      <LeftRail />
+      <div className="flex-1 min-w-0 flex flex-col">
       <TopBar
         projects={projectsForSwitcher}
         activeProjectId={state.activeProjectId}
@@ -240,6 +243,7 @@ const Timeline = () => {
         {String(typeof archiveProject)}{String(typeof restoreProject)}
         {String(typeof toggleFavoriteProject)}
       </span>
+      </div>
     </div>
   );
 };

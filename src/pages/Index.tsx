@@ -8,6 +8,7 @@ import { PriorityQueue } from "@/components/decision/PriorityQueue";
 import { ItemEditor } from "@/components/decision/ItemEditor";
 import { AllItemsView } from "@/components/decision/AllItemsView";
 // LensInsight intentionally not rendered; kept in codebase for potential reuse.
+import { LeftRail } from "@/components/decision/LeftRail";
 import { WelcomeOnboarding } from "@/components/decision/WelcomeOnboarding";
 import { FirstHint } from "@/components/decision/FirstHint";
 import { ProjectSettingsDrawer } from "@/components/decision/ProjectSettingsDrawer";
@@ -168,7 +169,9 @@ const Index = () => {
   const activeProjectCount = activeProject?.items.filter(i => i.status === "active").length ?? 0;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground flex">
+      <LeftRail />
+      <div className="flex-1 min-w-0 flex flex-col">
       <TopBar
         projects={projectsForSwitcher}
         activeProjectId={state.activeProjectId}
@@ -305,6 +308,7 @@ const Index = () => {
       />
 
       <HelpDrawer open={helpOpen} onClose={() => setHelpOpen(false)} />
+      </div>
     </div>
   );
 };
