@@ -510,8 +510,39 @@
     "views": {
       "title": "Ansichten",
       "matrix": "Matrix",
-      "timeline": "Zeitachse",
+      "timeline": "Fortschritt",
       "review": "Rückblick"
+    }
+  },
+  "progress": {
+    "title": "Fortschritt",
+    "sections": {
+      "inProgress": "In Arbeit",
+      "archive": "Archiv",
+      "dropped": "Verworfen"
+    },
+    "columns": {
+      "button": "Spalten",
+      "title": "Titel",
+      "verdict": "Urteil",
+      "score": "Punktzahl",
+      "date": "Datum"
+    },
+    "empty": {
+      "inProgressTitle": "Noch nichts in Arbeit",
+      "inProgressHint": "Punkte erscheinen hier, sobald Sie sie starten",
+      "archive": "Archiv ist leer"
+    },
+    "showMore": "Mehr anzeigen",
+    "relative": {
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "yesterday": "Gestern",
+      "noTarget": "—",
+      "inDays_one": "in {{count}} Tag",
+      "inDays_other": "in {{count}} Tagen",
+      "daysAgo_one": "vor {{count}} Tag",
+      "daysAgo_other": "vor {{count}} Tagen"
     }
   },
   "login": {

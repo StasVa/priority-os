@@ -510,8 +510,39 @@
     "views": {
       "title": "Vistas",
       "matrix": "Matriz",
-      "timeline": "Cronología",
+      "timeline": "Progreso",
       "review": "Revisión"
+    }
+  },
+  "progress": {
+    "title": "Progreso",
+    "sections": {
+      "inProgress": "En progreso",
+      "archive": "Archivo",
+      "dropped": "Descartados"
+    },
+    "columns": {
+      "button": "Columnas",
+      "title": "Título",
+      "verdict": "Veredicto",
+      "score": "Puntaje",
+      "date": "Fecha"
+    },
+    "empty": {
+      "inProgressTitle": "Nada en progreso aún",
+      "inProgressHint": "Los elementos llegan aquí cuando los inicias",
+      "archive": "El archivo está vacío"
+    },
+    "showMore": "Mostrar más",
+    "relative": {
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "yesterday": "Ayer",
+      "noTarget": "—",
+      "inDays_one": "en {{count}} día",
+      "inDays_other": "en {{count}} días",
+      "daysAgo_one": "hace {{count}} día",
+      "daysAgo_other": "hace {{count}} días"
     }
   },
   "login": {

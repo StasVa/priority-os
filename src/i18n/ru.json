@@ -557,8 +557,43 @@
     "views": {
       "title": "Виды",
       "matrix": "Матрица",
-      "timeline": "Хронология",
+      "timeline": "Прогресс",
       "review": "Пересмотр"
+    }
+  },
+  "progress": {
+    "title": "Прогресс",
+    "sections": {
+      "inProgress": "В работе",
+      "archive": "Архив",
+      "dropped": "Отклонено"
+    },
+    "columns": {
+      "button": "Колонки",
+      "title": "Название",
+      "verdict": "Вердикт",
+      "score": "Балл",
+      "date": "Дата"
+    },
+    "empty": {
+      "inProgressTitle": "Пока ничего в работе",
+      "inProgressHint": "Сюда попадают пункты, когда вы начинаете работу",
+      "archive": "Архив пуст"
+    },
+    "showMore": "Показать ещё",
+    "relative": {
+      "today": "Сегодня",
+      "tomorrow": "Завтра",
+      "yesterday": "Вчера",
+      "noTarget": "—",
+      "inDays_one": "через {{count}} день",
+      "inDays_few": "через {{count}} дня",
+      "inDays_many": "через {{count}} дней",
+      "inDays_other": "через {{count}} дней",
+      "daysAgo_one": "{{count}} день назад",
+      "daysAgo_few": "{{count}} дня назад",
+      "daysAgo_many": "{{count}} дней назад",
+      "daysAgo_other": "{{count}} дней назад"
     }
   },
   "login": {

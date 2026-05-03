@@ -1,16 +1,23 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router-dom";
-import { Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Pencil } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
+import type { TFunction } from "i18next";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { TopBar } from "@/components/decision/TopBar";
 import { LeftRail } from "@/components/decision/LeftRail";
 import { ItemEditor } from "@/components/decision/ItemEditor";
-import type { Item, ItemStatus, Project, ProjectColor } from "@/lib/decision/types";
+import type { Item, ItemStatus, Project, ProjectColor, Tone } from "@/lib/decision/types";
 import { autoEmojiForProject } from "@/lib/decision/projectEmoji";
 import { colorDot } from "@/lib/decision/projectColors";
 import { TONE_CLASSES, compositeScore, verdictForLens } from "@/lib/decision/logic";
 import {
-  dateInfo, dayDelta, daysSince, formatLongDate, formatShortDate,
+  dayDelta, daysSince, formatLongDate, formatShortDate,
   startOfDay, todayStart,
 } from "@/lib/decision/dates";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -95,7 +102,7 @@ const Timeline = () => {
     else setSearchParams({});
   };
 
-  // Gather rows scoped to the filter
+  // Gather rows scoped to the filter (all statuses; sections partition below).
   const allRows: CommitmentRow[] = useMemo(() => {
     const rows: CommitmentRow[] = [];
     const projectById = new Map(projects.map((p) => [p.id, p]));
@@ -104,7 +111,6 @@ const Timeline = () => {
       if (!p) continue;
       if (p.archivedAt) continue;
       if (!allMode && p.id !== effectiveActiveId) continue;
-      if (it.status !== "in_progress" && it.status !== "done") continue;
       rows.push({
         item: it,
         projectId: p.id,
@@ -117,40 +123,13 @@ const Timeline = () => {
   }, [projects, allItemsAcrossProjects, effectiveActiveId, allMode, t]);
 
   const inProgress = useMemo(() => allRows.filter(r => r.item.status === "in_progress"), [allRows]);
+  const done = useMemo(() => allRows.filter(r => r.item.status === "done"), [allRows]);
+  const dropped = useMemo(() => allRows.filter(r => r.item.status === "dropped"), [allRows]);
   const recentlyDone = useMemo(() => {
-    return allRows
-      .filter(r => r.item.status === "done" && r.item.resolvedAt && daysSince(r.item.resolvedAt) <= 30)
+    return done
+      .filter(r => r.item.resolvedAt && daysSince(r.item.resolvedAt) <= 30)
       .sort((a, b) => +new Date(b.item.resolvedAt!) - +new Date(a.item.resolvedAt!));
-  }, [allRows]);
-
-  // Group in_progress
-  const groups = useMemo(() => {
-    const today = todayStart().getTime();
-    const endOfWeek = today + 7 * DAY_MS;
-    const endOfNextWeek = today + 14 * DAY_MS;
-
-    const pastDue: CommitmentRow[] = [];
-    const thisWeek: CommitmentRow[] = [];
-    const nextWeek: CommitmentRow[] = [];
-    const later: CommitmentRow[] = [];
-    const noDate: CommitmentRow[] = [];
-
-    for (const r of inProgress) {
-      const td = r.item.targetDate;
-      if (!td) { noDate.push(r); continue; }
-      const ts = startOfDay(td).getTime();
-      if (ts < today) pastDue.push(r);
-      else if (ts < endOfWeek) thisWeek.push(r);
-      else if (ts < endOfNextWeek) nextWeek.push(r);
-      else later.push(r);
-    }
-    const byTarget = (a: CommitmentRow, b: CommitmentRow) =>
-      +new Date(a.item.targetDate!) - +new Date(b.item.targetDate!);
-    pastDue.sort(byTarget); thisWeek.sort(byTarget); nextWeek.sort(byTarget); later.sort(byTarget);
-    noDate.sort((a, b) => +new Date(b.item.startedAt ?? 0) - +new Date(a.item.startedAt ?? 0));
-
-    return { pastDue, thisWeek, nextWeek, later, noDate };
-  }, [inProgress]);
+  }, [done]);
 
   const openEdit = (id: string) => {
     const it = allItemsAcrossProjects.find(i => i.id === id);
@@ -276,7 +255,7 @@ const Timeline = () => {
       <main className="max-w-5xl mx-auto px-8 py-10 space-y-8">
         <header className="space-y-4">
           <h1 className="font-serif text-[32px] leading-tight" style={{ fontVariationSettings: '"opsz" 144' }}>
-            {t("timeline.title")}
+            {t("progress.title")}
           </h1>
           <TimelineFilter
             allMode={allMode}
@@ -311,22 +290,15 @@ const Timeline = () => {
           t={t}
         />
 
-        <CommitmentList
-          groups={groups}
-          recentlyDone={recentlyDone}
+        <ProgressSections
+          inProgress={inProgress}
+          done={done}
+          dropped={dropped}
           allMode={allMode}
           onSelect={openEdit}
+          locale={i18n.language}
           t={t}
         />
-
-        {inProgress.length === 0 && recentlyDone.length === 0 && (
-          <div className="text-center py-20">
-            <p className="font-serif italic text-muted-foreground">{t("timeline.empty")}</p>
-            <Link to="/" className="mt-4 inline-block px-5 py-2 rounded-full bg-ink text-paper font-serif text-sm hover:opacity-90 ease-editorial transition-opacity">
-              {t("matrix.addFirst")}
-            </Link>
-          </div>
-        )}
       </main>
 
       <ItemEditor
@@ -564,7 +536,7 @@ function TimelineGraph({ inProgress, recentlyDone, locale, allMode, windowOffset
           preserveAspectRatio="xMidYMid meet"
           style={{ minHeight: 280 }}
           role="img"
-          aria-label={t("timeline.title")}
+          aria-label={t("progress.title")}
         >
           {/* Horizontal axis line */}
           <line x1={PAD_X} x2={W - PAD_X} y1={TRACK_TOP - 8} y2={TRACK_TOP - 8} stroke="hsl(var(--border))" strokeWidth={1} />
@@ -634,165 +606,518 @@ function truncate(s: string, n: number) { return s.length > n ? s.slice(0, n - 1
 export { formatLongDate };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Commitment list
+// Progress sections (In Progress / Archive / Dropped) with sortable columns
 // ─────────────────────────────────────────────────────────────────────────────
 
-interface ListProps {
-  groups: {
-    pastDue: CommitmentRow[];
-    thisWeek: CommitmentRow[];
-    nextWeek: CommitmentRow[];
-    later: CommitmentRow[];
-    noDate: CommitmentRow[];
-  };
-  recentlyDone: CommitmentRow[];
-  allMode: boolean;
-  onSelect: (id: string) => void;
-  t: (k: string, opts?: Record<string, unknown>) => string;
+type ScoreColumnId = "impact" | "effort" | "importance" | "satisfaction" | "confidence" | "risk";
+type ToggleableColumnId = "verdict" | "score" | ScoreColumnId;
+type SortKey = "title" | "verdict" | "score" | ScoreColumnId | "date";
+type SortDir = "asc" | "desc";
+
+const VERDICT_TIER: Record<Tone, number> = { win: 0, bet: 1, drop: 2, neutral: 3 };
+
+const ARCHIVE_PAGE = 10;
+const ABSOLUTE_DATE_THRESHOLD_DAYS = 14;
+
+const ALL_TOGGLEABLE_COLUMNS: ToggleableColumnId[] = [
+  "verdict", "score", "impact", "effort", "importance", "satisfaction", "confidence", "risk",
+];
+const DEFAULT_TOGGLEABLE_COLUMNS: ToggleableColumnId[] = ["verdict", "score", "effort", "importance"];
+const COLUMN_STORAGE_KEY = "priority-os.progress.columns";
+const SCORE_COLUMNS: ReadonlySet<ScoreColumnId> = new Set([
+  "impact", "effort", "importance", "satisfaction", "confidence", "risk",
+]);
+
+function loadVisibleColumns(): ToggleableColumnId[] {
+  if (typeof window === "undefined") return DEFAULT_TOGGLEABLE_COLUMNS;
+  try {
+    const raw = window.localStorage.getItem(COLUMN_STORAGE_KEY);
+    if (!raw) return DEFAULT_TOGGLEABLE_COLUMNS;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return DEFAULT_TOGGLEABLE_COLUMNS;
+    return parsed.filter((x): x is ToggleableColumnId =>
+      ALL_TOGGLEABLE_COLUMNS.includes(x as ToggleableColumnId),
+    );
+  } catch {
+    return DEFAULT_TOGGLEABLE_COLUMNS;
+  }
 }
 
-function CommitmentList({ groups, recentlyDone, allMode, onSelect, t }: ListProps) {
-  type SectionKey = "pastDue" | "thisWeek" | "nextWeek" | "later" | "noDate" | "recentlyCompleted";
-  const sections: Array<{ key: SectionKey; titleKey: string; subtitleKey?: string; rows: CommitmentRow[]; tone: "rose" | "neutral"; defaultOpen: boolean }> = [
-    { key: "pastDue", titleKey: "timeline.sections.pastDue", subtitleKey: "timeline.sections.pastDueSubtitle", rows: groups.pastDue, tone: "rose", defaultOpen: true },
-    { key: "thisWeek", titleKey: "timeline.sections.thisWeek", rows: groups.thisWeek, tone: "neutral", defaultOpen: true },
-    { key: "nextWeek", titleKey: "timeline.sections.nextWeek", rows: groups.nextWeek, tone: "neutral", defaultOpen: false },
-    { key: "later", titleKey: "timeline.sections.later", rows: groups.later, tone: "neutral", defaultOpen: false },
-    { key: "noDate", titleKey: "timeline.sections.noDate", rows: groups.noDate, tone: "neutral", defaultOpen: false },
-    { key: "recentlyCompleted", titleKey: "timeline.sections.recentlyCompleted", rows: recentlyDone, tone: "neutral", defaultOpen: false },
-  ];
+function useVisibleColumns() {
+  const [visible, setVisible] = useState<Set<ToggleableColumnId>>(
+    () => new Set(loadVisibleColumns()),
+  );
 
-  const [openMap, setOpenMap] = useState<Record<SectionKey, boolean>>(() => {
-    const init = {} as Record<SectionKey, boolean>;
-    for (const s of sections) init[s.key] = s.defaultOpen;
-    return init;
-  });
+  const toggle = useCallback((col: ToggleableColumnId) => {
+    setVisible((prev) => {
+      const next = new Set(prev);
+      if (next.has(col)) next.delete(col);
+      else next.add(col);
+      const ordered = ALL_TOGGLEABLE_COLUMNS.filter((c) => next.has(c));
+      try {
+        window.localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(ordered));
+      } catch {
+        // ignore quota / private mode failures
+      }
+      return next;
+    });
+  }, []);
 
-  const toggle = (k: SectionKey) =>
-    setOpenMap(prev => ({ ...prev, [k]: !prev[k] }));
+  const ordered = useMemo(
+    () => ALL_TOGGLEABLE_COLUMNS.filter((c) => visible.has(c)),
+    [visible],
+  );
+
+  return { visible, ordered, toggle };
+}
+
+function columnLabelKey(col: ToggleableColumnId): string {
+  if (col === "verdict") return "progress.columns.verdict";
+  if (col === "score") return "progress.columns.score";
+  return `sliders.${col}.label`;
+}
+
+function buildGridTemplate(orderedColumns: ToggleableColumnId[]): string {
+  const parts: string[] = ["minmax(0,1fr)"]; // title - greedy
+  for (const col of orderedColumns) {
+    if (col === "verdict") parts.push("4.5rem");
+    else if (col === "score") parts.push("3.5rem");
+    else parts.push("3.75rem"); // 0-10 numeric — wide enough for short uppercase headers
+  }
+  parts.push("6.5rem"); // date
+  parts.push("1.25rem"); // chevron
+  return parts.join(" ");
+}
+
+function scoreValueFor(item: Item, col: ScoreColumnId): number {
+  return item[col];
+}
+
+interface ProgressSectionsProps {
+  inProgress: CommitmentRow[];
+  done: CommitmentRow[];
+  dropped: CommitmentRow[];
+  allMode: boolean;
+  onSelect: (id: string) => void;
+  locale: string;
+  t: TFunction;
+}
+
+function ProgressSections({ inProgress, done, dropped, allMode, onSelect, locale, t }: ProgressSectionsProps) {
+  const { visible, ordered, toggle } = useVisibleColumns();
+  const gridTemplate = useMemo(() => buildGridTemplate(ordered), [ordered]);
 
   return (
-    <section className="space-y-6">
-      {sections.map(s => {
-        if (s.rows.length === 0) return null;
-        const open = openMap[s.key];
-        const countLabel = t("timeline.section.itemCount", { count: s.rows.length });
-        const toggleLabel = open ? t("timeline.toggleSection.collapse") : t("timeline.toggleSection.expand");
-        return (
-          <div key={s.key}>
-            <button
-              type="button"
-              onClick={() => toggle(s.key)}
-              aria-expanded={open}
-              aria-label={`${t(s.titleKey)} — ${toggleLabel}`}
-              className="w-full flex items-center gap-2 py-2 text-left group cursor-pointer"
-            >
-              <h2 className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground group-hover:text-foreground ease-editorial transition-colors">
-                {t(s.titleKey)}
-              </h2>
-              {open ? (
-                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-transform" />
-              ) : (
-                <ChevronUp className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-transform" />
-              )}
-              <span className="ml-auto font-mono text-[11px] text-muted-foreground tabular-nums">
-                {countLabel}
-              </span>
-            </button>
-            {s.subtitleKey && open && (
-              <p className="font-serif italic text-[13px] text-muted-foreground/80 -mt-1 mb-2">{t(s.subtitleKey)}</p>
-            )}
-            <div
-              className="grid transition-[grid-template-rows] duration-200 ease-out"
-              style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
-            >
-              <div className="overflow-hidden">
-                <ul className="divide-y divide-border border-y border-border">
-                  {s.rows.map(r => (
-                    <CommitmentRowItem key={r.item.id} row={r} tone={s.tone} allMode={allMode} onSelect={onSelect} t={t} />
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        );
-      })}
+    <section className="space-y-10">
+      <ProgressSection
+        titleKey="progress.sections.inProgress"
+        rows={inProgress}
+        dateMode="target"
+        initialSort={{ key: "date", dir: "asc" }}
+        emptyState={{
+          title: t("progress.empty.inProgressTitle"),
+          hint: t("progress.empty.inProgressHint"),
+        }}
+        showWhenEmpty
+        allMode={allMode}
+        onSelect={onSelect}
+        locale={locale}
+        t={t}
+        orderedColumns={ordered}
+        gridTemplate={gridTemplate}
+        headerTrailing={<ColumnsPicker visible={visible} onToggle={toggle} t={t} />}
+      />
+      <ProgressSection
+        titleKey="progress.sections.archive"
+        rows={done}
+        dateMode="resolved"
+        initialSort={{ key: "date", dir: "desc" }}
+        emptyState={{ title: t("progress.empty.archive") }}
+        showWhenEmpty={false}
+        paginate
+        allMode={allMode}
+        onSelect={onSelect}
+        locale={locale}
+        t={t}
+        orderedColumns={ordered}
+        gridTemplate={gridTemplate}
+      />
+      <ProgressSection
+        titleKey="progress.sections.dropped"
+        rows={dropped}
+        dateMode="resolved"
+        initialSort={{ key: "date", dir: "desc" }}
+        emptyState={null}
+        showWhenEmpty={false}
+        allMode={allMode}
+        onSelect={onSelect}
+        locale={locale}
+        t={t}
+        orderedColumns={ordered}
+        gridTemplate={gridTemplate}
+      />
     </section>
   );
 }
 
-interface RowItemProps {
-  row: CommitmentRow;
-  tone: "rose" | "neutral";
-  allMode: boolean;
-  onSelect: (id: string) => void;
-  t: (k: string, opts?: Record<string, unknown>) => string;
+interface ColumnsPickerProps {
+  visible: Set<ToggleableColumnId>;
+  onToggle: (col: ToggleableColumnId) => void;
+  t: TFunction;
 }
 
-function CommitmentRowItem({ row, tone, allMode, onSelect, t }: RowItemProps) {
-  const dotCol = tone === "rose"
-    ? "hsl(var(--drop) / 0.6)"
-    : row.item.status === "done"
-      ? "hsl(var(--win))"
-      : "hsl(var(--muted-foreground))";
+function ColumnsPicker({ visible, onToggle, t }: ColumnsPickerProps) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className="inline-flex items-center gap-1 font-serif italic text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors cursor-pointer"
+        >
+          {t("progress.columns.button")}
+          <ChevronDown size={12} className="opacity-60" aria-hidden />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[200px]">
+        {ALL_TOGGLEABLE_COLUMNS.map((col) => (
+          <DropdownMenuCheckboxItem
+            key={col}
+            checked={visible.has(col)}
+            onCheckedChange={() => onToggle(col)}
+            onSelect={(e) => e.preventDefault()}
+            className="font-serif text-[14px] cursor-pointer"
+          >
+            {t(columnLabelKey(col))}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
-  const right = dateInfo(t as never, {
-    status: row.item.status as "in_progress" | "done" | "dropped" | "active",
-    targetDate: row.item.targetDate,
-    startedAt: row.item.startedAt,
-    resolvedAt: row.item.resolvedAt,
+interface ProgressSectionProps {
+  titleKey: string;
+  rows: CommitmentRow[];
+  dateMode: "target" | "resolved";
+  initialSort: { key: SortKey; dir: SortDir };
+  emptyState: { title: string; hint?: string } | null;
+  showWhenEmpty: boolean;
+  paginate?: boolean;
+  allMode: boolean;
+  onSelect: (id: string) => void;
+  locale: string;
+  t: TFunction;
+  orderedColumns: ToggleableColumnId[];
+  gridTemplate: string;
+  headerTrailing?: ReactNode;
+}
+
+function ProgressSection({
+  titleKey, rows, dateMode, initialSort, emptyState, showWhenEmpty, paginate,
+  allMode, onSelect, locale, t, orderedColumns, gridTemplate, headerTrailing,
+}: ProgressSectionProps) {
+  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>(initialSort);
+  const [shown, setShown] = useState(paginate ? ARCHIVE_PAGE : Number.POSITIVE_INFINITY);
+
+  // Reset pagination if the rows array shrinks (e.g. project filter changed).
+  useEffect(() => {
+    if (paginate) setShown(ARCHIVE_PAGE);
+  }, [paginate, rows.length]);
+
+  // If the active sort column got hidden, fall back to title.
+  useEffect(() => {
+    if (sort.key === "title" || sort.key === "date") return;
+    if (!orderedColumns.includes(sort.key as ToggleableColumnId)) {
+      setSort({ key: "title", dir: "asc" });
+    }
+  }, [orderedColumns, sort.key]);
+
+  const sorted = useMemo(() => sortRows(rows, sort, dateMode), [rows, sort, dateMode]);
+
+  if (rows.length === 0 && !showWhenEmpty) return null;
+
+  const toggleSort = (key: SortKey) => {
+    setSort((prev) =>
+      prev.key === key
+        ? { key, dir: prev.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: defaultDirFor(key, dateMode) },
+    );
+  };
+
+  const visibleRows = paginate ? sorted.slice(0, shown) : sorted;
+  const hasMore = paginate && shown < sorted.length;
+
+  return (
+    <div>
+      <header className="flex items-baseline justify-between gap-4 py-2">
+        <div className="flex items-baseline gap-2 min-w-0">
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            {t(titleKey)}
+          </h2>
+          <span className="font-mono text-[11px] text-muted-foreground/70 tabular-nums">
+            ({rows.length})
+          </span>
+        </div>
+        {headerTrailing}
+      </header>
+
+      {rows.length === 0 ? (
+        emptyState && (
+          <div className="border-y border-border py-10 text-center">
+            <p className="font-serif text-[15px] text-muted-foreground">{emptyState.title}</p>
+            {emptyState.hint && (
+              <p className="mt-1 font-serif italic text-[13px] text-muted-foreground/70">
+                {emptyState.hint}
+              </p>
+            )}
+          </div>
+        )
+      ) : (
+        <>
+          <div className="border-y border-border">
+            <ProgressColumnHeader
+              sort={sort}
+              onToggle={toggleSort}
+              t={t}
+              orderedColumns={orderedColumns}
+              gridTemplate={gridTemplate}
+            />
+            <ul className="divide-y divide-border">
+              {visibleRows.map((r) => (
+                <ProgressRow
+                  key={r.item.id}
+                  row={r}
+                  dateMode={dateMode}
+                  allMode={allMode}
+                  onSelect={onSelect}
+                  locale={locale}
+                  t={t}
+                  orderedColumns={orderedColumns}
+                  gridTemplate={gridTemplate}
+                />
+              ))}
+            </ul>
+          </div>
+          {hasMore && (
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                onClick={() => setShown((s) => s + ARCHIVE_PAGE)}
+                className="font-serif italic text-sm text-muted-foreground hover:text-foreground underline underline-offset-4 ease-editorial transition-colors"
+              >
+                {t("progress.showMore")}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function defaultDirFor(key: SortKey, dateMode: "target" | "resolved"): SortDir {
+  if (key === "title") return "asc";
+  if (key === "verdict") return "asc";
+  if (key === "date") return dateMode === "target" ? "asc" : "desc";
+  // numeric (score, impact, effort, ...) — higher is more interesting first
+  return "desc";
+}
+
+function sortRows(
+  rows: CommitmentRow[],
+  sort: { key: SortKey; dir: SortDir },
+  dateMode: "target" | "resolved",
+): CommitmentRow[] {
+  const dirMul = sort.dir === "asc" ? 1 : -1;
+  const dateOf = (r: CommitmentRow): number | null => {
+    const iso = dateMode === "target" ? r.item.targetDate : r.item.resolvedAt;
+    if (!iso) return null;
+    return +new Date(iso);
+  };
+
+  const out = [...rows];
+  out.sort((a, b) => {
+    if (sort.key === "title") {
+      return a.item.title.localeCompare(b.item.title) * dirMul;
+    }
+    if (sort.key === "score") {
+      return (compositeScore(a.item) - compositeScore(b.item)) * dirMul;
+    }
+    if (sort.key === "verdict") {
+      const ta = VERDICT_TIER[verdictForLens(a.item, "value-effort")];
+      const tb = VERDICT_TIER[verdictForLens(b.item, "value-effort")];
+      return (ta - tb) * dirMul;
+    }
+    if (sort.key === "date") {
+      const da = dateOf(a);
+      const db = dateOf(b);
+      if (da === null && db === null) return 0;
+      // Items without a date always sink to the end regardless of direction.
+      if (da === null) return 1;
+      if (db === null) return -1;
+      return (da - db) * dirMul;
+    }
+    if (SCORE_COLUMNS.has(sort.key)) {
+      return (scoreValueFor(a.item, sort.key) - scoreValueFor(b.item, sort.key)) * dirMul;
+    }
+    return 0;
   });
+  return out;
+}
 
-  const isPastDue = row.item.status === "in_progress" && row.item.targetDate && dayDelta(row.item.targetDate) < 0;
-  const muted = row.item.status === "done";
+interface ColumnHeaderProps {
+  sort: { key: SortKey; dir: SortDir };
+  onToggle: (key: SortKey) => void;
+  t: TFunction;
+  orderedColumns: ToggleableColumnId[];
+  gridTemplate: string;
+}
 
-  // Verdict + score (Value vs Effort lens — primary lens)
-  const verdict = verdictForLens(row.item, "value-effort");
+function ProgressColumnHeader({ sort, onToggle, t, orderedColumns, gridTemplate }: ColumnHeaderProps) {
+  const sortHeader = (key: SortKey, label: string) => (
+    <button
+      type="button"
+      onClick={() => onToggle(key)}
+      title={label}
+      className={cn(
+        "flex w-full items-center gap-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/80",
+        "hover:text-foreground ease-editorial transition-colors cursor-pointer",
+        "justify-start min-w-0 overflow-hidden",
+      )}
+    >
+      <span className="truncate flex-1 min-w-0 text-left">{label}</span>
+      {sort.key === key && (
+        sort.dir === "asc"
+          ? <ChevronUp className="w-3 h-3 shrink-0" aria-hidden />
+          : <ChevronDown className="w-3 h-3 shrink-0" aria-hidden />
+      )}
+    </button>
+  );
+
+  return (
+    <div
+      className="grid items-center gap-4 px-2 py-2 border-b border-border"
+      style={{ gridTemplateColumns: gridTemplate }}
+    >
+      <div className="min-w-0 overflow-hidden">
+        {sortHeader("title", t("progress.columns.title"))}
+      </div>
+      {orderedColumns.map((col) => (
+        <div key={col} className="min-w-0 overflow-hidden">
+          {sortHeader(col, t(columnLabelKey(col)))}
+        </div>
+      ))}
+      <div className="min-w-0 overflow-hidden">
+        {sortHeader("date", t("progress.columns.date"))}
+      </div>
+      <span aria-hidden />
+    </div>
+  );
+}
+
+interface ProgressRowProps {
+  row: CommitmentRow;
+  dateMode: "target" | "resolved";
+  allMode: boolean;
+  onSelect: (id: string) => void;
+  locale: string;
+  t: TFunction;
+  orderedColumns: ToggleableColumnId[];
+  gridTemplate: string;
+}
+
+function ProgressRow({
+  row, dateMode, allMode, onSelect, locale, t, orderedColumns, gridTemplate,
+}: ProgressRowProps) {
+  const it = row.item;
+  const verdict = verdictForLens(it, "value-effort");
   const verdictCls = TONE_CLASSES[verdict];
-  const score = compositeScore(row.item);
+  const score = compositeScore(it);
+  const muted = it.status === "done" || it.status === "dropped";
+
+  const dateText = formatRelativeDate({ dateMode, item: it, locale, t });
+  const isPastDue = dateMode === "target" && it.targetDate && dayDelta(it.targetDate) < 0;
 
   return (
     <li
-      onClick={() => onSelect(row.item.id)}
-      className="group px-2 py-3 cursor-pointer hover:bg-muted/40 ease-editorial transition-colors"
+      onClick={() => onSelect(it.id)}
+      className="group grid items-center gap-4 px-2 py-3 cursor-pointer hover:bg-muted/50 ease-editorial transition-colors"
+      style={{ gridTemplateColumns: gridTemplate }}
     >
-      <div className="flex items-start gap-3">
-        <span className="inline-block w-2 h-2 rounded-full mt-2" style={{ background: dotCol }} aria-hidden />
-        <div className="flex-1 min-w-0">
-          {/* First line: title + date */}
-          <div className="flex items-start gap-3">
-            <div className={`font-serif text-[16px] leading-snug truncate flex-1 min-w-0 ${muted ? "text-muted-foreground" : "text-foreground"}`}>
-              {row.item.title}
-            </div>
-            <div className={`text-right shrink-0 font-serif text-[13px] ${isPastDue ? "text-[hsl(var(--drop)/0.85)]" : "text-muted-foreground"}`}>
-              {right}
-            </div>
-          </div>
-          {/* Second line: verdict + score · project (if all mode) */}
-          <div className="mt-1.5 flex items-center gap-2 min-w-0">
-            <span className={cn(
-              "inline-block text-[10px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded",
-              verdictCls.bg, verdictCls.text,
-            )}>
-              {t(`verdicts.${verdictCls.verdictKey}`)}
-            </span>
-            <span className="font-mono text-[12px] text-muted-foreground tabular-nums">
-              {score.toFixed(1)}
-            </span>
-            {allMode && (
-              <>
-                <span className="text-muted-foreground/50" aria-hidden>·</span>
-                <span className="font-serif text-[13px] text-muted-foreground truncate min-w-0">
-                  {row.projectEmoji ? row.projectEmoji + " " : ""}{row.projectName}
-                </span>
-              </>
-            )}
-            <span className="ml-auto opacity-0 group-hover:opacity-100 ease-editorial transition-opacity text-muted-foreground" title={t("timeline.row.editTooltip") as string}>
-              <Pencil className="w-3.5 h-3.5" />
-            </span>
-          </div>
+      <div className="min-w-0">
+        <div className={cn(
+          "font-serif text-[15px] leading-snug truncate",
+          muted ? "text-muted-foreground" : "text-foreground",
+        )}>
+          {it.title}
         </div>
+        {allMode && (
+          <div className="font-serif italic text-[12px] text-muted-foreground/80 truncate mt-0.5">
+            {row.projectEmoji ? row.projectEmoji + " " : ""}{row.projectName}
+          </div>
+        )}
+      </div>
+      {orderedColumns.map((col) => {
+        if (col === "verdict") {
+          return (
+            <div key={col} className="min-w-0">
+              <span className={cn(
+                "inline-block text-[10px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded",
+                verdictCls.bg, verdictCls.text,
+              )}>
+                {t(`verdicts.${verdictCls.verdictKey}`)}
+              </span>
+            </div>
+          );
+        }
+        if (col === "score") {
+          return (
+            <div key={col} className="font-mono text-[13px] tabular-nums text-foreground/90 min-w-0">
+              {score.toFixed(1)}
+            </div>
+          );
+        }
+        return (
+          <div key={col} className="font-mono text-sm tabular-nums text-muted-foreground min-w-0">
+            {scoreValueFor(it, col)}
+          </div>
+        );
+      })}
+      <div className={cn(
+        "font-serif text-[13px] min-w-0 truncate",
+        isPastDue ? "text-[hsl(var(--drop)/0.85)]" : "text-muted-foreground",
+      )}>
+        {dateText}
+      </div>
+      <div className="flex justify-end opacity-0 group-hover:opacity-100 ease-editorial transition-opacity">
+        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" aria-hidden />
       </div>
     </li>
   );
+}
+
+function formatRelativeDate({
+  dateMode, item, locale, t,
+}: {
+  dateMode: "target" | "resolved";
+  item: Item;
+  locale: string;
+  t: TFunction;
+}): string {
+  if (dateMode === "target") {
+    if (!item.targetDate) return t("progress.relative.noTarget");
+    const d = dayDelta(item.targetDate);
+    if (d === 0) return t("progress.relative.today");
+    if (d === 1) return t("progress.relative.tomorrow");
+    if (d === -1) return t("progress.relative.yesterday");
+    if (d > 0) return t("progress.relative.inDays", { count: d });
+    return t("progress.relative.daysAgo", { count: -d });
+  }
+  // resolved
+  if (!item.resolvedAt) return t("progress.relative.noTarget");
+  const n = daysSince(item.resolvedAt);
+  if (n === 0) return t("progress.relative.today");
+  if (n === 1) return t("progress.relative.yesterday");
+  if (n <= ABSOLUTE_DATE_THRESHOLD_DAYS) return t("progress.relative.daysAgo", { count: n });
+  return formatLongDate(item.resolvedAt, locale);
 }

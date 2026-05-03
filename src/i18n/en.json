@@ -509,8 +509,39 @@
     "views": {
       "title": "Views",
       "matrix": "Matrix",
-      "timeline": "Timeline",
+      "timeline": "Progress",
       "review": "Review"
+    }
+  },
+  "progress": {
+    "title": "Progress",
+    "sections": {
+      "inProgress": "In Progress",
+      "archive": "Archive",
+      "dropped": "Dropped"
+    },
+    "columns": {
+      "button": "Columns",
+      "title": "Title",
+      "verdict": "Verdict",
+      "score": "Score",
+      "date": "Date"
+    },
+    "empty": {
+      "inProgressTitle": "Nothing in progress yet",
+      "inProgressHint": "Items move here when you start them",
+      "archive": "Archive is empty"
+    },
+    "showMore": "Show more",
+    "relative": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "yesterday": "Yesterday",
+      "noTarget": "—",
+      "inDays_one": "in {{count}} day",
+      "inDays_other": "in {{count}} days",
+      "daysAgo_one": "{{count}} day ago",
+      "daysAgo_other": "{{count}} days ago"
     }
   },
   "login": {

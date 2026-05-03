@@ -510,8 +510,39 @@
     "views": {
       "title": "Vues",
       "matrix": "Matrice",
-      "timeline": "Chronologie",
+      "timeline": "Progression",
       "review": "Revue"
+    }
+  },
+  "progress": {
+    "title": "Progression",
+    "sections": {
+      "inProgress": "En cours",
+      "archive": "Archives",
+      "dropped": "Abandonnés"
+    },
+    "columns": {
+      "button": "Colonnes",
+      "title": "Titre",
+      "verdict": "Verdict",
+      "score": "Score",
+      "date": "Date"
+    },
+    "empty": {
+      "inProgressTitle": "Rien en cours pour l'instant",
+      "inProgressHint": "Les éléments arrivent ici quand vous les démarrez",
+      "archive": "Les archives sont vides"
+    },
+    "showMore": "Afficher plus",
+    "relative": {
+      "today": "Aujourd'hui",
+      "tomorrow": "Demain",
+      "yesterday": "Hier",
+      "noTarget": "—",
+      "inDays_one": "dans {{count}} jour",
+      "inDays_other": "dans {{count}} jours",
+      "daysAgo_one": "il y a {{count}} jour",
+      "daysAgo_other": "il y a {{count}} jours"
     }
   },
   "login": {
