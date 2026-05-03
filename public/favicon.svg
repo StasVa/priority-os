@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Priority OS">
+  <style>
+    .bg { fill: #f5efe6; }
+    .fg { fill: #1a1817; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #1a1817; }
+      .fg { fill: #f5efe6; }
+    }
+  </style>
+  <rect class="bg" width="64" height="64" rx="10"/>
+  <text x="32" y="50" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="500" font-style="italic" class="fg">P</text>
+</svg>
