@@ -523,7 +523,16 @@
     },
     "signUp": {
       "heading": "Inscription",
-      "button": "S'inscrire"
+      "button": "S'inscrire",
+      "useDifferentEmail": "Utiliser un autre e-mail",
+      "checkEmail": {
+        "title": "Consultez votre boîte de réception sur {{email}} pour confirmer votre compte.",
+        "body": "Nous vous avons envoyé un lien. Cliquez dessus pour finaliser l'inscription.",
+        "spamHint": "Vous ne le voyez pas ? Vérifiez votre dossier spam.",
+        "resend": "Renvoyer l'email",
+        "resendIn": "Renvoyer dans {{seconds}} s",
+        "resending": "Envoi..."
+      }
     },
     "fields": {
       "email": "E-mail",

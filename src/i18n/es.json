@@ -523,7 +523,16 @@
     },
     "signUp": {
       "heading": "Registro",
-      "button": "Registrarse"
+      "button": "Registrarse",
+      "useDifferentEmail": "Usar otro correo",
+      "checkEmail": {
+        "title": "Revisa tu bandeja en {{email}} para confirmar tu cuenta.",
+        "body": "Te enviamos un enlace. Haz clic en él para terminar el registro.",
+        "spamHint": "¿No lo ves? Revisa tu carpeta de spam.",
+        "resend": "Reenviar correo",
+        "resendIn": "Reenviar en {{seconds}} s",
+        "resending": "Enviando..."
+      }
     },
     "fields": {
       "email": "Correo",

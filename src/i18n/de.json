@@ -523,7 +523,16 @@
     },
     "signUp": {
       "heading": "Registrieren",
-      "button": "Registrieren"
+      "button": "Registrieren",
+      "useDifferentEmail": "Andere E-Mail verwenden",
+      "checkEmail": {
+        "title": "Prüfen Sie Ihren Posteingang unter {{email}}, um Ihr Konto zu bestätigen.",
+        "body": "Wir haben Ihnen einen Link gesendet. Klicken Sie darauf, um die Registrierung abzuschließen.",
+        "spamHint": "Keine E-Mail erhalten? Prüfen Sie Ihren Spam-Ordner.",
+        "resend": "E-Mail erneut senden",
+        "resendIn": "Erneut senden in {{seconds}} s",
+        "resending": "Wird gesendet..."
+      }
     },
     "fields": {
       "email": "E-Mail",

@@ -522,7 +522,16 @@
     },
     "signUp": {
       "heading": "Sign up",
-      "button": "Sign up"
+      "button": "Sign up",
+      "useDifferentEmail": "Use a different email",
+      "checkEmail": {
+        "title": "Check your inbox at {{email}} to confirm your account.",
+        "body": "We sent you a link. Click it to finish signing up.",
+        "spamHint": "Don't see it? Check your spam folder.",
+        "resend": "Resend email",
+        "resendIn": "Resend in {{seconds}}s",
+        "resending": "Sending..."
+      }
     },
     "fields": {
       "email": "Email",

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/decision/LanguageSwitcher";
 import { ThemeToggle } from "@/components/decision/ThemeToggle";
@@ -11,7 +11,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const Login = () => {
   const { t } = useTranslation();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, resendSignUp } = useAuth();
 
   const [mode, setMode] = useState<Mode>("signIn");
   const [email, setEmail] = useState("");
@@ -19,6 +19,17 @@ const Login = () => {
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmationSentTo, setConfirmationSentTo] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0); // seconds remaining
+  const [resending, setResending] = useState(false);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const id = setInterval(() => {
+      setResendCooldown((s) => (s > 0 ? s - 1 : 0));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [resendCooldown]);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -38,9 +49,13 @@ const Login = () => {
       if (mode === "signIn") {
         await signIn(email.trim(), password);
       } else {
-        await signUp(email.trim(), password, {
+        const { needsConfirmation } = await signUp(email.trim(), password, {
           displayName: displayName.trim() || undefined,
         });
+        if (needsConfirmation) {
+          setConfirmationSentTo(email.trim());
+          setResendCooldown(60);
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -52,7 +67,40 @@ const Login = () => {
   const toggleMode = () => {
     setMode((m) => (m === "signIn" ? "signUp" : "signIn"));
     setError(null);
+    setConfirmationSentTo(null);
   };
+
+  const startOver = () => {
+    setConfirmationSentTo(null);
+    setEmail("");
+    setPassword("");
+    setDisplayName("");
+    setError(null);
+    setResendCooldown(0);
+    setResending(false);
+  };
+
+  const handleResend = async () => {
+    if (!confirmationSentTo || resending || resendCooldown > 0) return;
+    setResending(true);
+    setError(null);
+    try {
+      await resendSignUp(confirmationSentTo);
+      setResendCooldown(60);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setResending(false);
+    }
+  };
+
+  const resendLabel = resending
+    ? t("login.signUp.checkEmail.resending")
+    : resendCooldown > 0
+      ? t("login.signUp.checkEmail.resendIn", { seconds: resendCooldown })
+      : t("login.signUp.checkEmail.resend");
+
+  const confirmationSent = !!confirmationSentTo && mode === "signUp";
 
   const buttonLabel = submitting
     ? t("login.loading")
@@ -91,77 +139,120 @@ const Login = () => {
             {mode === "signIn" ? t("login.signIn.heading") : t("login.signUp.heading")}
           </h1>
 
-          <form onSubmit={onSubmit} className="space-y-4" noValidate>
-            <div className="space-y-1.5">
-              <label
-                htmlFor="email"
-                className="block font-mono text-[11px] uppercase tracking-wide text-muted-foreground"
+          {confirmationSent ? (
+            <>
+              <div
+                className="mb-5 p-4 rounded-lg border border-border bg-muted/40"
+                role="status"
+                aria-live="polite"
               >
-                {t("login.fields.email")}
-              </label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={submitting}
-                required
-              />
-            </div>
+                <p className="font-serif text-sm leading-relaxed">
+                  {t("login.signUp.checkEmail.title", { email: confirmationSentTo })}
+                </p>
+                <p className="mt-2 font-serif italic text-xs text-muted-foreground">
+                  {t("login.signUp.checkEmail.body")}
+                </p>
+                <p className="mt-3 font-serif italic text-xs text-muted-foreground">
+                  {t("login.signUp.checkEmail.spamHint")}
+                </p>
+              </div>
 
-            <div className="space-y-1.5">
-              <label
-                htmlFor="password"
-                className="block font-mono text-[11px] uppercase tracking-wide text-muted-foreground"
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resending || resendCooldown > 0}
+                className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-ink text-paper text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed ease-editorial transition-opacity"
               >
-                {t("login.fields.password")}
-              </label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete={mode === "signIn" ? "current-password" : "new-password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={submitting}
-                required
-                minLength={6}
-              />
-            </div>
+                <span className="font-serif">{resendLabel}</span>
+              </button>
 
-            {mode === "signUp" && (
+              {error && (
+                <p className="mt-3 text-sm text-destructive font-serif" role="alert">
+                  {error}
+                </p>
+              )}
+
+              <button
+                type="button"
+                onClick={startOver}
+                className="mt-4 w-full text-center font-serif italic text-sm text-muted-foreground hover:text-foreground ease-editorial transition-colors"
+              >
+                {t("login.signUp.useDifferentEmail")}
+              </button>
+            </>
+          ) : (
+            <form onSubmit={onSubmit} className="space-y-4" noValidate>
               <div className="space-y-1.5">
                 <label
-                  htmlFor="displayName"
+                  htmlFor="email"
                   className="block font-mono text-[11px] uppercase tracking-wide text-muted-foreground"
                 >
-                  {t("login.fields.displayName")}
+                  {t("login.fields.email")}
                 </label>
                 <Input
-                  id="displayName"
-                  type="text"
-                  autoComplete="name"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   disabled={submitting}
+                  required
                 />
               </div>
-            )}
 
-            {error && (
-              <p className="text-sm text-destructive font-serif" role="alert">
-                {error}
-              </p>
-            )}
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="password"
+                  className="block font-mono text-[11px] uppercase tracking-wide text-muted-foreground"
+                >
+                  {t("login.fields.password")}
+                </label>
+                <Input
+                  id="password"
+                  type="password"
+                  autoComplete={mode === "signIn" ? "current-password" : "new-password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={submitting}
+                  required
+                  minLength={6}
+                />
+              </div>
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-ink text-paper text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed ease-editorial transition-opacity"
-            >
-              <span className="font-serif">{buttonLabel}</span>
-            </button>
-          </form>
+              {mode === "signUp" && (
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="displayName"
+                    className="block font-mono text-[11px] uppercase tracking-wide text-muted-foreground"
+                  >
+                    {t("login.fields.displayName")}
+                  </label>
+                  <Input
+                    id="displayName"
+                    type="text"
+                    autoComplete="name"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    disabled={submitting}
+                  />
+                </div>
+              )}
+
+              {error && (
+                <p className="text-sm text-destructive font-serif" role="alert">
+                  {error}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-ink text-paper text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed ease-editorial transition-opacity"
+              >
+                <span className="font-serif">{buttonLabel}</span>
+              </button>
+            </form>
+          )}
 
           <button
             type="button"
