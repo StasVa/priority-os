@@ -16,7 +16,7 @@ interface TopBarProps {
   activeProjectColor?: ProjectColor;
   activeProjectCount: number;
   onSelectProject: (id: string) => void;
-  onCreateProject: (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => void;
+  onCreateProject: (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => Promise<void>;
   onOpenSettings: () => void;
   onOpenHelp: () => void;
   onNewItem: () => void;

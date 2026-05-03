@@ -75,6 +75,30 @@ export function useItem(id: string | undefined) {
   });
 }
 
+export type ProjectActiveCounts = Record<string, number>;
+
+async function fetchActiveCounts(): Promise<ProjectActiveCounts> {
+  // Fetch only the columns we need across ALL items the user can see.
+  // RLS already filters to projects the user is a member of.
+  const { data, error } = await supabase
+    .from("items")
+    .select("project_id")
+    .eq("status", "active");
+  if (error) throw error;
+  const counts: ProjectActiveCounts = {};
+  for (const row of (data ?? []) as Array<{ project_id: string }>) {
+    counts[row.project_id] = (counts[row.project_id] ?? 0) + 1;
+  }
+  return counts;
+}
+
+export function useProjectActiveCounts() {
+  return useQuery({
+    queryKey: queryKeys.items.activeCounts,
+    queryFn: fetchActiveCounts,
+  });
+}
+
 // ─── Mutations ──────────────────────────────────────────────────
 
 export type CreateItemInput = Omit<
@@ -138,6 +162,7 @@ export function useCreateItem() {
     onSuccess: (_data, input) => {
       qc.invalidateQueries({ queryKey: queryKeys.items.byProject(input.projectId) });
       qc.invalidateQueries({ queryKey: queryKeys.items.all });
+      qc.invalidateQueries({ queryKey: queryKeys.items.activeCounts });
     },
   });
 }
@@ -251,6 +276,7 @@ export function useUpdateItem() {
     onSettled: (_data, _err, input) => {
       qc.invalidateQueries({ queryKey: queryKeys.items.byProject(input.projectId) });
       qc.invalidateQueries({ queryKey: queryKeys.items.detail(input.id) });
+      qc.invalidateQueries({ queryKey: queryKeys.items.activeCounts });
     },
   });
 }
@@ -269,6 +295,7 @@ export function useDeleteItem() {
     onSuccess: (_data, input) => {
       qc.invalidateQueries({ queryKey: queryKeys.items.byProject(input.projectId) });
       qc.invalidateQueries({ queryKey: queryKeys.items.detail(input.id) });
+      qc.invalidateQueries({ queryKey: queryKeys.items.activeCounts });
     },
   });
 }

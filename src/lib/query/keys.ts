@@ -8,6 +8,7 @@ export const queryKeys = {
     all: ["items"] as const,
     byProject: (projectId: string) => ["items", "byProject", projectId] as const,
     detail: (id: string) => ["items", "detail", id] as const,
+    activeCounts: ["items", "activeCounts"] as const,
   },
   profiles: {
     me: ["profiles", "me"] as const,

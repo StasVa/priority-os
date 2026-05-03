@@ -30,6 +30,7 @@ import {
   useCreateItem,
   useDeleteItem,
   useItems,
+  useProjectActiveCounts,
   useUpdateItem,
   useUpdateItemStatus,
 } from "@/lib/query/items";
@@ -40,6 +41,8 @@ const Index = () => {
 
   const projectsQuery = useProjects();
   const projects = useMemo<Project[]>(() => projectsQuery.data ?? [], [projectsQuery.data]);
+  const activeCountsQuery = useProjectActiveCounts();
+  const activeCounts = activeCountsQuery.data ?? {};
 
   const [activeIdRaw, setActiveProjectId] = useActiveProjectId();
   const activeProjectBase = useMemo(
@@ -123,6 +126,7 @@ const Index = () => {
         emoji: autoEmojiForProject(draft.projectName),
         color: "neutral",
       });
+      await projectsQuery.refetch();
       setActiveProjectId(project.id);
       await createItem.mutateAsync({
         projectId: project.id,
@@ -151,6 +155,7 @@ const Index = () => {
         emoji: "💭",
         color: "neutral",
       });
+      await projectsQuery.refetch();
       setActiveProjectId(project.id);
       await Promise.all(
         DEMO_ITEMS.map((d) =>
@@ -234,16 +239,15 @@ const Index = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
 
-  const handleCreateProject = (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => {
-    createProject.mutate(
-      {
-        name: draft.name,
-        emoji: draft.emoji ?? autoEmojiForProject(draft.name),
-        color: draft.color ?? "neutral",
-        description: draft.description,
-      },
-      { onSuccess: (p) => setActiveProjectId(p.id) },
-    );
+  const handleCreateProject = async (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => {
+    const created = await createProject.mutateAsync({
+      name: draft.name,
+      emoji: draft.emoji ?? autoEmojiForProject(draft.name),
+      color: draft.color ?? "neutral",
+      description: draft.description,
+    });
+    await projectsQuery.refetch();
+    setActiveProjectId(created.id);
   };
 
   const handleUpsertItem = (
@@ -318,19 +322,14 @@ const Index = () => {
     () => projects.map(p => ({
       id: p.id,
       name: t(`projects.${p.name}`, { defaultValue: p.name }),
-      // Active count is only known for the loaded project; others show 0
-      // until you visit them. (Avoids an N+1 fetch.)
-      activeCount:
-        p.id === effectiveActiveId
-          ? allItems.filter(i => i.status === "active").length
-          : 0,
+      activeCount: activeCounts[p.id] ?? 0,
       lastAccessedAt: p.lastAccessedAt,
       emoji: p.emoji,
       color: p.color,
       isFavorite: p.isFavorite,
       archivedAt: p.archivedAt,
     })),
-    [projects, t, effectiveActiveId, allItems],
+    [projects, t, activeCounts],
   );
   const activeProjectName = activeProject ? t(`projects.${activeProject.name}`, { defaultValue: activeProject.name }) : "";
   const activeProjectCount = items.length;

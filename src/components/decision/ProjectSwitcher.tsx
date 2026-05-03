@@ -20,7 +20,7 @@ interface PanelProps {
   projects: ProjectLite[];
   activeProjectId: string;
   onSelect: (id: string) => void;
-  onCreate: (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => void;
+  onCreate: (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => Promise<void>;
   onClose: () => void;
   autoFocusSearch?: boolean;
 }
@@ -126,7 +126,15 @@ function ProjectSwitcherPanel({
     return (
       <CreateForm
         onBack={() => setView("list")}
-        onCreate={(draft) => { onCreate(draft); onClose(); }}
+        onCreate={async (draft) => {
+          try {
+            await onCreate(draft);
+            onClose();
+          } catch {
+            // Leave the picker open so the user can retry; error is already
+            // surfaced via the mutation's existing error handling.
+          }
+        }}
       />
     );
   }
@@ -357,7 +365,7 @@ interface ProjectSwitcherProps {
   activeProjectColor?: ProjectColor;
   activeProjectCount: number;
   onSelect: (id: string) => void;
-  onCreate: (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => void;
+  onCreate: (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => Promise<void>;
 }
 
 export function ProjectSwitcher({

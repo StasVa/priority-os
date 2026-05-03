@@ -20,6 +20,7 @@ import {
   useAllItems,
   useCreateItem,
   useDeleteItem,
+  useProjectActiveCounts,
   useUpdateItem,
   useUpdateItemStatus,
 } from "@/lib/query/items";
@@ -46,6 +47,8 @@ const Timeline = () => {
     () => allItemsQuery.data ?? [],
     [allItemsQuery.data],
   );
+  const activeCountsQuery = useProjectActiveCounts();
+  const activeCounts = activeCountsQuery.data ?? {};
 
   const [activeIdRaw, setActiveProjectId] = useActiveProjectId();
   const activeProjectBase = useMemo(
@@ -157,16 +160,15 @@ const Timeline = () => {
     setEditorOpen(true);
   };
 
-  const handleCreateProject = (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => {
-    createProject.mutate(
-      {
-        name: draft.name,
-        emoji: draft.emoji ?? autoEmojiForProject(draft.name),
-        color: draft.color ?? "neutral",
-        description: draft.description,
-      },
-      { onSuccess: (p) => setActiveProjectId(p.id) },
-    );
+  const handleCreateProject = async (draft: { name: string; emoji?: string; color?: ProjectColor; description?: string }) => {
+    const created = await createProject.mutateAsync({
+      name: draft.name,
+      emoji: draft.emoji ?? autoEmojiForProject(draft.name),
+      color: draft.color ?? "neutral",
+      description: draft.description,
+    });
+    await projectsQuery.refetch();
+    setActiveProjectId(created.id);
   };
 
   const handleUpsertItem = (
@@ -233,14 +235,14 @@ const Timeline = () => {
     () => projects.map(p => ({
       id: p.id,
       name: t(`projects.${p.name}`, { defaultValue: p.name }),
-      activeCount: allItemsAcrossProjects.filter(i => i.projectId === p.id && i.status === "active").length,
+      activeCount: activeCounts[p.id] ?? 0,
       lastAccessedAt: p.lastAccessedAt,
       emoji: p.emoji,
       color: p.color,
       isFavorite: p.isFavorite,
       archivedAt: p.archivedAt,
     })),
-    [projects, t, allItemsAcrossProjects],
+    [projects, t, activeCounts],
   );
   const activeProjectName = activeProject ? t(`projects.${activeProject.name}`, { defaultValue: activeProject.name }) : "";
   const activeProjectCount = activeProjectItems.filter(i => i.status === "active").length;
