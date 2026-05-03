@@ -73,8 +73,8 @@ export function lensCoords(item: Item, lens: LensId): { x: number; y: number } {
 
 export function verdictForLens(item: Item, lens: LensId): Tone {
   const { x, y } = lensCoords(item, lens);
-  const left = x < 0.5;
-  const top = y >= 0.5;
+  const left = x <= 0.5;
+  const top = y > 0.5;
   const def = LENSES.find(l => l.id === lens)!;
   const q = top ? (left ? def.quadrants.tl : def.quadrants.tr) : (left ? def.quadrants.bl : def.quadrants.br);
   return q.tone;

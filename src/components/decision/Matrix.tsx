@@ -127,56 +127,110 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
     return m;
   }, [nodes]);
 
-  // 3) Always-visible labels (primary only). Two-pass: compute final positions then collision detection.
+  // 3) Always-visible labels (primary only). Try multiple sides per node, treat
+  //    other dots as obstacles, fall back to invisible (with a "help" cursor cue).
   const showLabels = !isMini && nodes.length > 0 && nodes.length <= 25;
   const labels = useMemo(() => {
-    type L = { id: string; x: number; y: number; text: string; anchor: "start" | "end"; visible: boolean; box: { x1: number; x2: number; y1: number; y2: number }; score: number; cluster: boolean };
+    type Box = { x1: number; x2: number; y1: number; y2: number };
+    type L = { id: string; x: number; y: number; text: string; anchor: "start" | "middle" | "end"; visible: boolean; box: Box; score: number; cluster: boolean };
     if (!showLabels) return [] as L[];
     const charW = 7;
     const labelH = 14;
     const gap = 8;
+    const dotBleed = 2;
     const rightEdge = w - padR - 4;
     const leftEdge = padL + 4;
     const topEdge = padT + 4;
     const bottomEdge = h - padB - 4;
 
-    const computed: L[] = nodes.map(n => {
+    // Dot circles, +bleed, treated as obstacles for label placement.
+    const dotObstacles = nodes.map(n => ({
+      id: n.id,
+      x1: n.cx - n.r - dotBleed,
+      x2: n.cx + n.r + dotBleed,
+      y1: n.cy - n.r - dotBleed,
+      y2: n.cy + n.r + dotBleed,
+    }));
+
+    type Side = "right" | "left" | "bottom" | "top";
+    type Candidate = { x: number; y: number; anchor: L["anchor"]; box: Box };
+
+    const tryPosition = (n: MatrixNode, side: Side, width: number): Candidate => {
+      if (side === "right") {
+        const x = n.cx + n.r + gap;
+        const y = n.cy;
+        return { x, y, anchor: "start", box: { x1: x, x2: x + width, y1: y - labelH / 2, y2: y + labelH / 2 } };
+      }
+      if (side === "left") {
+        const x = n.cx - n.r - gap;
+        const y = n.cy;
+        return { x, y, anchor: "end", box: { x1: x - width, x2: x, y1: y - labelH / 2, y2: y + labelH / 2 } };
+      }
+      if (side === "bottom") {
+        const x = n.cx;
+        const y = n.cy + n.r + gap + labelH / 2;
+        return { x, y, anchor: "middle", box: { x1: x - width / 2, x2: x + width / 2, y1: y - labelH / 2, y2: y + labelH / 2 } };
+      }
+      // top
+      const x = n.cx;
+      const y = n.cy - n.r - gap - labelH / 2;
+      return { x, y, anchor: "middle", box: { x1: x - width / 2, x2: x + width / 2, y1: y - labelH / 2, y2: y + labelH / 2 } };
+    };
+
+    const insideEdges = (b: Box) =>
+      b.x1 >= leftEdge && b.x2 <= rightEdge && b.y1 >= topEdge && b.y2 <= bottomEdge;
+    const overlaps = (a: Box, b: Box) =>
+      !(a.x2 < b.x1 || a.x1 > b.x2 || a.y2 < b.y1 || a.y1 > b.y2);
+
+    const sides: Side[] = ["right", "left", "bottom", "top"];
+    const order = [...nodes].sort((a, b) => b.topScore - a.topScore);
+    const placedBoxes: Box[] = [];
+    const result = new Map<string, L>();
+
+    for (const n of order) {
       const text = n.isCluster
         ? t("matrix.cluster.label", { count: n.items.length })
         : n.items[0].title;
       const width = text.length * charW;
 
-      let anchor: "start" | "end" = "start";
-      let lx = n.cx + n.r + gap;
-      if (lx + width > rightEdge) {
-        anchor = "end";
-        lx = n.cx - n.r - gap;
-        if (lx - width < leftEdge) {
-          anchor = "end";
-          lx = rightEdge;
-        }
+      let chosen: Candidate | null = null;
+      for (const side of sides) {
+        const c = tryPosition(n, side, width);
+        if (!insideEdges(c.box)) continue;
+        if (dotObstacles.some(d => d.id !== n.id && overlaps(c.box, d))) continue;
+        if (placedBoxes.some(p => overlaps(c.box, p))) continue;
+        chosen = c;
+        break;
       }
 
-      let ly = n.cy;
-      if (n.cy - labelH / 2 < topEdge) ly = n.cy + n.r + labelH;
-      else if (n.cy + labelH / 2 > bottomEdge) ly = n.cy - n.r - labelH / 2;
-
-      const x1 = anchor === "start" ? lx : lx - width;
-      const x2 = anchor === "start" ? lx + width : lx;
-      const box = { x1, x2, y1: ly - labelH / 2, y2: ly + labelH / 2 };
-
-      return { id: n.id, x: lx, y: ly, text, anchor, visible: true, box, score: n.topScore, cluster: n.isCluster };
-    });
-
-    const order = [...computed].sort((a, b) => b.score - a.score);
-    const placed: { x1: number; x2: number; y1: number; y2: number }[] = [];
-    for (const l of order) {
-      const collides = placed.some(p => !(l.box.x2 < p.x1 || l.box.x1 > p.x2 || l.box.y2 < p.y1 || l.box.y1 > p.y2));
-      if (collides) l.visible = false;
-      else placed.push(l.box);
+      if (chosen) {
+        placedBoxes.push(chosen.box);
+        result.set(n.id, {
+          id: n.id, x: chosen.x, y: chosen.y, text,
+          anchor: chosen.anchor, visible: true, box: chosen.box,
+          score: n.topScore, cluster: n.isCluster,
+        });
+      } else {
+        // No side fits — keep position record but mark hidden. The node's
+        // <g> will switch to cursor:"help" so users know to hover.
+        const c = tryPosition(n, "right", width);
+        result.set(n.id, {
+          id: n.id, x: c.x, y: c.y, text,
+          anchor: c.anchor, visible: false, box: c.box,
+          score: n.topScore, cluster: n.isCluster,
+        });
+      }
     }
-    return computed;
+
+    // Preserve original node order for stable render.
+    return nodes.map(n => result.get(n.id)!);
   }, [nodes, showLabels, w, h, padL, padR, padT, padB, t]);
+
+  const hiddenLabelIds = useMemo(() => {
+    const s = new Set<string>();
+    for (const l of labels) if (!l.visible) s.add(l.id);
+    return s;
+  }, [labels]);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const hoveredNode = (hoveredId && itemToNode.get(hoveredId)) || null;
@@ -431,12 +485,15 @@ export function Matrix({ lens, items, hoveredId, onHover, onSelect, size = "prim
         const ringStroke = isMini ? 1 : 1.5;
         const ringGap = isMini ? 2 : 3;
         const ringR = n.r + ringGap + ringStroke / 2;
+        // If the label couldn't be placed anywhere, hint that hovering reveals it.
+        const labelHidden = hiddenLabelIds.has(n.id);
+        const cursor = !isMini && labelHidden && !n.isCluster ? "help" : "pointer";
         return (
           <g key={n.id}
              onMouseEnter={() => onHover(n.id)}
              onMouseLeave={() => onHover(null)}
              onClick={(e) => handleNodeClick(n, e)}
-             style={{ cursor: "pointer" }}
+             style={{ cursor }}
           >
             {hovered && (
               <circle cx={n.cx} cy={n.cy} r={n.r + 10} fill="none"
